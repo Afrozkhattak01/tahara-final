@@ -1,7 +1,7 @@
 # Tahara AI — Landing Page (Next.js + React)
 
 The Tahara AI marketing landing page, running as a **Next.js (React + TypeScript)**
-application. The page itself is a hand-crafted design — its markup, styling, and
+application. The page itselfP is a hand-crafted design — its markup, styling, and
 ~1900-line animation engine (the `<canvas>` 3D lattice, scroll effects, animated
 counters, EN/AR language toggle, mega-menu and drawer) are served intact through
 a React component, so the rendered result is identical to the original design.
