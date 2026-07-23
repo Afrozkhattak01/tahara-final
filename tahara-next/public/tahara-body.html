@@ -1,0 +1,563 @@
+
+<!-- ambient background -->
+<div class="bg" aria-hidden="true"></div>
+<canvas id="scene3d" aria-hidden="true"></canvas>
+<div class="bg-blob blob-1" aria-hidden="true"></div>
+<div class="bg-blob blob-2" aria-hidden="true"></div>
+<div class="bg-blob blob-3" aria-hidden="true"></div>
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-noise" aria-hidden="true"></div>
+
+<!-- ══════════ announcement ══════════ -->
+<div class="ribbon">
+  <a href="#resources">
+    <span class="tag">New</span>
+    <span data-i18n="ribbon.text">The 2026 Agentic AI Assurance Report</span>
+    <span class="arw" aria-hidden="true">→</span>
+  </a>
+</div>
+
+<!-- ══════════ navigation ══════════ -->
+<header id="siteHeader">
+  <nav>
+    <a href="#" class="brand"><span class="brand-mark" aria-hidden="true"></span>Tahara AI</a>
+    <div class="nav-links" id="navLinks">
+      <a href="#platform" class="on has-mega" id="megaBtn" role="button" aria-haspopup="true" aria-expanded="false" aria-controls="mega"><span data-i18n="nav.platform">Platform</span>
+        <svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1.6 3.4 5 6.8l3.4-3.4"/></svg>
+      </a>
+      <a href="#lifecycle" data-i18n="nav.lifecycle">Lifecycle</a>
+      <a href="#stack" data-i18n="nav.architecture">Architecture</a>
+      <div class="nav-drop" id="resWrap">
+        <a href="#resources" class="has-mega" id="resBtn" role="button" aria-haspopup="true" aria-expanded="false" aria-controls="resMenu"><span data-i18n="nav.resources">Resources</span>
+          <svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1.6 3.4 5 6.8l3.4-3.4"/></svg>
+        </a>
+        <div class="res-menu" id="resMenu" role="region" aria-label="Resources menu">
+          <a class="mega-item" href="#resources"><span class="mt">TC</span><span><b data-i18n="res.tc.t">Trust center</b><span class="d" data-i18n="res.tc.d">Our own posture, public</span></span></a>
+          <a class="mega-item" href="#resources"><span class="mt">BL</span><span><b data-i18n="res.bl.t">Blog</b><span class="d" data-i18n="res.bl.d">Notes on AI assurance</span></span></a>
+          <a class="mega-item" href="#resources"><span class="mt">DC</span><span><b data-i18n="res.dc.t">Documentation</b><span class="d" data-i18n="res.dc.d">API and integration guides</span></span></a>
+        </div>
+      </div>
+      <a href="#faq" data-i18n="nav.faq">FAQ</a>
+    </div>
+    <div class="nav-right">
+      <button class="lang-switch" id="langSwitch" aria-label="Switch language">
+        <span class="ls-opt" data-lang="en">EN</span><span class="ls-opt" data-lang="ar">عربي</span>
+      </button>
+      <a href="#" style="color:var(--ink-2)" data-i18n="nav.signin">Sign in</a>
+      <button class="btn btn-solid" data-mag><span data-i18n="cta.demo">Request a demo</span></button>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 5h14M2 9h14M2 13h14"/></svg>
+      </button>
+    </div>
+    <span class="prog" id="prog" aria-hidden="true"></span>
+  </nav>
+
+  <!-- platform mega-menu, filled from PLATFORM_MENU in js/data.js -->
+  <div class="mega" id="mega" role="region" aria-label="Platform menu">
+    <div class="mega-card">
+      <div class="mega-inner" id="megaInner">
+        <!-- columns injected here by UI.mega() -->
+        <div class="mega-demo">
+          <span class="demo-ic" aria-hidden="true">◆</span>
+          <span class="demo-k" data-i18n="mega.demo.k">Guided demo</span>
+          <h4 data-i18n="mega.demo.title">See Tahara in action</h4>
+          <p data-i18n="mega.demo.desc">A 30-minute walkthrough, tailored to your stack</p>
+          <a href="#faq" class="demo-btn"><span data-i18n="cta.demo">Request a demo</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="mega-scrim" id="megaScrim" aria-hidden="true"></div>
+
+<div class="drawer-scrim" id="drawerScrim" aria-hidden="true"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
+  <div class="drawer-head">
+    <div><span class="k" id="drawerKind"></span><h3 id="drawerTitle"></h3></div>
+    <button class="drawer-x" id="drawerX" aria-label="Close">
+      <svg viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body">
+    <p id="drawerLede"></p>
+    <span class="label">What Tahara maps</span>
+    <ul id="drawerList"></ul>
+  </div>
+  <div class="drawer-foot">
+    <button class="btn btn-solid" data-mag>Download the mapping <span class="arw" aria-hidden="true">→</span></button>
+  </div>
+</aside>
+
+<!-- ══════════ hero ══════════ -->
+<div class="wrap">
+  <section class="hero">
+    <div class="aura" aria-hidden="true"></div>
+    <h1 class="hero-h1 r" style="--i:0"><span class="hero-static" data-i18n="hero.built">Built for AI</span> <span class="hero-rot" id="heroRot"><span class="hero-rot-w" id="heroRotWord">Governance</span></span></h1>
+    <p class="lede r" style="--i:6" data-i18n="hero.lede">Discovery, live enforcement and audit-ready evidence — for every model, agent and prompt you run.</p>
+    <div class="hero-cta r" style="--i:7">
+      <button class="btn btn-solid" data-mag><span data-i18n="cta.explore">Explore platform</span> <span class="arw" aria-hidden="true">→</span></button>
+      <button class="btn btn-line" data-mag><span data-i18n="cta.seehow">See how it works</span></button>
+    </div>
+
+    <div class="console-stage">
+      <div class="console" id="console" role="img" aria-label="Tahara assurance console: AI inventory counts, enforcement totals and a live decision feed">
+        <div class="console-bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="path">tahara / assurance console</span>
+          <span class="live"><span class="pulse"></span>Enforcing</span>
+        </div>
+        <div class="console-body">
+          <aside class="console-side">
+            <div class="label">Workspace</div>
+            <a class="on" href="#"><svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>Overview</a>
+            <a href="#"><svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 4.5 8 2l6 2.5-6 2.5z"/><path d="M2 8l6 2.5L14 8"/><path d="M2 11.5 8 14l6-2.5"/></svg>Inventory</a>
+            <a href="#"><svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="5" r="2.4"/><path d="M3 13.5c0-2.5 2.2-4 5-4s5 1.5 5 4"/></svg>Agents</a>
+            <a href="#"><svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1.8 13.5 4v4.2c0 3.2-2.3 5.4-5.5 6-3.2-.6-5.5-2.8-5.5-6V4z"/></svg>Policies</a>
+            <a href="#"><svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>Findings</a>
+            <a href="#"><svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3.5 2h6L12.5 5v9h-9z"/><path d="M5.5 8.5h5M5.5 11h3"/></svg>Evidence</a>
+          </aside>
+
+          <div class="console-main">
+            <div class="tiles">
+              <div class="tile" style="--i:0">
+                <div class="k">Systems in scope</div><div class="v" data-count="412">0</div>
+                <div class="d">+18 this week</div>
+                <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 22 14 20 28 17 42 15 56 11 70 10 84 6 100 3" fill="none" stroke="#114086" stroke-width="1.6"/></svg>
+              </div>
+              <div class="tile" style="--i:1">
+                <div class="k">Agents monitored</div><div class="v" data-count="96">0</div>
+                <div class="d">14 with tool access</div>
+                <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 20 14 21 28 16 42 18 56 12 70 13 84 8 100 7" fill="none" stroke="#114086" stroke-width="1.6"/></svg>
+              </div>
+              <div class="tile" style="--i:2">
+                <div class="k">Policies enforced</div><div class="v" data-count="38">0</div>
+                <div class="d">6 pending approval</div>
+                <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 18 14 18 28 14 42 14 56 10 70 10 84 7 100 7" fill="none" stroke="#114086" stroke-width="1.6"/></svg>
+              </div>
+              <div class="tile" style="--i:3">
+                <div class="k">Blocked · 24h</div><div class="v" data-count="1204">0</div>
+                <div class="d warn">Injections up 9%</div>
+                <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 16 14 19 28 9 42 20 56 7 70 17 84 5 100 11" fill="none" stroke="#b5651d" stroke-width="1.6"/></svg>
+              </div>
+            </div>
+            <div class="feed">
+              <div class="feed-head">
+                <span class="label">Decision feed</span>
+                <span class="label" style="letter-spacing:.1em">Append-only</span>
+              </div>
+              <div class="feed-list" id="feedList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════ standards marquee ══════════ -->
+<section class="strip">
+  <div class="proof" id="proof">
+    <p class="label" data-i18n="proof.label">Trusted by security teams at</p>
+    <div class="proof-row" id="proofRow"></div>
+  </div>
+  <p class="label" data-i18n="standards.label">Mapped to the standards your board reads</p>
+  <div class="marquee" id="marquee" aria-hidden="true"></div>
+</section>
+
+<!-- ══════════ 1 · record panels ══════════ -->
+<div class="wrap">
+  <section class="band" id="platform">
+    <div class="head">
+      <span class="eyebrow r-fade"><i></i><span data-i18n="eyebrow.platform">The platform</span></span>
+      <h2 style="margin-top:16px" data-split data-i18n="platform.title">One record of truth for every AI system you run.</h2>
+      <p class="lede r" data-i18n="platform.lede">Discovery, enforcement and evidence on a single timeline.</p>
+    </div>
+
+    <div class="recs">
+      <article class="rec rec-tall r" style="--i:0">
+        <span class="rec-mesh" aria-hidden="true"></span>
+        <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
+        <div class="rec-tag"><span class="lv"></span>REC-01 <b>· Discovery &amp; red team</b></div>
+        <div class="rec-art">
+          <div class="radar" aria-hidden="true">
+            <div class="sweep"></div>
+            <div class="r0"></div><div class="r0 r1"></div><div class="r0 r2"></div>
+            <div class="blip" style="left:32%;top:28%;animation-delay:.4s"></div>
+            <div class="blip" style="left:70%;top:40%;animation-delay:.6s"></div>
+            <div class="blip" style="left:56%;top:74%;animation-delay:.8s"></div>
+            <div class="blip" style="left:24%;top:62%;animation-delay:1s"></div>
+            <div class="blip unk" style="left:80%;top:70%;animation-delay:1.2s"></div>
+            <div class="blip unk" style="left:18%;top:44%;animation-delay:1.4s"></div>
+            <div class="core">SCANNING</div>
+            <span class="probe" style="--ang:33.9deg;--len:81px;animation-delay:0s"></span>
+            <span class="probe" style="--ang:190.6deg;--len:74px;animation-delay:1.5s"></span>
+            <span class="probe" style="--ang:-26.5deg;--len:51px;animation-delay:3s"></span>
+            <span class="hit" style="left:80%;top:70%;animation-delay:0s"></span>
+            <span class="hit" style="left:18%;top:44%;animation-delay:1.5s"></span>
+            <span class="hit" style="left:70%;top:40%;animation-delay:3s"></span>
+          </div>
+          <span class="rt-badge"><i></i>Red team</span>
+        </div>
+        <div>
+          <h3 data-i18n="rec.discovery.title">Find the AI nobody registered.</h3>
+          <p data-i18n="rec.discovery.desc">Models, agents, MCP servers and keys — mapped, owned and risk-tiered, then probed the way an attacker would.</p>
+          <div class="rt-note">
+            <span class="k"><i></i>What the red team does</span>
+            <p>Finding a system is only half of it. Every model and agent we discover is then attacked
+               the way an outsider would — prompt injection, jailbreaks, tool-chain abuse and attempts to
+               pull data out — and each finding is scored against OWASP LLM Top 10, handed to the owning
+               team, and retested once it is fixed.</p>
+          </div>
+          <div class="rt-stats">
+            <div class="rt-stat"><div class="k">Probes fired</div><div class="v">2,318</div></div>
+            <div class="rt-stat"><div class="k">Findings</div><div class="v warn">14</div></div>
+            <div class="rt-stat"><div class="k">Retest</div><div class="v">Auto</div></div>
+          </div>
+        </div>
+      </article>
+
+      <div class="rec-col">
+        <article class="rec r" style="--i:1">
+          <span class="rec-mesh" aria-hidden="true"></span>
+          <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
+          <div class="rec-tag"><span class="lv"></span>REC-02 <b>· Runtime</b></div>
+          <div class="rec-art rec-art-sm">
+            <svg class="gate" viewBox="0 0 300 136" aria-hidden="true">
+              <path class="lane" d="M14 34h272M14 68h272M14 102h272"/>
+              <path class="wall" d="M148 16v104"/>
+              <rect class="pk g1" x="20" y="29" width="13" height="10" rx="2"/>
+              <rect class="pk g2" x="20" y="63" width="13" height="10" rx="2"/>
+              <rect class="pk-b g3" x="20" y="97" width="13" height="10" rx="2"/>
+              <circle cx="148" cy="102" r="13" fill="none" stroke="#b5651d" stroke-width="1.6"/>
+              <path d="M143 97l10 10M153 97l-10 10" stroke="#b5651d" stroke-width="1.8" stroke-linecap="round"/>
+              <text x="148" y="132" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#4884bc" letter-spacing="1.4">POLICY</text>
+            </svg>
+          </div>
+          <h3 data-i18n="rec.runtime.title">Stop unsafe calls while they run.</h3>
+          <p data-i18n="rec.runtime.desc">Allow, redact, escalate or block — before the model ever sees it.</p>
+        </article>
+
+        <article class="rec r" style="--i:2">
+          <span class="rec-mesh" aria-hidden="true"></span>
+          <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
+          <div class="rec-tag"><span class="lv"></span>REC-03 <b>· Evidence</b></div>
+          <div class="rec-art rec-art-sm">
+            <div class="ledger" aria-hidden="true">
+              <div class="row" style="--i:0"><span class="h">A-1042</span><span class="bar"><i style="--w:100%"></i></span><span class="ok">SEALED</span></div>
+              <div class="row" style="--i:1"><span class="h">A-1043</span><span class="bar"><i style="--w:100%"></i></span><span class="ok">SEALED</span></div>
+              <div class="row" style="--i:2"><span class="h">A-1044</span><span class="bar"><i style="--w:62%"></i></span><span class="ok">WRITING</span></div>
+            </div>
+            <span class="spark-burst" aria-hidden="true">
+              <i style="--dx:-22px;--dy:-18px"></i><i style="--dx:16px;--dy:-24px"></i>
+              <i style="--dx:26px;--dy:6px"></i><i style="--dx:-14px;--dy:14px"></i>
+              <i style="--dx:6px;--dy:22px"></i><i style="--dx:-28px;--dy:-2px"></i>
+            </span>
+            <svg class="seal-stamp" viewBox="0 0 56 56" aria-hidden="true">
+              <circle cx="28" cy="28" r="25"/>
+              <circle class="rim" cx="28" cy="28" r="20"/>
+              <path d="M28 20 34 28 28 36 22 28Z"/>
+              <text x="28" y="49" text-anchor="middle">SEALED</text>
+            </svg>
+          </div>
+          <h3 data-i18n="rec.evidence.title">Evidence an auditor can read alone.</h3>
+          <p data-i18n="rec.evidence.desc">Append-only log, packaged against the control it satisfies.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 2 · dossier lifecycle ══════════ -->
+  <section class="band" id="lifecycle">
+    <div class="head-row">
+      <div>
+        <span class="eyebrow r-fade"><i></i><span data-i18n="eyebrow.whatwedo">What we do</span></span>
+        <h2 style="margin-top:16px" data-split data-i18n="lifecycle.title">Cover the whole life of a model.</h2>
+      </div>
+      <p class="lede r" data-i18n="lifecycle.lede">Four stages, one engagement — each handing the next its evidence.</p>
+    </div>
+
+    <div class="journey" id="journey" aria-hidden="true">
+      <svg viewBox="0 0 1000 34" preserveAspectRatio="none"></svg>
+    </div>
+
+    <div class="life" id="life">
+      <article class="dossier" style="--i:0">
+        <span class="tab"><span class="no">01</span> Assess<svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
+        <div class="dossier-body">
+          <h3 data-i18n="dossier.assess.title">Risk assessment and treatment</h3>
+          <div class="d-rule"></div>
+          <ul>
+            <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.assess.b1">Risk tiering for models and agents</span></li>
+            <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.assess.b2">Bias, robustness and privacy tests</span></li>
+            <li style="--j:2"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.assess.b3">Treatment plan with named owners</span></li>
+          </ul>
+          <a class="more" href="#"><span data-i18n="dossier.assess.cta">See the method</span> <span class="arw">→</span></a>
+        </div>
+      </article>
+
+      <article class="dossier" style="--i:1">
+        <span class="tab"><span class="no">02</span> Govern<svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
+        <div class="dossier-body">
+          <h3 data-i18n="dossier.govern.title">Governance system</h3>
+          <div class="d-rule"></div>
+          <ul>
+            <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.govern.b1">Policy set aligned to ISO/IEC 42001</span></li>
+            <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.govern.b2">Approvals with evidence attached</span></li>
+            <li style="--j:2"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.govern.b3">A register that stays current</span></li>
+          </ul>
+          <a class="more" href="#"><span data-i18n="dossier.govern.cta">See the framework</span> <span class="arw">→</span></a>
+        </div>
+      </article>
+
+      <article class="dossier" style="--i:2">
+        <span class="tab"><span class="no">03</span> Test<svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
+        <div class="dossier-body">
+          <h3 data-i18n="dossier.test.title">Adversarial testing</h3>
+          <div class="d-rule"></div>
+          <ul>
+            <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.test.b1">Jailbreak sets mapped to OWASP LLM Top 10</span></li>
+            <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.test.b2">Tool-chain and agent abuse cases</span></li>
+            <li style="--j:2"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.test.b3">Retest on every material change</span></li>
+          </ul>
+          <a class="more" href="#"><span data-i18n="dossier.test.cta">See the test set</span> <span class="arw">→</span></a>
+        </div>
+      </article>
+
+      <article class="dossier" style="--i:3">
+        <span class="tab"><span class="no">04</span> Monitor<svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
+        <div class="dossier-body">
+          <h3 data-i18n="dossier.monitor.title">Continuous monitoring</h3>
+          <div class="d-rule"></div>
+          <ul>
+            <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.monitor.b1">Drift, refusal and grounding failures</span></li>
+            <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.monitor.b2">Policy hits and overrides</span></li>
+            <li style="--j:2"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.monitor.b3">Alerts routed into your SOC</span></li>
+          </ul>
+          <a class="more" href="#"><span data-i18n="dossier.monitor.cta">See the signals</span> <span class="arw">→</span></a>
+        </div>
+      </article>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════ 3 · pinned architecture ══════════ -->
+<section class="stack-sec" id="stack">
+  <div class="wrap">
+    <div class="stack-intro">
+      <span class="eyebrow r-fade"><i></i><span data-i18n="eyebrow.architecture">Architecture</span></span>
+      <h2 style="margin-top:16px" data-split data-i18n="stack.title">Assurance runs the full depth of the stack.</h2>
+      <p class="lede r" data-i18n="stack.lede">A guardrail at one layer is easy to walk around. Tahara instruments five — then reads them as one.</p>
+    </div>
+  </div>
+
+  <div class="stack-track" id="stackTrack">
+    <div class="stack-pin">
+      <div class="wrap">
+        <div class="pin-head">
+          <span class="label" data-i18n="stack.assembling">Assembling 05 layers</span>
+          <span class="pin-rail" id="pinRail" aria-hidden="true"><i></i></span>
+          <span class="label" id="pinPct">00%</span>
+        </div>
+
+        <div class="stack-grid">
+          <div class="stack-stage">
+            <span class="beam" aria-hidden="true"></span>
+            <svg id="stackSvg" class="tilt" viewBox="0 0 600 820" role="img" aria-label="Five instrumented layers assembling into one stack, from enterprise data at the base to governance and assurance at the top"></svg>
+
+          </div>
+
+          <div class="stack-list" id="stackList">
+            <div class="stack-item" data-layer="4"><span class="n">05</span>
+              <div><h4 data-i18n="stack.item5.title">Governance and assurance</h4><p data-i18n="stack.item5.desc">Policy, approvals, risk register, evidence pack.</p></div></div>
+            <div class="stack-item" data-layer="3"><span class="n">04</span>
+              <div><h4 data-i18n="stack.item4.title">Runtime guardrails</h4><p data-i18n="stack.item4.desc">Inline checks on prompts, responses and tool calls.</p></div></div>
+            <div class="stack-item" data-layer="2"><span class="n">03</span>
+              <div><h4 data-i18n="stack.item3.title">Agents and orchestration</h4><p data-i18n="stack.item3.desc">Identity, scope and spend limits per agent.</p></div></div>
+            <div class="stack-item" data-layer="1"><span class="n">02</span>
+              <div><h4 data-i18n="stack.item2.title">Models and tools</h4><p data-i18n="stack.item2.desc">Approved catalogue: versions, prompts, connectors.</p></div></div>
+            <div class="stack-item" data-layer="0"><span class="n">01</span>
+              <div><h4 data-i18n="stack.item1.title">Enterprise data</h4><p data-i18n="stack.item1.desc">Classification and lineage for what gets retrieved.</p></div></div>
+          </div>
+
+          <div class="stack-mark" id="stackMark" aria-hidden="true">
+              <div class="mark-in">
+                <span class="mark-glow"></span>
+                <svg class="mark-ring" viewBox="0 0 300 300">
+                  <circle class="outer" cx="150" cy="150" r="140"/>
+                  <circle class="dash"  cx="150" cy="150" r="118"/>
+                </svg>
+                <span class="orbit"><i></i></span>
+                <span class="orbit slow"><i></i></span>
+                <span class="mark-dia"></span>
+                <div class="mark-word" id="markWord">Tahara AI</div>
+                <div class="mark-sub">Five layers · one record</div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 4 · principles ══════════ -->
+<div class="wrap">
+  <section class="band">
+    <div class="head">
+      <h2 data-split data-i18n="principles.title">Built for the way AI actually reaches production.</h2>
+    </div>
+    <div class="scale-wrap">
+      <div class="scale">
+        <div class="scale-rule"></div>
+        <div class="notches" aria-hidden="true">
+          <span class="notch" style="--i:0"><i></i></span>
+          <span class="notch" style="--i:1"><i></i></span>
+          <span class="notch" style="--i:2"><i></i></span>
+        </div>
+      </div>
+      <div class="cols">
+        <div class="col" style="--i:0">
+          <span class="n"><span>01</span></span>
+          <h3 data-split data-i18n="principles.col1.title">Adoption outruns change control.</h3>
+          <p class="r-fade" style="--i:4" data-i18n="principles.col1.body">Teams ship an agent in an afternoon. Tahara notices, then brings it into scope.</p>
+        </div>
+        <div class="col" style="--i:1">
+          <span class="n"><span>02</span></span>
+          <h3 data-split data-i18n="principles.col2.title">Security and audit read one signal.</h3>
+          <p class="r-fade" style="--i:5" data-i18n="principles.col2.body">One stream serves the block decision and the evidence record.</p>
+        </div>
+        <div class="col" style="--i:2">
+          <span class="n"><span>03</span></span>
+          <h3 data-split data-i18n="principles.col3.title">No vendor holds your policy.</h3>
+          <p class="r-fade" style="--i:6" data-i18n="principles.col3.body">Change the model, keep the guardrail and the history that proves it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 5 · connectors ══════════ -->
+  <section class="band-tight connect2">
+    <div class="marq-wrap">
+      <div class="marq-row dir-l">
+        <div class="marq-track" id="marqTrack1"></div>
+      </div>
+      <div class="marq-row dir-r">
+        <div class="marq-track" id="marqTrack2"></div>
+      </div>
+    </div>
+
+    <div class="connect2-hub">
+      <div class="hub-mark" aria-hidden="true">
+        <span class="dia"></span><b>Tahara AI</b><i data-i18n="mark.assurance">Assurance</i>
+      </div>
+      <h2 data-split data-i18n="connect.title">Sits next to the stack you already run.</h2>
+      <p class="sub" data-i18n="connect.sub">Model providers, vector stores, agent frameworks, identity and SIEM — via your gateway or a sidecar.</p>
+      <button class="btn btn-solid" data-mag><span data-i18n="cta.browse">Browse connectors</span> <span class="arw" aria-hidden="true">→</span></button>
+    </div>
+  </section>
+
+  <!-- ══════════ 6 · frameworks ══════════ -->
+  <section class="band" id="resources">
+    <div class="head">
+      <span class="eyebrow r-fade"><i></i><span data-i18n="eyebrow.alignment">Alignment</span></span>
+      <h2 style="margin-top:16px" data-split data-i18n="frameworks.title">Aligned to the frameworks your regulator reads.</h2>
+      <p class="lede r" data-i18n="frameworks.lede">Every control ships with its mapping.</p>
+    </div>
+
+    <div class="frames" id="frames">
+      <div class="seal" style="--i:0"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k">Management</div><div class="v">ISO/IEC 42001</div></div>
+      <div class="seal" style="--i:1"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k">Security</div><div class="v">ISO/IEC 27001</div></div>
+      <div class="seal" style="--i:2"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k">Risk</div><div class="v">NIST AI RMF</div></div>
+      <div class="seal" style="--i:3"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k">Regulation</div><div class="v">EU AI Act</div></div>
+      <div class="seal" style="--i:4"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k">Application</div><div class="v">OWASP LLM Top 10</div></div>
+      <div class="seal" style="--i:5"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k">Adversary</div><div class="v">MITRE ATLAS</div></div>
+    </div>
+
+    <p class="label r" style="margin-bottom:16px" data-i18n="guides.label">Field guides from Tahara research</p>
+    <div class="res">
+      <div class="res-card r" style="--i:0">
+        <div class="kind"><span class="label" data-i18n="guides.card1.kind">Playbook</span><span class="mono" style="font-size:11px;color:var(--ink-3)">PDF</span></div>
+        <h4 data-i18n="guides.card1.title">Running an AI risk assessment</h4>
+        <div class="res-seal" data-i18n="guides.seal">Tahara Research</div>
+      </div>
+      <div class="res-card r" style="--i:1">
+        <div class="kind"><span class="label" data-i18n="guides.card2.kind">96 controls</span><span class="mono" style="font-size:11px;color:var(--ink-3)">XLSX</span></div>
+        <h4 data-i18n="guides.card2.title">Control set for agentic systems</h4>
+        <div class="res-seal" data-i18n="guides.seal">Tahara Research</div>
+      </div>
+      <div class="res-card r" style="--i:2">
+        <div class="kind"><span class="label" data-i18n="guides.card3.kind">Template</span><span class="mono" style="font-size:11px;color:var(--ink-3)">DOCX</span></div>
+        <h4 data-i18n="guides.card3.title">Evidence pack for ISO/IEC 42001</h4>
+        <div class="res-seal" data-i18n="guides.seal">Tahara Research</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 7 · FAQ ══════════ -->
+  <section class="band" id="faq">
+    <div class="head">
+      <span class="eyebrow r-fade"><i></i><span data-i18n="eyebrow.answers">Answers</span></span>
+      <h2 style="margin-top:16px" data-split data-i18n="faq.title">Questions we get first.</h2>
+    </div>
+
+    <div class="faq-grid">
+      <div class="q-index r" id="qIndex">
+        <span class="q-slide" id="qSlide" aria-hidden="true"></span>
+        <button class="q-item on" data-q="0" aria-selected="true"><span class="k">01</span><span><span data-i18n="faq.q1">How do you find AI nobody told us about?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="1" aria-selected="false"><span class="k">02</span><span><span data-i18n="faq.q2">Does it sit in the request path?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="2" aria-selected="false"><span class="k">03</span><span><span data-i18n="faq.q3">What happens when an agent reaches for sensitive data?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="3" aria-selected="false"><span class="k">04</span><span><span data-i18n="faq.q4">Can we keep our models and data private?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="4" aria-selected="false"><span class="k">05</span><span><span data-i18n="faq.q5">How is this different from an AI gateway?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="5" aria-selected="false"><span class="k">06</span><span><span data-i18n="faq.q6">How long before we see something useful?</span></span><span class="cv arw">→</span></button>
+      </div>
+
+      <div class="q-panel r" style="--i:1">
+        <span class="mesh" aria-hidden="true"></span>
+        <div class="q-head"><span class="label" id="qLabel">Answer · 01</span></div>
+        <div class="q-a" id="qAnswer"></div>
+        <div class="q-foot">
+          <span data-i18n="faq.stillnot">Still not covered?</span>
+          <button class="btn btn-line" data-mag><span data-i18n="cta.askteam">Ask our team</span> <span class="arw" aria-hidden="true">→</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 8 · closing CTA ══════════ -->
+  <section class="band-tight">
+    <div class="close-cta" id="closeCta">
+      <span class="floor" aria-hidden="true"></span>
+      <span class="cta-halo" aria-hidden="true"></span>
+      <span class="cta-dia" aria-hidden="true"></span>
+      <h2 data-split data-i18n="cta.title">Put your AI under control.</h2>
+      <p data-i18n="cta.body">Thirty minutes on your own estate: what we would find, and what we would block.</p>
+      <div class="row">
+        <button class="btn btn-pale" data-mag><span data-i18n="cta.demo">Request a demo</span> <span class="arw" aria-hidden="true">→</span></button>
+        <button class="btn btn-clear" data-mag><span data-i18n="cta.talkeng">Talk to an engineer</span></button>
+      </div>
+      <div class="cta-strip">
+        <span style="--i:0"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg><span data-i18n="strip.tenancy">Runs in your tenancy</span></span>
+        <span style="--i:1"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg><span data-i18n="strip.nomodel">No model changes</span></span>
+        <span style="--i:2"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg><span data-i18n="strip.reportweek">Report in week one</span></span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════ footer ══════════ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Tahara AI</div>
+        <p data-i18n="footer.tagline">Safety, governance and transparency for the AI you actually run.</p>
+      </div>
+      <div id="footCols"></div>
+    </div>
+    <div class="foot-bottom">
+      <span data-i18n="footer.copyright">© 2026 Tahara AI. All rights reserved.</span>
+      <span class="mono" style="font-size:11.5px;letter-spacing:.08em" data-i18n="footer.motto">SAFE · ETHICAL · TRANSPARENT</span>
+    </div>
+  </div>
+</footer>
+
