@@ -2070,40 +2070,56 @@ window.TaharaI18N = (function(){
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && open) set(false); });
   })();
 
-  /* ── create-account modal — opened by "Sign up", closed by X / scrim / Esc.
-     Illustrative only: the form never submits, nothing is sent. ── */
+  /* ── auth modals — "Sign in" opens the sign-in modal; its "Create an account"
+     link swaps to the sign-up modal (and vice-versa). Closed by X / scrim / Esc.
+     Illustrative only: the forms never submit, nothing is sent. ── */
   (function(){
-    const triggers = document.querySelectorAll('[data-signup]');
-    const modal = document.getElementById('acctModal');
-    const scrim = document.getElementById('acctScrim');
-    const closeX = document.getElementById('acctX');
-    if (!triggers.length || !modal || !scrim) return;
-    let open = false, lastTrigger = null;
-    function set(v){
-      open = v;
-      modal.classList.toggle('on', v);
-      scrim.classList.toggle('on', v);
-      modal.setAttribute('aria-hidden', String(!v));
-      scrim.setAttribute('aria-hidden', String(!v));
-      document.body.style.overflow = v ? 'hidden' : '';
-      if (v){ const f = modal.querySelector('input'); f && setTimeout(() => f.focus(), 80); }
-      else if (lastTrigger) lastTrigger.focus();
+    const signin = { m: document.getElementById('signinModal'), s: document.getElementById('signinScrim') };
+    const signup = { m: document.getElementById('acctModal'),   s: document.getElementById('acctScrim') };
+    if (!signin.m || !signup.m) return;
+    const all = [signin, signup];
+    let openM = null, lastTrigger = null;
+
+    function hideAll(){
+      all.forEach(x => { x.m.classList.remove('on'); x.s.classList.remove('on');
+        x.m.setAttribute('aria-hidden','true'); x.s.setAttribute('aria-hidden','true'); });
     }
-    triggers.forEach(t => t.addEventListener('click', e => { e.preventDefault(); lastTrigger = t; set(true); }));
-    closeX && closeX.addEventListener('click', () => set(false));
-    scrim.addEventListener('click', () => set(false));
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && open) set(false); });
-    const form = document.getElementById('acctForm');
-    form && form.addEventListener('submit', e => e.preventDefault());
-    /* password strength meter — visual only */
-    const pw = modal.querySelector('.acct-pw'), meter = document.getElementById('acctMeter');
+    function show(which){
+      hideAll();
+      which.m.classList.add('on'); which.s.classList.add('on');
+      which.m.setAttribute('aria-hidden','false'); which.s.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+      openM = which;
+      const f = which.m.querySelector('input'); f && setTimeout(() => f.focus(), 80);
+    }
+    function close(){
+      hideAll();
+      document.body.style.overflow = '';
+      openM = null;
+      if (lastTrigger) lastTrigger.focus();
+    }
+
+    document.querySelectorAll('[data-signin]').forEach(t =>
+      t.addEventListener('click', e => { e.preventDefault(); lastTrigger = t; show(signin); }));
+    document.querySelectorAll('[data-open-signup]').forEach(a =>
+      a.addEventListener('click', e => { e.preventDefault(); show(signup); }));
+    document.querySelectorAll('[data-open-signin]').forEach(a =>
+      a.addEventListener('click', e => { e.preventDefault(); show(signin); }));
+
+    [document.getElementById('signinX'), document.getElementById('acctX')].forEach(x => x && x.addEventListener('click', close));
+    all.forEach(x => x.s.addEventListener('click', close));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && openM) close(); });
+    all.forEach(x => { const form = x.m.querySelector('form'); form && form.addEventListener('submit', e => e.preventDefault()); });
+
+    /* sign-up password-strength meter — visual only */
+    const pw = signup.m.querySelector('.acct-pw'), meter = document.getElementById('acctMeter');
     if (pw && meter){
       pw.addEventListener('input', () => {
-        let s = 0;
-        if (pw.value.length >= 10) s++;
-        if (/\d/.test(pw.value)) s++;
-        if (/[^A-Za-z0-9]/.test(pw.value)) s++;
-        meter.style.width = (s / 3 * 100) + '%';
+        let n = 0;
+        if (pw.value.length >= 10) n++;
+        if (/\d/.test(pw.value)) n++;
+        if (/[^A-Za-z0-9]/.test(pw.value)) n++;
+        meter.style.width = (n / 3 * 100) + '%';
       });
     }
   })();

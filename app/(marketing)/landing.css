@@ -315,6 +315,19 @@ h4{font-family:'Inter Tight',sans-serif;font-weight:600;letter-spacing:-.015em;f
 .acct-alt{text-align:center;font-size:14px;color:var(--ink-2);margin-top:16px}
 .acct-alt a{color:var(--g700);font-weight:600;border-bottom:1px solid var(--g700)}
 .acct-note{display:block;text-align:center;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.acct-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 6px}
+.acct-link{font-size:13.5px;color:var(--g700);font-weight:500}
+.acct-link:hover{color:var(--g900)}
+.acct-or{display:flex;align-items:center;gap:12px;margin:18px 0;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.acct-or::before,.acct-or::after{content:'';flex:1;height:1px;background:var(--line)}
+.acct-sso{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.acct-sso-btn{display:flex;align-items:center;justify-content:center;gap:9px;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;
+  font-size:14px;color:var(--ink);cursor:pointer;transition:border-color .2s,background .2s}
+.acct-sso-btn:hover{border-color:var(--g400);background:var(--bg-2)}
+.acct-sso-ic{width:22px;height:22px;display:grid;place-items:center;border-radius:6px;
+  background:var(--bg-2);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--g700)}
 @media(max-width:600px){ .acct-grid{grid-template-columns:1fr} .acct-modal{padding:22px 20px} }
 
 /* ── assurance dashboard (4-module tabbed console) ── */
