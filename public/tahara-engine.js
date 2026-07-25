@@ -209,7 +209,7 @@ window.TAHARA_DATA = (function(){
 
   /* ── standards marquee ── */
   const STANDARDS = ['ISO/IEC 42001','ISO/IEC 27001','NIST AI RMF','EU AI Act',
-                     'OWASP LLM Top 10','MITRE ATLAS','SOC 2','GDPR'];
+                     'OWASP LLM Top 10','MITRE ATLAS','AIUC-1','SOC 2','GDPR'];
 
   /* ── fallback glyphs, used when a logo file cannot be loaded ── */
   const GLYPH = {
@@ -302,34 +302,38 @@ window.TAHARA_DATA = (function(){
   /* ── Platform mega-menu ──────────────────────────────────────
      [ column heading, [ monogram, title, one-line description, comingSoon ] ]
      ───────────────────────────────────────────────────────── */
+  /* [title, description, comingSoon, href?] — href is optional and currently
+     unset on every item: the menu is presentational until the pages exist. */
   const PLATFORM_MENU = [
     ['Governance', [
-      ['AE',  'Applicability engine',      'Which laws apply, and why',             false, false, '/platform/governance'],
-      ['GA',  'Gap assessment',            "What's missing, ranked by risk",        false],
-      ['SoA', 'Statement of applicability','Every control, justified',              false],
-      ['EL',  'Evidence locker',           'Proof, stored and dated',               false],
-      ['AL',  'Audit ledger',              'Tamper-proof history',                  false],
-      ['VR',  'Vendor risk',               'Track third-party AI vendors',          true ],
-      ['AR',  'Trust Center',              'Who can touch what, checked regularly', true ]
+      ['Statement of Applicability', 'Every control, justified',   false],
+      ['Evidence Locker',            'Proof, stored and dated',    false],
+      ['Audit Ledger',               'Tamper-proof history',       false],
+      ['AI Inventory',               'Every system, tracked',      false],
+      ['Risk Classification',        'Tiered by exposure',         false],
+      ['Agent Constraints',          'Boundaries, enforced',       false],
+      ['Compliance Reporting',       'Ready when asked',           false],
+      ['Continuous Dashboard',       'Live, not annual',           false],
+      ['Vendor Risk',                'Third-party AI tracked',     true ],
+      ['Access Reviews',             'Checked regularly, always',  true ]
     ]],
     ['Adversarial', [
-      ['AS',  'Attack simulation',         'Scheduled, staging only',               false],
-      ['10',  'OWASP LLM top 10',          'Every category, tracked',               false],
-      ['RT',  'Red-team scheduling',       'Recurring, not annual',                 false],
-      ['FR',  'Findings register',         'Every result, kept',                    false]
+      ['Attack Simulation',          'Scheduled, staging only',    false],
+      ['OWASP LLM Top 10',           'Every category, tracked',    false],
+      ['Red-Team Scheduling',        'Recurring, not annual',      false],
+      ['Findings Register',          'Every result, kept',         false],
+      ['Continuous Dashboard',       'Attacks, tracked live',      false]
     ]],
-    ['PII guardrails', [
-      ['PI',  'Prompt inspection',         'Checked before the model sees it',      false],
-      ['MR',  'PII Masking',               'Reversible, on our side only',          false],
-      ['BD',  'Bilingual detection',       'English and Roman Urdu',                false],
-      ['CC',  'Cookie & consent',          'Banner rules, tracker checks',          true ]
+    ['PII Guardrails', [
+      ['Prompt Inspection',          'Checked before the model sees it',   false],
+      ['Masking & Redaction',        'Reversible, on our side only',       false],
+      ['Bilingual Detection',        'English and Roman Urdu',             false],
+      ['Cookie & Consent',           'Banner rules, tracker checks',       true ]
     ]],
-    ['Vulnerability', [
-      ['CC',  'Cloud config scan',         'IAM, storage, network rules',           false],
-      ['DC',  'Dependency checks',         'Known CVEs, flagged',                   false],
-      ['SD',  'Secret detection',          'Exposed keys, caught early',            false],
-      ['DPO', 'VDPO',                      'Talk to our data officer',              false],
-      ['AP',  'Audit programs',            'Scope, run, and report an audit',       true ]
+    ['Vulnerability Scanner', [
+      ['Cloud Config Scan',          'IAM, storage, network rules',        false],
+      ['Dependency Checks',          'Known CVEs, flagged',                false],
+      ['Secret Detection',           'Exposed keys, caught early',         false]
     ]]
   ];
 
@@ -391,30 +395,56 @@ window.TAHARA_DATA = (function(){
     'MITRE ATLAS': ['Adversary tactics',
       'A knowledge base of real tactics and techniques used against AI systems.',
       ['Attack simulations mapped to ATLAS techniques','Coverage gaps surfaced per system',
-       'Detection hooks routed to your SOC','Recurring schedule, not an annual exercise']]
+       'Detection hooks routed to your SOC','Recurring schedule, not an annual exercise']],
+    'AIUC-1': ['Agent certification',
+      'A certification standard for AI agents, written so a buyer can hold every vendor’s agent to one bar.',
+      ['Agent controls mapped to platform evidence','Each finding tied to the control it affects',
+       'Evidence packaged for the certification audit','Re-checked continuously, not only at audit time']]
   };
 
 
   /* ── FAQ answers, one array entry per rendered line ── */
+  /* Each entry is one answer, split into lines that slide up in sequence —
+     the breaks are clause boundaries, not wrapping (the panel wraps on its own). */
   const ANSWERS = [
-    ['Tahara reads signals your estate already produces — gateway traffic, cloud AI usage,',
-     'keys sitting in the secret store, and model references in code and CI.',
-     'Each finding arrives with a proposed owner and a suggested risk tier.'],
-    ['Only for enforcement. Discovery and monitoring are entirely passive.',
-     'Inline control runs through your existing gateway or a sidecar, and',
-     'fail-open or fail-closed is set per policy — not for the whole deployment.'],
-    ['The call is checked against the agent’s declared scope and the data’s classification.',
-     'Tahara can allow it, redact fields, require step-up approval from a named human,',
-     'or block it outright — and the reason is recorded either way.'],
-    ['Yes. Tahara deploys inside your own tenancy or on-premises.',
-     'Prompts, responses and documents stay within your boundary, and',
-     'nothing passing through the platform is used to train anything.'],
-    ['A gateway routes traffic and enforces rate limits.',
-     'Tahara adds the layer above it — the register, the risk assessment,',
-     'the approval trail and the evidence pack — reading your gateway as one input.'],
-    ['A first discovery report usually lands within a week,',
-     'and in most estates that is the part which changes the conversation.',
-     'Enforcement on an initial policy set follows in two to four weeks.']
+    ['Inside your own environment. Tahara AI never asks for data to leave your systems,',
+     'it runs where the infrastructure already lives, reads only what it’s given permission to see,',
+     'and never holds credentials.'],
+    ['Tahara AI doesn’t rely on what’s documented, it checks what’s real.',
+     'It reads the actual configuration and access records directly,',
+     'so anything genuinely running shows up, whether or not it was ever registered or logged.'],
+    ['Yes. Tahara AI doesn’t require an agent to be built on it, deployed through it,',
+     'or wired into it in any special way. It reads the environment an agent already runs in',
+     'so anything live is in scope, regardless of where or how it was built.'],
+    ['A gateway sits in front of traffic and a dashboard shows what’s already been reported.',
+     'Tahara AI does neither, it independently checks the real system against what’s claimed and what’s documented,',
+     'and only marks something resolved once a stakeholder confirms it.',
+     'It’s built to catch what a dashboard would just display without question.'],
+    ['Tahara AI flags it the moment it’s found, not held for the next scheduled review.',
+     'Every violation is logged with a status, an owner,',
+     'and a record that stays open until it’s resolved.'],
+    ['No. Tahara AI can raise a flag on its own.',
+     'Only a stakeholder can confirm it’s resolved.'],
+    ['Tahara AI is built around a single Master Framework — a continuously updated map',
+     'of global and regional AI and LLM regulations, including the EU AI Act, ISO/IEC 42001,',
+     'ISO/IEC 23894, and NIST AI RMF, kept current as new frameworks emerge worldwide.',
+     'One profile, checked against all of them at once.'],
+    ['Both, against each other. Tahara AI compares what a team says, what the policy states,',
+     'and what the live system actually shows and treats any mismatch between them as a finding,',
+     'even when no one was wrong on purpose.'],
+    ['No, it closes the gap between them.',
+     'Tahara AI runs continuously, so what’s true about a system today is caught today,',
+     'instead of surfacing months later at the next scheduled review.'],
+    ['Only what’s necessary to check configuration and access records — never production data,',
+     'never customer content, never write access.',
+     'Read-only, scoped, and revocable at any time.'],
+    ['A named stakeholder on your team.',
+     'Tahara AI can observe and flag continuously, but sign-off always stays human,',
+     'a machine’s read of a system is evidence, not a verdict.'],
+    ['Compliance and security teams for the findings and reports,',
+     'engineering leads for what gets flagged in their systems,',
+     'and leadership for the standing view of where the organization actually sits',
+     'against every framework that applies.']
   ];
 
   return { FEED, STANDARDS, GLYPH, CONNECTORS, GRID_LAYOUT, PLATFORM_MENU, ANSWERS,
@@ -620,13 +650,14 @@ window.TaharaUI = (function(){
       h.className = 'mega-h';
       h.textContent = heading;
       col.appendChild(h);
-      items.forEach(([mono, title, desc, soon, splitBefore, href]) => {
+      /* the AR menu sets the same `soon` flag, so the badge follows the locale */
+      const soonTxt = window.TaharaI18N && window.TaharaI18N.current === 'ar' ? 'قريبًا' : 'Coming soon';
+      items.forEach(([title, desc, soon, href]) => {
         const a = document.createElement('a');
-        a.className = 'mega-item' + (splitBefore ? ' split' : '');
+        a.className = 'mega-item';
         a.href = href || '#platform';
         a.innerHTML =
-          '<span class="mt">' + mono + '</span>' +
-          '<span><b>' + title + (soon ? ' <i class="soon">Coming soon</i>' : '') + '</b>' +
+          '<span><b>' + title + (soon ? ' <i class="soon">' + soonTxt + '</i>' : '') + '</b>' +
           '<span class="d">' + desc + '</span></span>';
         col.appendChild(a);
       });
@@ -1015,7 +1046,8 @@ window.TaharaUI = (function(){
       slide.style.top = (r.top - pr.top + 12) + 'px';
       slide.style.height = Math.max(0, r.height - 24) + 'px';
       const ar = window.TaharaI18N && window.TaharaI18N.current === 'ar';
-      label.textContent = (ar ? 'الإجابة · 0' : 'Answer · 0') + (i + 1);
+      /* pad rather than prefixing a literal '0' — past nine that read "Answer · 010" */
+      label.textContent = (ar ? 'الإجابة · ' : 'Answer · ') + String(i + 1).padStart(2, '0');
       answer.classList.remove('show');
       answer.innerHTML = activeAnswers[i]
         .map((l, j) => '<span class="ln"><i style="--li:' + j + '">' + l + '</i></span>').join('');
@@ -1090,11 +1122,15 @@ window.TaharaUI = (function(){
 window.TaharaMarquee2 = (function(){
   const D = window.TAHARA_DATA;
 
-  const LOGO_SOURCE = 'cdn';                 /* 'cdn' | 'local' — see assets/logos/README */
-  const DEFAULT_HEX = '6a8a6a';
-  const HOVER_HEX   = '1a3c2a';
-  const cdnUrl   = (slug, hex) => 'https://cdn.simpleicons.org/' + slug + '/' + hex;
-  const localUrl = (slug, hex) => 'logos/' + slug + '-' + hex + '.svg';
+  /* Full-colour marks, three deep: a local brand file if we have one, else the
+     Simple Icons mark in the brand's own colour (requesting no colour suffix
+     returns the official hex), else the geometric glyph. Sources mix freely,
+     so the local set can be filled in one brand at a time — a local file always
+     wins, which is what makes a true multi-colour mark worth adding.
+     'local' | 'cdn' — 'cdn' skips straight to the CDN for every brand. */
+  const LOGO_SOURCE = 'local';
+  const cdnUrl   = slug => 'https://cdn.simpleicons.org/' + slug;
+  const localUrl = slug => '/logos/' + slug + '.svg';
 
   /* Why exactly 2x, not 3x: the loop keyframe animates the track from
      translateX(0) to translateX(-50%). For that to be seamless, -50%
@@ -1124,30 +1160,26 @@ window.TaharaMarquee2 = (function(){
     el.setAttribute('aria-label', name);
 
     if (slug){
-      const url = LOGO_SOURCE === 'local' ? localUrl : cdnUrl;
       const base = document.createElement('img');
       base.className = 'mlogo base';
       base.decoding = 'async';
       base.alt = name;
-      base.src = url(slug, DEFAULT_HEX);
 
-      const hover = document.createElement('img');
-      hover.className = 'mlogo hover';
-      hover.decoding = 'async';
-      hover.alt = '';
-      hover.setAttribute('aria-hidden', 'true');
-      hover.src = url(slug, HOVER_HEX);
+      /* last resort: no mark at this slug anywhere, draw the geometric glyph */
+      const useGlyph = () => { base.remove(); glyphFallback(el, glyph); };
 
-      /* if the base tint 404s, the mark doesn't exist at this slug —
-         drop both images and use the geometric glyph instead */
-      base.addEventListener('error', () => {
-        base.remove();
-        hover.remove();
-        glyphFallback(el, glyph);
-      }, { once: true });
+      if (LOGO_SOURCE === 'local'){
+        base.addEventListener('error', () => {
+          base.addEventListener('error', useGlyph, { once: true });
+          base.src = cdnUrl(slug);
+        }, { once: true });
+        base.src = localUrl(slug);
+      } else {
+        base.addEventListener('error', useGlyph, { once: true });
+        base.src = cdnUrl(slug);
+      }
 
       el.appendChild(base);
-      el.appendChild(hover);
     } else {
       glyphFallback(el, glyph);
     }
@@ -1227,9 +1259,12 @@ window.TaharaDrawer = (function(){
     }
 
     $$('.seal').forEach(seal => {
+      const name = seal.querySelector('.v').textContent.trim();
+      /* A seal with no mapping detail has nothing to open — open() would bail
+         silently, so leave it inert rather than advertising a dead click. */
+      if (!activeDetail[name]){ seal.classList.add('seal-inert'); return; }
       seal.setAttribute('role', 'button');
       seal.tabIndex = 0;
-      const name = seal.querySelector('.v').textContent.trim();
       seal.setAttribute('aria-label', name + ' — open mapping detail');
       seal.addEventListener('click', () => open(name, seal));
       seal.addEventListener('keydown', e => {
@@ -1336,6 +1371,11 @@ window.TaharaI18N = (function(){
     'eyebrow.alignment':   { en:'Alignment', ar:'التوافق' },
     'eyebrow.answers':     { en:'Answers', ar:'الإجابات' },
 
+    'stmt.title': { en:'The compliance, security, and privacy engine your AI <em>needs.</em>',
+                    ar:'محرك الامتثال والأمن والخصوصية الذي <em>يحتاجه</em> ذكاؤك الاصطناعي.' },
+    'stmt.desc':  { en:"Tahara AI finds what laws apply, tests what could go wrong, and stops what shouldn't leak — all from one platform, checked continuously.",
+                    ar:'يكتشف Tahara AI القوانين المنطبقة، ويختبر ما قد يسوء، ويمنع ما لا ينبغي تسريبه — من منصة واحدة، بفحص مستمر.' },
+
     'platform.title': { en:'One record of truth.',
                         ar:'سجل حقيقة واحد.' },
     'platform.lede':  { en:'Discovery, enforcement and evidence on one timeline.',
@@ -1356,26 +1396,33 @@ window.TaharaI18N = (function(){
                          ar:'أربع مراحل، تكليف واحد — كل مرحلة تسلّم التالية أدلتها.' },
 
     'dossier.assess.title':  { en:'Risk assessment and treatment', ar:'تقييم المخاطر ومعالجتها' },
-    'dossier.assess.b1': { en:'Risk tiering for models and agents', ar:'تصنيف المخاطر للنماذج والوكلاء' },
-    'dossier.assess.b2': { en:'Bias, robustness and privacy tests', ar:'اختبارات التحيّز والمتانة والخصوصية' },
+    'dossier.assess.b1': { en:'Tiering aligned to the EU AI Act, mapped straight to risk category',
+                           ar:'تصنيف متوافق مع EU AI Act، مرتبط مباشرة بفئة المخاطر' },
+    'dossier.assess.b2': { en:"Extends to regional frameworks on request — SDAIA, UAE, and others as they're added",
+                           ar:'يمتدّ إلى الأطر الإقليمية عند الطلب — سدايا والإمارات وغيرها كلما أُضيفت' },
     'dossier.assess.b3': { en:'Treatment plan with named owners', ar:'خطة معالجة بمالكين محدَّدين' },
     'dossier.assess.cta':{ en:'See the method', ar:'اطّلع على المنهجية' },
 
     'dossier.govern.title':  { en:'Governance system', ar:'نظام الحوكمة' },
     'dossier.govern.b1': { en:'Policy set aligned to ISO/IEC 42001', ar:'مجموعة سياسات متوافقة مع ISO/IEC 42001' },
-    'dossier.govern.b2': { en:'Approvals with evidence attached', ar:'موافقات مرفق بها الأدلة' },
+    'dossier.govern.b2': { en:'Expands to NIST AI RMF, ISO/IEC 23894, and regional standards without re-answering a single question',
+                           ar:'يتوسّع إلى NIST AI RMF و ISO/IEC 23894 والمعايير الإقليمية دون إعادة الإجابة عن سؤال واحد' },
     'dossier.govern.b3': { en:'A register that stays current', ar:'سجلّ يبقى محدَّثًا باستمرار' },
     'dossier.govern.cta':{ en:'See the framework', ar:'اطّلع على الإطار' },
 
     'dossier.test.title':    { en:'Adversarial testing', ar:'الاختبار العدائي' },
-    'dossier.test.b1': { en:'Jailbreak sets mapped to OWASP LLM Top 10', ar:'مجموعات اختراق مطابقة لقائمة OWASP LLM Top 10' },
-    'dossier.test.b2': { en:'Tool-chain and agent abuse cases', ar:'حالات إساءة استخدام سلسلة الأدوات والوكلاء' },
+    'dossier.test.b1': { en:'Attack sets mapped to the OWASP LLM Top 10',
+                         ar:'مجموعات هجوم مرتبطة بقائمة OWASP LLM Top 10' },
+    'dossier.test.b2': { en:'Extends to custom and region-specific threat models as new ones are defined',
+                         ar:'يمتدّ إلى نماذج تهديد مخصّصة وإقليمية كلما جرى تعريف نماذج جديدة' },
     'dossier.test.b3': { en:'Retest on every material change', ar:'إعادة اختبار عند كل تغيير جوهري' },
     'dossier.test.cta':{ en:'See the test set', ar:'اطّلع على مجموعة الاختبار' },
 
     'dossier.monitor.title': { en:'Continuous monitoring', ar:'المراقبة المستمرة' },
-    'dossier.monitor.b1': { en:'Drift, refusal and grounding failures', ar:'الانحراف والرفض وإخفاقات الإسناد الواقعي' },
-    'dossier.monitor.b2': { en:'Policy hits and overrides', ar:'مطابقات السياسات وتجاوزاتها' },
+    'dossier.monitor.b1': { en:'Drift, refusal, and grounding checked against your declared baseline',
+                            ar:'الانحراف والرفض والإسناد الواقعي، مفحوصة مقابل خط الأساس المعلَن لديكم' },
+    'dossier.monitor.b2': { en:"Extends to org-specific and regional policy signals as they're defined",
+                            ar:'يمتدّ إلى مؤشرات السياسات الخاصة بالمؤسسة والإقليمية كلما جرى تعريفها' },
     'dossier.monitor.b3': { en:'Alerts routed into your SOC', ar:'تنبيهات موجَّهة إلى مركز العمليات الأمنية لديكم' },
     'dossier.monitor.cta':{ en:'See the signals', ar:'اطّلع على المؤشرات' },
 
@@ -1430,12 +1477,18 @@ window.TaharaI18N = (function(){
 
     'faq.title':    { en:'Questions we get first.', ar:'الأسئلة التي نتلقّاها أولًا.' },
     'faq.stillnot': { en:'Still not covered?', ar:'لم تجد إجابتك بعد؟' },
-    'faq.q1': { en:'How do you find AI nobody told us about?', ar:'كيف تكتشفون ذكاءً اصطناعيًا لم يُخبرنا به أحد؟' },
-    'faq.q2': { en:'Does it sit in the request path?', ar:'هل يقف في مسار الطلب؟' },
-    'faq.q3': { en:'What happens when an agent reaches for sensitive data?', ar:'ماذا يحدث عندما يحاول وكيل الوصول إلى بيانات حسّاسة؟' },
-    'faq.q4': { en:'Can we keep our models and data private?', ar:'هل يمكننا إبقاء نماذجنا وبياناتنا خاصة؟' },
-    'faq.q5': { en:'How is this different from an AI gateway?', ar:'ما الفرق بين هذا وبوابة الذكاء الاصطناعي؟' },
-    'faq.q6': { en:'How long before we see something useful?', ar:'كم يستغرق ظهور نتائج مفيدة؟' },
+    'faq.q1':  { en:'Where does Tahara AI run?', ar:'أين يعمل Tahara AI؟' },
+    'faq.q2':  { en:'How does Tahara AI find AI agents already in use?', ar:'كيف يكتشف Tahara AI وكلاء الذكاء الاصطناعي المستخدَمين بالفعل؟' },
+    'faq.q3':  { en:'Can Tahara AI govern agents built outside the platform?', ar:'هل يستطيع Tahara AI حوكمة وكلاء بُنوا خارج المنصة؟' },
+    'faq.q4':  { en:'How is Tahara AI different from an AI gateway or dashboard?', ar:'ما الفرق بين Tahara AI وبوابة الذكاء الاصطناعي أو لوحة المعلومات؟' },
+    'faq.q5':  { en:'What happens when a policy is broken?', ar:'ماذا يحدث عند خرق سياسة؟' },
+    'faq.q6':  { en:'Can a machine close a finding?', ar:'هل يمكن لآلة أن تُغلق نتيجة؟' },
+    'faq.q7':  { en:'Which frameworks are covered?', ar:'ما الأطر المشمولة؟' },
+    'faq.q8':  { en:'What does Tahara AI actually check — documentation, or the real system?', ar:'ما الذي يفحصه Tahara AI فعليًا — التوثيق أم النظام الفعلي؟' },
+    'faq.q9':  { en:'Does this replace an annual audit?', ar:'هل يحلّ هذا محلّ التدقيق السنوي؟' },
+    'faq.q10': { en:'What does Tahara AI need access to?', ar:'ما الصلاحيات التي يحتاجها Tahara AI؟' },
+    'faq.q11': { en:'Who has to confirm a finding is real?', ar:'من الذي يؤكّد أن النتيجة حقيقية؟' },
+    'faq.q12': { en:'Who uses Tahara AI day to day?', ar:'من يستخدم Tahara AI يوميًا؟' },
     'faq.mostasked': { en:'Most asked', ar:'الأكثر شيوعًا' },
     'faq.helpful':   { en:'Was this helpful?', ar:'هل كانت هذه الإجابة مفيدة؟' },
     'faq.thanks':    { en:'Thanks — noted.', ar:'شكرًا — تم التسجيل.' },
@@ -1443,6 +1496,87 @@ window.TaharaI18N = (function(){
     'mega.demo.k':     { en:'Guided demo', ar:'عرض توضيحي موجَّه' },
     'mega.demo.title': { en:'See Tahara in action', ar:'شاهد Tahara في العمل' },
     'mega.demo.desc':  { en:'A 30-minute walkthrough, tailored to your stack', ar:'جولة مدتها 30 دقيقة، مصمَّمة خصيصًا لمنظومتكم' },
+    'mega.demo.walk':  { en:'What we walk through', ar:'ما الذي نستعرضه' },
+    'mega.soon':       { en:'Coming soon', ar:'قريبًا' },
+
+    /* the four lifecycle stage names — shared by the mega-menu demo panel
+       and the dossier tabs, so they can never drift apart */
+    'stage.assess':  { en:'Assess',  ar:'التقييم' },
+    'stage.govern':  { en:'Govern',  ar:'الحوكمة' },
+    'stage.test':    { en:'Test',    ar:'الاختبار' },
+    'stage.monitor': { en:'Monitor', ar:'المراقبة' },
+
+    /* ── create-account modal ── */
+    'acct.kicker': { en:'Create account', ar:'إنشاء حساب' },
+    'acct.title':  { en:'Start your first assurance run', ar:'ابدأ أول جولة ضمان لديكم' },
+    'acct.desc':   { en:'Connect one environment and see what it exposes. No card needed.',
+                     ar:'اربط بيئة واحدة وشاهد ما تكشفه. دون الحاجة إلى بطاقة.' },
+    'acct.c1':     { en:'One environment, free while you evaluate', ar:'بيئة واحدة، مجانًا طوال فترة التقييم' },
+    'acct.c2':     { en:'Runs in your tenancy, nothing leaves it', ar:'يعمل داخل بيئتكم، ولا يغادرها شيء' },
+    'acct.c3':     { en:'First inventory inside a day', ar:'أول جرد خلال يوم واحد' },
+    'acct.name':   { en:'Full name', ar:'الاسم الكامل' },
+    'acct.org':    { en:'Organisation', ar:'المؤسسة' },
+    'acct.email':  { en:'Work email', ar:'بريد العمل الإلكتروني' },
+    'acct.hint1':  { en:'Use your work address — we verify the domain', ar:'استخدم عنوان عملك — نتحقّق من النطاق' },
+    'acct.pw':     { en:'Password', ar:'كلمة المرور' },
+    'acct.hint2':  { en:'10 characters, a number and a symbol', ar:'10 أحرف، ورقم، ورمز' },
+    'acct.agree':  { en:'I agree to the terms and the privacy notice', ar:'أوافق على الشروط وإشعار الخصوصية' },
+    'acct.submit': { en:'Create account', ar:'إنشاء الحساب' },
+    'acct.alt':    { en:'Already have an account?', ar:'لديكم حساب بالفعل؟' },
+    'acct.altlink':{ en:'Sign in', ar:'تسجيل الدخول' },
+    'acct.note':   { en:'Demo interface. No account is created and nothing is sent.',
+                     ar:'واجهة توضيحية. لا يُنشأ أي حساب ولا يُرسَل أي شيء.' },
+
+    /* ── sign-in modal ── */
+    'si.kicker':  { en:'Sign in', ar:'تسجيل الدخول' },
+    'si.title':   { en:'Welcome back', ar:'أهلًا بعودتكم' },
+    'si.desc':    { en:'Pick up where your last assurance run left off.', ar:'تابعوا من حيث انتهت آخر جولة ضمان لديكم.' },
+    'si.keep':    { en:'Keep me signed in', ar:'أبقِ الجلسة مفتوحة' },
+    'si.forgot':  { en:'Forgot password', ar:'نسيت كلمة المرور' },
+    'si.submit':  { en:'Sign in', ar:'تسجيل الدخول' },
+    'si.or':      { en:'or', ar:'أو' },
+    'si.alt':     { en:'New to Tahara?', ar:'جديد على Tahara؟' },
+    'si.altlink': { en:'Create an account', ar:'أنشئ حسابًا' },
+
+    /* ── "One record of truth" cards ── */
+    'plat.scan':      { en:'Scan', ar:'الفحص' },
+    'plat.scan.l1':   { en:'agents found', ar:'وكيلًا مكتشَفًا' },
+    'plat.scan.l2':   { en:'unmanaged', ar:'غير مُدار' },
+    'plat.scan.l3':   { en:'governed', ar:'خاضع للحوكمة' },
+    'plat.scan.h':    { en:'Expose the AI nobody approved', ar:'اكشف الذكاء الاصطناعي الذي لم يعتمده أحد' },
+    'plat.scan.d':    { en:'Every model, agent, MCP server and key running in your estate, with an owner and a risk tier.',
+                        ar:'كل نموذج ووكيل وخادم MCP ومفتاح يعمل في بيئتكم، مع مالك وتصنيف مخاطر.' },
+    'plat.rt':        { en:'Runtime policy', ar:'سياسة وقت التشغيل' },
+    'plat.rt.policy': { en:'<span class="pw">Allow</span> <span class="ptok" style="--d:0">customer records</span> <span class="pw">only when</span> <span class="ptok hot" style="--d:1">checks pass</span> <span class="pw">and</span> <span class="ptok" style="--d:2">egress is internal</span><span class="pw">.</span>',
+                        ar:'<span class="pw">اسمح بـ</span> <span class="ptok" style="--d:0">سجلات العملاء</span> <span class="pw">فقط عندما</span> <span class="ptok hot" style="--d:1">تجتاز الفحوص</span> <span class="pw">و</span> <span class="ptok" style="--d:2">يكون الخروج داخليًا</span><span class="pw">.</span>' },
+    'plat.rt.eval':   { en:'Policy enforced', ar:'السياسة مُنفَّذة' },
+    'plat.rt.h':      { en:'Enforce before the call fires', ar:'أنفِذ قبل انطلاق الاستدعاء' },
+    'plat.rt.d':      { en:'Allow, redact, escalate or block at the execution layer, not after the fact.',
+                        ar:'السماح أو التنقيح أو التصعيد أو الحظر في طبقة التنفيذ، لا بعد وقوع الأمر.' },
+    'plat.audit':        { en:'Audit trail', ar:'مسار التدقيق' },
+    'plat.audit.sealed': { en:'Sealed', ar:'مختوم' },
+    'plat.audit.h':      { en:'Evidence you can hand over', ar:'أدلة يمكنكم تسليمها' },
+    'plat.audit.d':      { en:'Continuous documentation mapped to the EU AI Act, ISO/IEC 42001, NIST AI RMF and SOC 2.',
+                            ar:'توثيق مستمر مرتبط بـ EU AI Act و ISO/IEC 42001 و NIST AI RMF و SOC 2.' },
+
+    /* ── assurance dashboard tab strip ── */
+    'dash.tab.discover':    { en:'Discover', ar:'الاكتشاف' },
+    'dash.tab.govern':      { en:'Govern', ar:'الحوكمة' },
+    'dash.tab.adversarial': { en:'Adversarial', ar:'الاختبار العدائي' },
+    'dash.tab.guardrails':  { en:'Guardrails', ar:'حواجز الحماية' },
+
+    /* ── framework seals: the category label only. The value beneath it
+       (ISO/IEC 42001 …) is also the drawer's lookup key — never translate it ── */
+    'seal.management':  { en:'Management', ar:'الإدارة' },
+    'seal.security':    { en:'Security', ar:'الأمن' },
+    'seal.risk':        { en:'Risk', ar:'المخاطر' },
+    'seal.regulation':  { en:'Regulation', ar:'التنظيم' },
+    'seal.application': { en:'Application', ar:'التطبيق' },
+    'seal.adversary':   { en:'Adversary', ar:'الخصم' },
+
+    'drawer.maps':     { en:'What Tahara maps', ar:'ما الذي ترسمه Tahara' },
+    'drawer.download': { en:'Download the mapping', ar:'حمّل خريطة الربط' },
+    'mark.sub':        { en:'Five layers · one record', ar:'خمس طبقات · سجلّ واحد' },
 
     'strip.tenancy':    { en:'Runs in your tenancy', ar:'يعمل داخل بيئتكم' },
     'strip.nomodel':    { en:'No model changes', ar:'دون تغييرات على النماذج' },
@@ -1459,54 +1593,76 @@ window.TaharaI18N = (function(){
      when Arabic is active, so there's exactly one code path either way ── */
   const PLATFORM_MENU_AR = [
     ['الحوكمة', [
-      ['AE',  'محرك الانطباق',        'ما القوانين المنطبقة، ولماذا',        false, false, '/platform/governance'],
-      ['GA',  'تقييم الفجوات',        'ما الناقص، مرتّبًا حسب المخاطر',      false],
-      ['SoA', 'بيان الانطباق',        'كل ضابط، مبرَّر',                    false],
-      ['EL',  'خزانة الأدلة',         'إثبات، مخزَّن ومؤرَّخ',              false],
-      ['AL',  'سجلّ التدقيق',         'سجلّ غير قابل للتلاعب',              false],
-      ['VR',  'مخاطر المورّدين',       'تتبّع موردي الذكاء الاصطناعي الخارجيين', true],
-      ['AR',  'مركز الثقة',            'من يمكنه الوصول لماذا، بمراجعة دورية', true]
+      ['بيان الانطباق',        'كل ضابط، مبرَّر',              false],
+      ['خزانة الأدلة',         'إثبات، مخزَّن ومؤرَّخ',        false],
+      ['سجلّ التدقيق',         'سجلّ غير قابل للتلاعب',        false],
+      ['جرد الذكاء الاصطناعي', 'كل نظام، متتبَّع',             false],
+      ['تصنيف المخاطر',        'مُدرَّج حسب درجة التعرّض',      false],
+      ['قيود الوكلاء',         'حدود، مفروضة',                false],
+      ['تقارير الامتثال',      'جاهزة عند الطلب',              false],
+      ['لوحة متابعة مستمرة',   'حيّة، لا سنوية',               false],
+      ['مخاطر المورّدين',      'ذكاء اصطناعي خارجي متتبَّع',    true ],
+      ['مراجعات الوصول',       'مُراجَعة دوريًا، دائمًا',       true ]
     ]],
     ['الاختبار العدائي', [
-      ['AS', 'محاكاة الهجوم', 'مجدولة، في بيئة التجربة فقط', false],
-      ['10', 'أعلى 10 مخاطر LLM حسب OWASP', 'كل فئة، متتبَّعة', false],
-      ['RT', 'جدولة الفريق الأحمر', 'متكررة، وليست سنوية', false],
-      ['FR', 'سجلّ النتائج', 'كل نتيجة، محفوظة', false]
+      ['محاكاة الهجوم',        'مجدولة، في بيئة التجهيز فقط',  false],
+      ['OWASP LLM Top 10',     'كل فئة، متتبَّعة',             false],
+      ['جدولة الفريق الأحمر',  'متكررة، وليست سنوية',          false],
+      ['سجلّ النتائج',         'كل نتيجة، محفوظة',             false],
+      ['لوحة متابعة مستمرة',   'الهجمات، متتبَّعة مباشرة',      false]
     ]],
     ['ضوابط حماية البيانات الشخصية', [
-      ['PI', 'فحص الطلبات', 'يُفحص قبل وصوله إلى النموذج', false],
-      ['MR', 'إخفاء PII', 'قابل للعكس، من جانبنا فقط', false],
-      ['BD', 'الكشف ثنائي اللغة', 'الإنجليزية والعربية بالحروف اللاتينية', false],
-      ['CC', 'ملفات تعريف الارتباط والموافقة', 'قواعد اللافتات وفحوصات المتتبّعات', true]
+      ['فحص الطلبات',          'يُفحص قبل وصوله إلى النموذج',   false],
+      ['الإخفاء والتنقيح',     'قابل للعكس، من جانبنا فقط',     false],
+      ['الكشف ثنائي اللغة',    'الإنجليزية والأردية باللاتينية', false],
+      ['ملفات الارتباط والموافقة', 'قواعد اللافتات وفحوصات المتتبّعات', true ]
     ]],
     ['الفحص الأمني', [
-      ['CC', 'فحص إعدادات السحابة', 'إدارة الهوية والتخزين وقواعد الشبكة', false],
-      ['DC', 'فحص التبعيات', 'ثغرات معروفة، مُعلَّمة', false],
-      ['SD', 'كشف الأسرار', 'مفاتيح مكشوفة، تُكتشف مبكرًا', false],
-      ['DPO', 'VDPO', 'تحدَّث مع مسؤول البيانات لدينا', false],
-      ['AP', 'برامج التدقيق', 'تحديد نطاق التدقيق وتنفيذه وإعداد تقاريره', true]
+      ['فحص إعدادات السحابة',  'إدارة الهوية والتخزين وقواعد الشبكة', false],
+      ['فحص التبعيات',         'ثغرات معروفة، مُعلَّمة',        false],
+      ['كشف الأسرار',          'مفاتيح مكشوفة، تُكتشف مبكرًا',   false]
     ]]
   ];
 
   const ANSWERS_AR = [
-    ['تقرأ Tahara الإشارات التي تنتجها بيئتكم أصلًا — حركة مرور البوابة، استخدام خدمات الذكاء الاصطناعي السحابية،',
-     'المفاتيح المخزَّنة في مخزن الأسرار، وإشارات النماذج داخل الشيفرة وأنظمة CI.',
-     'تصل كل نتيجة مع مالك مقترَح ومستوى مخاطر مقترَح.'],
-    ['فقط عند الإنفاذ. الاكتشاف والمراقبة سلبيّان تمامًا.',
-     'يعمل التحكّم المباشر عبر بوابتكم الحالية أو خدمة مرافقة، ويُحدَّد',
-     'الفشل المفتوح أو المغلق لكل سياسة على حدة — وليس للنشر بأكمله.'],
-    ['يُفحص الاستدعاء مقابل النطاق المعلَن للوكيل وتصنيف البيانات المستهدَفة.',
-     'يمكن لـ Tahara السماح به أو إخفاء الحقول أو طلب موافقة تصعيدية من شخص محدَّد،',
-     'أو حظره تمامًا — ويُسجَّل السبب في الحالتين.'],
-    ['نعم. تُنشَر Tahara داخل بيئتكم الخاصة أو محليًا.',
-     'تبقى الطلبات والردود والمستندات ضمن حدودكم، ولا',
-     'يُستخدم أي شيء يمرّ عبر المنصة لتدريب أي نموذج.'],
-    ['البوابة توجّه حركة المرور وتفرض حدود المعدّل.',
-     'تضيف Tahara الطبقة فوقها — السجلّ وتقييم المخاطر،',
-     'ومسار الموافقات وحزمة الأدلة — وتقرأ بوابتكم كأحد مدخلاتها.'],
-    ['عادة ما يصدر تقرير الاكتشاف الأول خلال أسبوع،',
-     'وفي معظم البيئات يكون هذا الجزء هو ما يغيّر مسار الحوار.',
-     'يتبعه الإنفاذ على مجموعة سياسات أولية خلال أسبوعين إلى أربعة أسابيع.']
+    ['داخل بيئتكم الخاصة. لا يطلب Tahara AI مغادرة البيانات لأنظمتكم،',
+     'بل يعمل حيث توجد البنية التحتية أصلًا، ولا يقرأ إلا ما مُنح إذنًا برؤيته،',
+     'ولا يحتفظ ببيانات الاعتماد إطلاقًا.'],
+    ['لا يعتمد Tahara AI على ما هو موثَّق، بل يتحقّق مما هو قائم فعلًا.',
+     'يقرأ الإعدادات وسجلات الوصول الفعلية مباشرة،',
+     'فيظهر كل ما يعمل حقًا، سواء سُجِّل يومًا أو لم يُسجَّل.'],
+    ['نعم. لا يشترط Tahara AI أن يكون الوكيل مبنيًا عليه أو منشورًا من خلاله،',
+     'أو موصولًا به بطريقة خاصة. إنه يقرأ البيئة التي يعمل فيها الوكيل أصلًا،',
+     'فيدخل كل ما هو نشط ضمن النطاق، بغضّ النظر عن مكان بنائه أو طريقته.'],
+    ['تقف البوابة أمام حركة المرور، وتعرض لوحة المعلومات ما جرى الإبلاغ عنه سلفًا.',
+     'لا يفعل Tahara AI أيًّا منهما، بل يتحقّق باستقلالية من النظام الفعلي مقابل ما يُدّعى وما هو موثَّق،',
+     'ولا يعتبر الأمر مُعالَجًا إلا بعد تأكيد أحد المعنيين.',
+     'صُمِّم ليلتقط ما تكتفي لوحة المعلومات بعرضه دون تدقيق.'],
+    ['يرفع Tahara AI العلامة فور اكتشافها، لا انتظارًا للمراجعة المجدولة التالية.',
+     'تُسجَّل كل مخالفة بحالتها ومالكها،',
+     'مع سجلّ يبقى مفتوحًا حتى تُعالَج.'],
+    ['لا. يستطيع Tahara AI رفع العلامة بنفسه.',
+     'وحده أحد المعنيين يمكنه تأكيد معالجتها.'],
+    ['بُني Tahara AI حول إطار رئيسي واحد — خريطة محدَّثة باستمرار',
+     'للتنظيمات العالمية والإقليمية للذكاء الاصطناعي والنماذج اللغوية الكبيرة، منها EU AI Act و ISO/IEC 42001',
+     'و ISO/IEC 23894 و NIST AI RMF، تبقى محدَّثة كلما ظهرت أطر جديدة حول العالم.',
+     'ملف واحد، يُفحص مقابلها جميعًا دفعة واحدة.'],
+    ['كليهما، أحدهما مقابل الآخر. يقارن Tahara AI ما يقوله الفريق، وما تنصّ عليه السياسة،',
+     'وما يُظهره النظام الحيّ فعلًا، ويعتبر أي تعارض بينها نتيجة،',
+     'حتى وإن لم يخطئ أحد عن قصد.'],
+    ['لا، بل يسدّ الفجوة بين عمليات التدقيق.',
+     'يعمل Tahara AI باستمرار، فما يصحّ عن النظام اليوم يُكتشف اليوم،',
+     'بدل أن يظهر بعد أشهر في المراجعة المجدولة التالية.'],
+    ['فقط ما يلزم لفحص الإعدادات وسجلات الوصول — لا بيانات إنتاج،',
+     'ولا محتوى عملاء، ولا صلاحية كتابة.',
+     'قراءة فقط، محدَّدة النطاق، وقابلة للسحب في أي وقت.'],
+    ['أحد المعنيين المسمَّين في فريقكم.',
+     'يستطيع Tahara AI الملاحظة والتنبيه باستمرار، لكن الاعتماد يبقى بشريًا دائمًا،',
+     'فقراءة الآلة للنظام دليل، وليست حكمًا.'],
+    ['فرق الامتثال والأمن للنتائج والتقارير،',
+     'وقادة الهندسة لما يُرصد في أنظمتهم،',
+     'والقيادة للرؤية الدائمة لموقع المؤسسة الفعلي',
+     'مقابل كل إطار ينطبق عليها.']
   ];
 
   const FOOTER_LINKS_AR = [
@@ -1551,7 +1707,11 @@ window.TaharaI18N = (function(){
     'MITRE ATLAS': ['تكتيكات الخصم',
       'قاعدة معرفة بالتكتيكات والأساليب الفعلية المستخدَمة ضد أنظمة الذكاء الاصطناعي.',
       ['محاكاة هجمات مرتبطة بأساليب ATLAS','فجوات التغطية مُبرَزة لكل نظام',
-       'آليات الكشف موجَّهة إلى مركز العمليات الأمنية لديكم','جدول متكرر، وليس تمرينًا سنويًا']]
+       'آليات الكشف موجَّهة إلى مركز العمليات الأمنية لديكم','جدول متكرر، وليس تمرينًا سنويًا']],
+    'AIUC-1': ['اعتماد الوكلاء',
+      'معيار اعتماد لوكلاء الذكاء الاصطناعي، مصمَّم ليقيس المشتري وكلاء كل مورّد بالمعيار نفسه.',
+      ['ضوابط الوكلاء مرتبطة بأدلة المنصة','كل نتيجة مرتبطة بالضابط الذي تمسّه',
+       'الأدلة مُجهَّزة لتدقيق الاعتماد','يُعاد الفحص باستمرار، لا عند التدقيق فقط']]
   };
 
   let current = 'en';
@@ -1612,6 +1772,8 @@ window.TaharaI18N = (function(){
       if (window.TaharaDrawer && window.TaharaDrawer.setLocale)
         window.TaharaDrawer.setLocale(lang === 'ar' ? FRAMEWORK_DETAIL_AR : null);
     }
+    /* the assurance dashboard keeps its own AR copy — see the MODULES_AR overlay */
+    if (window.TaharaDash && window.TaharaDash.setLocale) window.TaharaDash.setLocale(lang);
   }
 
   function init(){
@@ -2136,7 +2298,6 @@ window.TaharaI18N = (function(){
     const statsEl = document.getElementById('dashStats');
     const findEl = document.getElementById('dashFinding');
     const coverEl = document.getElementById('dashCover');
-    const queryEl = document.getElementById('dashQuery');
     const card = document.getElementById('console');
     if (!tabs || !statsEl || !coverEl) return;
 
@@ -2151,8 +2312,7 @@ window.TaharaI18N = (function(){
         finding:{ kind:'Critical finding', t:'3 systems profile individuals with no owner on record',
           d:'Each one is in scope for EU AI Act Art. 6(3). None can claim the derogation.' },
         coverT:'Coverage by surface',
-        cover:[['Models','128',128/144,''],['Agents','96',96/144,''],['MCP servers','44',44/144,''],['Keys & tools','144',1,'']],
-        query:{ q:'Which systems have no owner on record?', tag:'High risk' } },
+        cover:[['Models','128',128/144,''],['Agents','96',96/144,''],['MCP servers','44',44/144,''],['Keys & tools','144',1,'']] },
       { badge:'Module 02 · Govern', title:'Applicability and evidence',
         sub:'Every control mapped to a probe, and a probe to proof.',
         nav:['Govern','Frameworks','Control mapping','Probes','Evidence','Findings'], active:2,
@@ -2163,8 +2323,7 @@ window.TaharaI18N = (function(){
         finding:{ kind:'Major non-conformity', t:'Access control does not match the documented policy',
           d:'ISO 42001 A.4.2 — the IAM scan contradicts the policy on file. Human review pending.' },
         coverT:'Conformance by framework',
-        cover:[['EU AI Act','18/33',18/33,''],['ISO/IEC 42001','24/76',24/76,''],['ISO/IEC 23894','11/41',11/41,''],['NIST AI RMF','8/37',8/37,'']],
-        query:{ q:'Show me every control blocked on evidence', tag:'Unresolved' } },
+        cover:[['EU AI Act','18/33',18/33,''],['ISO/IEC 42001','24/76',24/76,''],['ISO/IEC 23894','11/41',11/41,''],['NIST AI RMF','8/37',8/37,'']] },
       { badge:'Module 03 · Adversarial', title:'Attack simulation',
         sub:'The OWASP LLM Top 10, run on a schedule against staging.',
         nav:['Adversarial','Test sets','OWASP LLM Top 10','Runs','Findings','Retest'], active:2,
@@ -2175,8 +2334,7 @@ window.TaharaI18N = (function(){
         finding:{ kind:'Open finding · LLM01', t:'468 of 1,204 indirect injection attempts succeeded',
           d:'Instructions hidden inside an uploaded document were followed. Re-tested every six hours.' },
         coverT:'Pass rate by category',
-        cover:[['LLM01 Prompt injection','61%',.61,'sig'],['LLM02 Disclosure','74%',.74,'sig'],['LLM06 Excessive agency','83%',.83,''],['LLM07 Prompt leakage','100%',1,'']],
-        query:{ q:'Why did LLM01 fail this run?', tag:'Highest priority' } },
+        cover:[['LLM01 Prompt injection','61%',.61,'sig'],['LLM02 Disclosure','74%',.74,'sig'],['LLM06 Excessive agency','83%',.83,''],['LLM07 Prompt leakage','100%',1,'']] },
       { badge:'Module 04 · Guardrails', title:'Prompt inspection',
         sub:'Every prompt checked before the model sees it.',
         nav:['Guardrails','Inspection','Detectors','Policies','Prompt log','Escalations'], active:4,
@@ -2187,9 +2345,68 @@ window.TaharaI18N = (function(){
         finding:{ kind:'Escalated', t:'A national ID reached the model unmasked',
           d:'It arrived through a document the retrieval layer injected, not the typed prompt. The filter reads the prompt, not the assembled context.' },
         coverT:'Detector hits · 24h',
-        cover:[['Name (NER)','1,204',1,''],['Email','1,118',1118/1204,''],['Phone','744',744/1204,''],['National ID','28',28/1204,'sig']],
-        query:{ q:'What leaked in the last 24 hours?', tag:'Escalated' } }
+        cover:[['Name (NER)','1,204',1,''],['Email','1,118',1118/1204,''],['Phone','744',744/1204,''],['National ID','28',28/1204,'sig']] }
     ];
+
+    /* Arabic is a TEXT-ONLY overlay: every number, sparkline and bar fraction
+       still comes from MODULES above, so the two languages can never drift
+       apart on the data. Framework names, LLM0x codes and NER stay Latin. */
+    const MODULES_AR = [
+      { badge:'الوحدة 01 · الاكتشاف', title:'الاكتشاف',
+        sub:'ما الذي تشغّلونه، ومن يملكه، ومن يتعرّض له.',
+        nav:['الاكتشاف','الربط','لوحة المعلومات','الوكلاء','الجرد','سجل النشاط'],
+        statK:['الأنظمة ضمن النطاق','الوكلاء المراقَبون','النتائج المفتوحة'],
+        statD:['+18 هذا الأسبوع','14 منها يصل إلى الأدوات','3 جوهرية'],
+        kind:'نتيجة حرجة', t:'3 أنظمة تُنشئ ملفات عن أفراد دون مالك مسجَّل',
+        d:'كلٌّ منها يقع ضمن نطاق EU AI Act المادة 6(3)، ولا يمكن لأيٍّ منها الاستفادة من الاستثناء.',
+        coverT:'التغطية حسب السطح',
+        coverL:['النماذج','الوكلاء','خوادم MCP','المفاتيح والأدوات'] },
+      { badge:'الوحدة 02 · الحوكمة', title:'قابلية التطبيق والأدلة',
+        sub:'كل ضابط مرتبط باختبار، وكل اختبار بدليل.',
+        nav:['الحوكمة','الأطر','ربط الضوابط','الاختبارات','الأدلة','النتائج'],
+        statK:['المتطلبات المُقيَّمة','المطابقة','النتائج الجوهرية'],
+        statD:['من أصل 187','من المُقيَّم','2 جديدة هذا الأسبوع'],
+        kind:'عدم مطابقة جوهري', t:'التحكم في الوصول لا يطابق السياسة الموثَّقة',
+        d:'ISO 42001 A.4.2 — فحص إدارة الهوية يناقض السياسة المحفوظة. المراجعة البشرية قيد الانتظار.',
+        coverT:'المطابقة حسب الإطار',
+        coverL:['EU AI Act','ISO/IEC 42001','ISO/IEC 23894','NIST AI RMF'] },
+      { badge:'الوحدة 03 · الاختبار العدائي', title:'محاكاة الهجمات',
+        sub:'قائمة OWASP LLM Top 10، تُنفَّذ وفق جدول على بيئة التجهيز.',
+        nav:['الاختبار العدائي','مجموعات الاختبار','OWASP LLM Top 10','الجولات','النتائج','إعادة الاختبار'],
+        statK:['الاختبارات · 24 ساعة','الفئات الناجحة','الفئات الراسبة'],
+        statD:['عبر 10 فئات','من أصل 10','الحقن والإفشاء'],
+        kind:'نتيجة مفتوحة · LLM01', t:'نجحت 468 محاولة حقن غير مباشر من أصل 1,204',
+        d:'اتُّبعت تعليمات مخفية داخل مستند مرفوع. تُعاد الاختبارات كل ست ساعات.',
+        coverT:'معدل النجاح حسب الفئة',
+        coverL:['LLM01 حقن الطلبات','LLM02 إفشاء المعلومات','LLM06 الصلاحية المفرطة','LLM07 تسريب الطلبات'] },
+      { badge:'الوحدة 04 · حواجز الحماية', title:'فحص الطلبات',
+        sub:'كل طلب يُفحص قبل أن يصل إلى النموذج.',
+        nav:['حواجز الحماية','الفحص','الكواشف','السياسات','سجل الطلبات','التصعيدات'],
+        statK:['المفحوصة · 24 ساعة','المُخفاة','المُسرَّبة'],
+        statD:['طلبًا جرى فحصه','مُنقَّحة وقابلة للاسترجاع','صُعِّدت إلى مسؤول حماية البيانات'],
+        kind:'مُصعَّد', t:'وصل رقم هوية وطنية إلى النموذج دون إخفاء',
+        d:'وصل عبر مستند أدرجته طبقة الاسترجاع، لا عبر الطلب المكتوب. المرشِّح يقرأ الطلب، لا السياق المُجمَّع.',
+        coverT:'إصابات الكواشف · 24 ساعة',
+        coverL:['الاسم (NER)','البريد الإلكتروني','الهاتف','رقم الهوية الوطنية'] }
+    ];
+
+    /* i18n.init() has already run by the time this IIFE executes, so read the
+       restored language rather than assuming English — otherwise a reload with
+       Arabic saved paints the dashboard in English until the toggle is used. */
+    let lang = window.TaharaI18N && window.TaharaI18N.current === 'ar' ? 'ar' : 'en';
+    let modIdx = 0;
+
+    /* the module as it should read in the current language */
+    function view(i){
+      const m = MODULES[i];
+      if (lang !== 'ar') return m;
+      const a = MODULES_AR[i];
+      return { badge:a.badge, title:a.title, sub:a.sub, nav:a.nav, active:m.active,
+        stats: m.stats.map((s,j)=>Object.assign({}, s, { k:a.statK[j], d:a.statD[j] })),
+        finding:{ kind:a.kind, t:a.t, d:a.d },
+        coverT:a.coverT,
+        cover: m.cover.map((r,j)=>[a.coverL[j], r[1], r[2], r[3]]) };
+    }
 
     const XS = [0,14,28,42,56,70,84,100];
     const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -2213,15 +2430,11 @@ window.TaharaI18N = (function(){
         '<div class="dash-card-foot"><span class="dash-card-d'+(s.tone==='sig'?' sig':'')+'">'+esc(s.d)+'</span>'+
         sparkSVG(s.spark,s.tone)+'</div></div>').join('');
       findEl.innerHTML = '<span class="dash-kicker"><i></i>'+esc(m.finding.kind).toUpperCase()+'</span>'+
-        '<h4>'+esc(m.finding.t)+'</h4><p>'+esc(m.finding.d)+'</p>';
+        '<div class="dash-finding-b"><h4>'+esc(m.finding.t)+'</h4><p>'+esc(m.finding.d)+'</p></div>';
       coverEl.innerHTML = '<span class="dash-cover-t">'+esc(m.coverT).toUpperCase()+'</span>'+
         m.cover.map(r=>'<div class="dash-bar-row"><span class="dash-bar-l">'+esc(r[0])+'</span>'+
           '<span class="dash-bar-v">'+esc(r[1])+'</span>'+
           '<span class="dash-bar-track"><i class="dash-bar-fill'+(r[3]==='sig'?' sig':'')+'" data-frac="'+r[2]+'"></i></span></div>').join('');
-      queryEl.innerHTML = '<span class="dash-q-text">'+esc(m.query.q)+'</span>'+
-        '<div class="dash-q-foot"><span class="dash-q-chips"><span class="dash-av">M</span><span class="dash-av">A</span><span class="dash-av">S</span><span class="dash-more">+3</span></span>'+
-        '<span class="dash-q-tag">'+esc(m.query.tag)+'</span>'+
-        '<button class="dash-q-send" type="button" aria-label="Send">&uarr;</button></div>';
     }
 
     /* animate the current module in */
@@ -2247,14 +2460,20 @@ window.TaharaI18N = (function(){
       });
     }
 
-    render(MODULES[0]);
+    render(view(0));
     tabs.querySelectorAll('.dash-tab').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         tabs.querySelectorAll('.dash-tab').forEach(b=>b.classList.toggle('on', b===btn));
-        render(MODULES[+btn.dataset.mod]);
+        modIdx = +btn.dataset.mod;
+        render(view(modIdx));
         animate();
       });
     });
+
+    /* Unlike the mega-menu/FAQ/footer/drawer, the AR copy lives in this IIFE
+       rather than in the i18n module, so the hook takes the language code and
+       repaints whichever tab is currently open. */
+    window.TaharaDash = { setLocale(l){ lang = l === 'ar' ? 'ar' : 'en'; render(view(modIdx)); animate(); } };
     /* first scroll into view animates the default module */
     if ('IntersectionObserver' in window && card){
       new IntersectionObserver((es,obs)=>{ if (es[0].isIntersecting){ animate(); obs.disconnect(); } }, { threshold:.2 }).observe(card);

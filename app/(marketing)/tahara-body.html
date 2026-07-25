@@ -43,29 +43,29 @@
       <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M2 2l10 10M12 2 2 12" stroke-linecap="round"/></svg>
     </button>
   </div>
-  <span class="acct-kicker">Create account</span>
-  <h3 id="acctTitle">Start your first assurance run</h3>
-  <p class="acct-desc">Connect one environment and see what it exposes. No card needed.</p>
+  <span class="acct-kicker" data-i18n="acct.kicker">Create account</span>
+  <h3 id="acctTitle" data-i18n="acct.title">Start your first assurance run</h3>
+  <p class="acct-desc" data-i18n="acct.desc">Connect one environment and see what it exposes. No card needed.</p>
   <ul class="acct-checks">
-    <li><svg class="acct-tick" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg>One environment, free while you evaluate</li>
-    <li><svg class="acct-tick" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg>Runs in your tenancy, nothing leaves it</li>
-    <li><svg class="acct-tick" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg>First inventory inside a day</li>
+    <li><svg class="acct-tick" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="acct.c1">One environment, free while you evaluate</span></li>
+    <li><svg class="acct-tick" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="acct.c2">Runs in your tenancy, nothing leaves it</span></li>
+    <li><svg class="acct-tick" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="acct.c3">First inventory inside a day</span></li>
   </ul>
   <form class="acct-form" id="acctForm" novalidate>
     <div class="acct-grid">
-      <label class="acct-field"><span class="acct-lbl">Full name</span><input type="text" placeholder="Amira Khan" autocomplete="name"></label>
-      <label class="acct-field"><span class="acct-lbl">Organisation</span><input type="text" placeholder="Acme Bank" autocomplete="organization"></label>
+      <label class="acct-field"><span class="acct-lbl" data-i18n="acct.name">Full name</span><input type="text" placeholder="Amira Khan" autocomplete="name"></label>
+      <label class="acct-field"><span class="acct-lbl" data-i18n="acct.org">Organisation</span><input type="text" placeholder="Acme Bank" autocomplete="organization"></label>
     </div>
-    <label class="acct-field"><span class="acct-lbl">Work email</span><input type="email" placeholder="you@company.com" autocomplete="email"></label>
-    <span class="acct-hint">Use your work address — we verify the domain</span>
-    <label class="acct-field"><span class="acct-lbl">Password</span><input class="acct-pw" type="password" placeholder="At least 10 characters" autocomplete="new-password"></label>
+    <label class="acct-field"><span class="acct-lbl" data-i18n="acct.email">Work email</span><input type="email" placeholder="you@company.com" autocomplete="email"></label>
+    <span class="acct-hint" data-i18n="acct.hint1">Use your work address — we verify the domain</span>
+    <label class="acct-field"><span class="acct-lbl" data-i18n="acct.pw">Password</span><input class="acct-pw" type="password" placeholder="At least 10 characters" autocomplete="new-password"></label>
     <div class="acct-meter"><i id="acctMeter"></i></div>
-    <span class="acct-hint">10 characters, a number and a symbol</span>
-    <label class="acct-agree"><input type="checkbox"> I agree to the terms and the privacy notice</label>
-    <button class="acct-submit" type="submit">Create account <span class="arw" aria-hidden="true">→</span></button>
+    <span class="acct-hint" data-i18n="acct.hint2">10 characters, a number and a symbol</span>
+    <label class="acct-agree"><input type="checkbox"> <span data-i18n="acct.agree">I agree to the terms and the privacy notice</span></label>
+    <button class="acct-submit" type="submit"><span data-i18n="acct.submit">Create account</span> <span class="arw" aria-hidden="true">→</span></button>
   </form>
-  <p class="acct-alt">Already have an account? <a href="#" data-open-signin>Sign in</a></p>
-  <span class="acct-note">Demo interface. No account is created and nothing is sent.</span>
+  <p class="acct-alt"><span data-i18n="acct.alt">Already have an account?</span> <a href="#" data-open-signin data-i18n="acct.altlink">Sign in</a></p>
+  <span class="acct-note" data-i18n="acct.note">Demo interface. No account is created and nothing is sent.</span>
 </div>
 
 <!-- sign-in modal, opened from the "Sign in" buttons -->
@@ -77,25 +77,25 @@
       <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M2 2l10 10M12 2 2 12" stroke-linecap="round"/></svg>
     </button>
   </div>
-  <span class="acct-kicker">Sign in</span>
-  <h3 id="signinTitle">Welcome back</h3>
-  <p class="acct-desc">Pick up where your last assurance run left off.</p>
+  <span class="acct-kicker" data-i18n="si.kicker">Sign in</span>
+  <h3 id="signinTitle" data-i18n="si.title">Welcome back</h3>
+  <p class="acct-desc" data-i18n="si.desc">Pick up where your last assurance run left off.</p>
   <form class="acct-form" id="signinForm" novalidate>
-    <label class="acct-field"><span class="acct-lbl">Work email</span><input type="email" placeholder="you@company.com" autocomplete="email"></label>
-    <label class="acct-field"><span class="acct-lbl">Password</span><input type="password" placeholder="At least 10 characters" autocomplete="current-password"></label>
+    <label class="acct-field"><span class="acct-lbl" data-i18n="acct.email">Work email</span><input type="email" placeholder="you@company.com" autocomplete="email"></label>
+    <label class="acct-field"><span class="acct-lbl" data-i18n="acct.pw">Password</span><input type="password" placeholder="At least 10 characters" autocomplete="current-password"></label>
     <div class="acct-row">
-      <label class="acct-agree"><input type="checkbox"> Keep me signed in</label>
-      <a class="acct-link" href="#">Forgot password</a>
+      <label class="acct-agree"><input type="checkbox"> <span data-i18n="si.keep">Keep me signed in</span></label>
+      <a class="acct-link" href="#" data-i18n="si.forgot">Forgot password</a>
     </div>
-    <button class="acct-submit" type="submit">Sign in <span class="arw" aria-hidden="true">→</span></button>
+    <button class="acct-submit" type="submit"><span data-i18n="si.submit">Sign in</span> <span class="arw" aria-hidden="true">→</span></button>
   </form>
-  <div class="acct-or">or</div>
+  <div class="acct-or" data-i18n="si.or">or</div>
   <div class="acct-sso">
     <button class="acct-sso-btn" type="button"><span class="acct-sso-ic">M</span>Microsoft</button>
     <button class="acct-sso-btn" type="button"><span class="acct-sso-ic">O</span>Okta</button>
   </div>
-  <p class="acct-alt">New to Tahara? <a href="#" data-open-signup>Create an account</a></p>
-  <span class="acct-note">Demo interface. No account is created and nothing is sent.</span>
+  <p class="acct-alt"><span data-i18n="si.alt">New to Tahara?</span> <a href="#" data-open-signup data-i18n="si.altlink">Create an account</a></p>
+  <span class="acct-note" data-i18n="acct.note">Demo interface. No account is created and nothing is sent.</span>
 </div>
 
 <!-- ══════════ navigation ══════════ -->
@@ -113,9 +113,9 @@
           <svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1.6 3.4 5 6.8l3.4-3.4"/></svg>
         </a>
         <div class="res-menu" id="resMenu" role="region" aria-label="Resources menu">
-          <a class="mega-item" href="#resources"><span class="mt">TC</span><span><b data-i18n="res.tc.t">Trust center</b><span class="d" data-i18n="res.tc.d">Our own posture, public</span></span></a>
-          <a class="mega-item" href="#resources"><span class="mt">BL</span><span><b data-i18n="res.bl.t">Blog</b><span class="d" data-i18n="res.bl.d">Notes on AI assurance</span></span></a>
-          <a class="mega-item" href="#resources"><span class="mt">DC</span><span><b data-i18n="res.dc.t">Documentation</b><span class="d" data-i18n="res.dc.d">API and integration guides</span></span></a>
+          <a class="mega-item" href="#resources"><span><b data-i18n="res.tc.t">Trust center</b><span class="d" data-i18n="res.tc.d">Our own posture, public</span></span></a>
+          <a class="mega-item" href="#resources"><span><b data-i18n="res.bl.t">Blog</b><span class="d" data-i18n="res.bl.d">Notes on AI assurance</span></span></a>
+          <a class="mega-item" href="#resources"><span><b data-i18n="res.dc.t">Documentation</b><span class="d" data-i18n="res.dc.d">API and integration guides</span></span></a>
         </div>
       </div>
       <a href="#faq" data-i18n="nav.faq">FAQ</a>
@@ -139,11 +139,17 @@
       <div class="mega-inner" id="megaInner">
         <!-- columns injected here by UI.mega() -->
         <div class="mega-demo">
-          <span class="demo-ic" aria-hidden="true">◆</span>
           <span class="demo-k" data-i18n="mega.demo.k">Guided demo</span>
           <h4 data-i18n="mega.demo.title">See Tahara in action</h4>
           <p data-i18n="mega.demo.desc">A 30-minute walkthrough, tailored to your stack</p>
-          <a href="#faq" class="demo-btn"><span data-i18n="cta.demo">Request a demo</span></a>
+          <span class="demo-walk-k" data-i18n="mega.demo.walk">What we walk through</span>
+          <ul class="demo-steps">
+            <li class="demo-step" style="--si:0"><span class="demo-dot"></span><span data-i18n="stage.assess">Assess</span><svg class="demo-si" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5"/><path d="M12.5 12.5 17 17" stroke-linecap="round"/></svg></li>
+            <li class="demo-step" style="--si:1"><span class="demo-dot"></span><span data-i18n="stage.govern">Govern</span><svg class="demo-si" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M10 2.5 4 5v4.6c0 3.4 2.4 5.8 6 6.4 3.6-.6 6-3 6-6.4V5z" stroke-linejoin="round"/></svg></li>
+            <li class="demo-step" style="--si:2"><span class="demo-dot"></span><span data-i18n="stage.test">Test</span><svg class="demo-si" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><circle cx="10" cy="10" r="2.4"/></svg></li>
+            <li class="demo-step" style="--si:3"><span class="demo-dot"></span><span data-i18n="stage.monitor">Monitor</span><svg class="demo-si" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 10h3l2.2-5 3 10 2.2-6 1.4 3H18" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
+          </ul>
+          <a href="#faq" class="demo-btn"><span data-i18n="cta.demo">Request a demo</span> <span class="arw" aria-hidden="true">→</span></a>
         </div>
       </div>
     </div>
@@ -162,11 +168,11 @@
   </div>
   <div class="drawer-body">
     <p id="drawerLede"></p>
-    <span class="label">What Tahara maps</span>
+    <span class="label" data-i18n="drawer.maps">What Tahara maps</span>
     <ul id="drawerList"></ul>
   </div>
   <div class="drawer-foot">
-    <button class="btn btn-solid" data-mag>Download the mapping <span class="arw" aria-hidden="true">→</span></button>
+    <button class="btn btn-solid" data-mag><span data-i18n="drawer.download">Download the mapping</span> <span class="arw" aria-hidden="true">→</span></button>
   </div>
 </aside>
 
@@ -178,16 +184,15 @@
     <p class="lede r" style="--i:6" data-i18n="hero.lede">Discovery, live enforcement and audit-ready evidence.</p>
     <div class="hero-cta r" style="--i:7">
       <button class="btn btn-solid" data-mag><span data-i18n="cta.explore">Explore platform</span> <span class="arw" aria-hidden="true">→</span></button>
-      <button class="btn btn-line" data-mag data-signup type="button"><span data-i18n="nav.signup">Sign up</span></button>
     </div>
 
     <div class="console-stage">
       <div class="console dash" id="console" role="img" aria-label="Tahara assurance dashboard: four modules with live metrics">
         <div class="dash-tabs" id="dashTabs" role="tablist" aria-label="Modules">
-          <button class="dash-tab on" type="button" data-mod="0">Discover</button>
-          <button class="dash-tab" type="button" data-mod="1">Govern</button>
-          <button class="dash-tab" type="button" data-mod="2">Adversarial</button>
-          <button class="dash-tab" type="button" data-mod="3">Guardrails</button>
+          <button class="dash-tab on" type="button" data-mod="0" data-i18n="dash.tab.discover">Discover</button>
+          <button class="dash-tab" type="button" data-mod="1" data-i18n="dash.tab.govern">Govern</button>
+          <button class="dash-tab" type="button" data-mod="2" data-i18n="dash.tab.adversarial">Adversarial</button>
+          <button class="dash-tab" type="button" data-mod="3" data-i18n="dash.tab.guardrails">Guardrails</button>
         </div>
         <div class="dash-head">
           <span class="dash-badge" id="dashBadge"></span>
@@ -202,7 +207,6 @@
               <div class="dash-finding" id="dashFinding"></div>
               <div class="dash-cover" id="dashCover"></div>
             </div>
-            <div class="dash-query" id="dashQuery"></div>
           </div>
         </div>
       </div>
@@ -216,6 +220,14 @@
   <div class="marquee" id="marquee" aria-hidden="true"></div>
 </section>
 
+<!-- ══════════ statement ══════════ -->
+<div class="wrap">
+  <section class="stmt">
+    <h2 class="stmt-t r" data-i18n-html="stmt.title">The compliance, security, and privacy engine your AI <em>needs.</em></h2>
+    <p class="stmt-d r" data-i18n="stmt.desc">Tahara AI finds what laws apply, tests what could go wrong, and stops what shouldn't leak — all from one platform, checked continuously.</p>
+  </section>
+</div>
+
 <!-- ══════════ 1 · record panels ══════════ -->
 <div class="wrap">
   <section class="band" id="platform">
@@ -228,39 +240,39 @@
     <div class="plat">
       <div class="pcol r" style="--i:0">
         <div class="pcard">
-          <span class="pchip"><i></i>Scan</span>
+          <span class="pchip"><i></i><span data-i18n="plat.scan">Scan</span></span>
           <div class="pscan">
-            <div class="pscan-row"><span class="pn" data-v="412">0</span><span class="pl">agents found</span></div>
-            <div class="pscan-row"><span class="pn sig" data-v="3">0</span><span class="pl">unmanaged</span></div>
-            <div class="pscan-row"><span class="pn" data-v="97" data-suf="%">0%</span><span class="pl">governed</span></div>
+            <div class="pscan-row"><span class="pn" data-v="412">0</span><span class="pl" data-i18n="plat.scan.l1">agents found</span></div>
+            <div class="pscan-row"><span class="pn sig" data-v="3">0</span><span class="pl" data-i18n="plat.scan.l2">unmanaged</span></div>
+            <div class="pscan-row"><span class="pn" data-v="97" data-suf="%">0%</span><span class="pl" data-i18n="plat.scan.l3">governed</span></div>
           </div>
         </div>
-        <h3>Expose the AI nobody approved</h3>
-        <p>Every model, agent, MCP server and key running in your estate, with an owner and a risk tier.</p>
+        <h3 data-i18n="plat.scan.h">Expose the AI nobody approved</h3>
+        <p data-i18n="plat.scan.d">Every model, agent, MCP server and key running in your estate, with an owner and a risk tier.</p>
       </div>
 
       <div class="pcol r" style="--i:1">
         <div class="pcard">
-          <span class="pchip"><i></i>Runtime policy</span>
-          <p class="ppolicy"><span class="pw">Allow</span> <span class="ptok" style="--d:0">customer records</span> <span class="pw">only when</span> <span class="ptok hot" style="--d:1">checks pass</span> <span class="pw">and</span> <span class="ptok" style="--d:2">egress is internal</span><span class="pw">.</span></p>
-          <div class="peval"><span class="peval-dot"></span>Policy enforced</div>
+          <span class="pchip"><i></i><span data-i18n="plat.rt">Runtime policy</span></span>
+          <p class="ppolicy" data-i18n-html="plat.rt.policy"><span class="pw">Allow</span> <span class="ptok" style="--d:0">customer records</span> <span class="pw">only when</span> <span class="ptok hot" style="--d:1">checks pass</span> <span class="pw">and</span> <span class="ptok" style="--d:2">egress is internal</span><span class="pw">.</span></p>
+          <div class="peval"><span class="peval-dot"></span><span data-i18n="plat.rt.eval">Policy enforced</span></div>
         </div>
-        <h3>Enforce before the call fires</h3>
-        <p>Allow, redact, escalate or block at the execution layer, not after the fact.</p>
+        <h3 data-i18n="plat.rt.h">Enforce before the call fires</h3>
+        <p data-i18n="plat.rt.d">Allow, redact, escalate or block at the execution layer, not after the fact.</p>
       </div>
 
       <div class="pcol r" style="--i:2">
         <div class="pcard">
-          <span class="pchip"><i></i>Audit trail</span>
+          <span class="pchip"><i></i><span data-i18n="plat.audit">Audit trail</span></span>
           <div class="psearch">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14" stroke-linecap="round"/></svg>
             <span class="pq">ISO 42001 A.4.2</span><span class="pcaret"></span>
           </div>
-          <div class="prow" style="--d:0"><span class="prow-ic"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-6.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="prow-id">A-1044</span><span class="prow-tag">Sealed</span></div>
-          <div class="prow" style="--d:1"><span class="prow-ic"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3.5 5.5 7 9l3.5-3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="prow-id">A-1043</span><span class="prow-tag">Sealed</span></div>
+          <div class="prow" style="--d:0"><span class="prow-ic"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-6.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="prow-id">A-1044</span><span class="prow-tag" data-i18n="plat.audit.sealed">Sealed</span></div>
+          <div class="prow" style="--d:1"><span class="prow-ic"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3.5 5.5 7 9l3.5-3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="prow-id">A-1043</span><span class="prow-tag" data-i18n="plat.audit.sealed">Sealed</span></div>
         </div>
-        <h3>Evidence you can hand over</h3>
-        <p>Continuous documentation mapped to the EU AI Act, ISO/IEC 42001, NIST AI RMF and SOC 2.</p>
+        <h3 data-i18n="plat.audit.h">Evidence you can hand over</h3>
+        <p data-i18n="plat.audit.d">Continuous documentation mapped to the EU AI Act, ISO/IEC 42001, NIST AI RMF and SOC 2.</p>
       </div>
     </div>
   </section>
@@ -280,7 +292,7 @@
 
     <div class="life" id="life">
       <article class="dossier" style="--i:0">
-        <span class="tab"><span class="no">01</span> Assess<svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
+        <span class="tab"><span class="no">01</span> <span data-i18n="stage.assess">Assess</span><svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
         <div class="dossier-body">
           <h3 data-i18n="dossier.assess.title">Risk assessment and treatment</h3>
           <div class="d-rule"></div>
@@ -293,7 +305,7 @@
       </article>
 
       <article class="dossier" style="--i:1">
-        <span class="tab"><span class="no">02</span> Govern<svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
+        <span class="tab"><span class="no">02</span> <span data-i18n="stage.govern">Govern</span><svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
         <div class="dossier-body">
           <h3 data-i18n="dossier.govern.title">Governance system</h3>
           <div class="d-rule"></div>
@@ -306,7 +318,7 @@
       </article>
 
       <article class="dossier" style="--i:2">
-        <span class="tab"><span class="no">03</span> Test<svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
+        <span class="tab"><span class="no">03</span> <span data-i18n="stage.test">Test</span><svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
         <div class="dossier-body">
           <h3 data-i18n="dossier.test.title">Adversarial testing</h3>
           <div class="d-rule"></div>
@@ -319,7 +331,7 @@
       </article>
 
       <article class="dossier" style="--i:3">
-        <span class="tab"><span class="no">04</span> Monitor<svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
+        <span class="tab"><span class="no">04</span> <span data-i18n="stage.monitor">Monitor</span><svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
         <div class="dossier-body">
           <h3 data-i18n="dossier.monitor.title">Continuous monitoring</h3>
           <div class="d-rule"></div>
@@ -383,7 +395,7 @@
                 <span class="orbit slow"><i></i></span>
                 <span class="mark-dia"></span>
                 <div class="mark-word" id="markWord">Tahara AI</div>
-                <div class="mark-sub">Five layers · one record</div>
+                <div class="mark-sub" data-i18n="mark.sub">Five layers · one record</div>
               </div>
             </div>
         </div>
@@ -453,12 +465,13 @@
     </div>
 
     <div class="frames" id="frames">
-      <div class="seal" style="--i:0"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k">Management</div><div class="v">ISO/IEC 42001</div></div>
-      <div class="seal" style="--i:1"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k">Security</div><div class="v">ISO/IEC 27001</div></div>
-      <div class="seal" style="--i:2"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k">Risk</div><div class="v">NIST AI RMF</div></div>
-      <div class="seal" style="--i:3"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k">Regulation</div><div class="v">EU AI Act</div></div>
-      <div class="seal" style="--i:4"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k">Application</div><div class="v">OWASP LLM Top 10</div></div>
-      <div class="seal" style="--i:5"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k">Adversary</div><div class="v">MITRE ATLAS</div></div>
+      <div class="seal" style="--i:0"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k" data-i18n="seal.management">Management</div><div class="v">ISO/IEC 42001</div></div>
+      <div class="seal" style="--i:1"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k" data-i18n="seal.security">Security</div><div class="v">ISO/IEC 27001</div></div>
+      <div class="seal" style="--i:2"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k" data-i18n="seal.risk">Risk</div><div class="v">NIST AI RMF</div></div>
+      <div class="seal" style="--i:3"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k" data-i18n="seal.regulation">Regulation</div><div class="v">EU AI Act</div></div>
+      <div class="seal" style="--i:4"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k" data-i18n="seal.application">Application</div><div class="v">OWASP LLM Top 10</div></div>
+      <div class="seal" style="--i:5"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k" data-i18n="seal.adversary">Adversary</div><div class="v">MITRE ATLAS</div></div>
+      <div class="seal" style="--i:6"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg><span class="ck"><svg viewBox="0 0 18 18"><path d="M4 9.4 7.3 12.7 14 5.6"/></svg></span></div><div class="k" data-i18n="seal.regulation">Regulation</div><div class="v">AIUC-1</div></div>
     </div>
 
     <p class="label r" style="margin-bottom:16px" data-i18n="guides.label">Field guides from Tahara research</p>
@@ -491,12 +504,18 @@
     <div class="faq-grid">
       <div class="q-index r" id="qIndex">
         <span class="q-slide" id="qSlide" aria-hidden="true"></span>
-        <button class="q-item on" data-q="0" aria-selected="true"><span class="k">01</span><span><span data-i18n="faq.q1">How do you find AI nobody told us about?</span></span><span class="cv arw">→</span></button>
-        <button class="q-item" data-q="1" aria-selected="false"><span class="k">02</span><span><span data-i18n="faq.q2">Does it sit in the request path?</span></span><span class="cv arw">→</span></button>
-        <button class="q-item" data-q="2" aria-selected="false"><span class="k">03</span><span><span data-i18n="faq.q3">What happens when an agent reaches for sensitive data?</span></span><span class="cv arw">→</span></button>
-        <button class="q-item" data-q="3" aria-selected="false"><span class="k">04</span><span><span data-i18n="faq.q4">Can we keep our models and data private?</span></span><span class="cv arw">→</span></button>
-        <button class="q-item" data-q="4" aria-selected="false"><span class="k">05</span><span><span data-i18n="faq.q5">How is this different from an AI gateway?</span></span><span class="cv arw">→</span></button>
-        <button class="q-item" data-q="5" aria-selected="false"><span class="k">06</span><span><span data-i18n="faq.q6">How long before we see something useful?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item on" data-q="0" aria-selected="true"><span class="k">01</span><span><span data-i18n="faq.q1">Where does Tahara AI run?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="1" aria-selected="false"><span class="k">02</span><span><span data-i18n="faq.q2">How does Tahara AI find AI agents already in use?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="2" aria-selected="false"><span class="k">03</span><span><span data-i18n="faq.q3">Can Tahara AI govern agents built outside the platform?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="3" aria-selected="false"><span class="k">04</span><span><span data-i18n="faq.q4">How is Tahara AI different from an AI gateway or dashboard?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="4" aria-selected="false"><span class="k">05</span><span><span data-i18n="faq.q5">What happens when a policy is broken?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="5" aria-selected="false"><span class="k">06</span><span><span data-i18n="faq.q6">Can a machine close a finding?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="6" aria-selected="false"><span class="k">07</span><span><span data-i18n="faq.q7">Which frameworks are covered?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="7" aria-selected="false"><span class="k">08</span><span><span data-i18n="faq.q8">What does Tahara AI actually check — documentation, or the real system?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="8" aria-selected="false"><span class="k">09</span><span><span data-i18n="faq.q9">Does this replace an annual audit?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="9" aria-selected="false"><span class="k">10</span><span><span data-i18n="faq.q10">What does Tahara AI need access to?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="10" aria-selected="false"><span class="k">11</span><span><span data-i18n="faq.q11">Who has to confirm a finding is real?</span></span><span class="cv arw">→</span></button>
+        <button class="q-item" data-q="11" aria-selected="false"><span class="k">12</span><span><span data-i18n="faq.q12">Who uses Tahara AI day to day?</span></span><span class="cv arw">→</span></button>
       </div>
 
       <div class="q-panel r" style="--i:1">
@@ -521,7 +540,6 @@
       <p data-i18n="cta.body">Thirty minutes on your own estate: what we would find, and what we would block.</p>
       <div class="row">
         <button class="btn btn-pale" data-mag><span data-i18n="cta.demo">Request a demo</span> <span class="arw" aria-hidden="true">→</span></button>
-        <button class="btn btn-clear" data-mag><span data-i18n="cta.talkeng">Talk to an engineer</span></button>
       </div>
       <div class="cta-strip">
         <span style="--i:0"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg><span data-i18n="strip.tenancy">Runs in your tenancy</span></span>

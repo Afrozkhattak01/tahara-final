@@ -274,14 +274,18 @@ h4{font-family:'Inter Tight',sans-serif;font-weight:600;letter-spacing:-.015em;f
   transition:opacity .35s var(--e-out),visibility 0s .35s}
 .acct-scrim.on{opacity:1;pointer-events:auto;visibility:visible;transition:opacity .35s var(--e-out)}
 .acct-modal{position:fixed;z-index:131;left:50%;top:50%;
-  width:min(460px,calc(100vw - 32px));max-height:calc(100vh - 44px);overflow-y:auto;
+  width:min(520px,calc(100vw - 32px));max-height:calc(100vh - 44px);overflow-y:auto;
   transform:translate(-50%,-46%) scale(.97);
   background:var(--paper);border:1px solid var(--line);border-radius:22px;
-  box-shadow:var(--sh-l);padding:28px 32px 26px;scrollbar-gutter:stable;
+  box-shadow:var(--sh-l);padding:30px 34px 28px;
+  scrollbar-width:thin;scrollbar-color:var(--line-2) transparent;
   opacity:0;pointer-events:none;visibility:hidden;
   transition:opacity .4s var(--e-out),transform .4s var(--e-back),visibility 0s .4s}
 .acct-modal.on{opacity:1;pointer-events:auto;visibility:visible;transform:translate(-50%,-50%) scale(1);
   transition:opacity .4s var(--e-out),transform .5s var(--e-back)}
+.acct-modal::-webkit-scrollbar{width:9px}
+.acct-modal::-webkit-scrollbar-track{background:transparent}
+.acct-modal::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:9px;border:3px solid var(--paper);background-clip:padding-box}
 .acct-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .acct-brand{display:inline-flex;align-items:center;gap:9px;font-family:'Inter Tight',sans-serif;font-weight:700;font-size:16px;color:var(--ink)}
 .acct-dia{width:22px;height:22px;border-radius:7px;background:var(--bg-2);border:1px solid var(--line);position:relative;flex:none}
@@ -367,43 +371,51 @@ h4{font-family:'Inter Tight',sans-serif;font-weight:600;letter-spacing:-.015em;f
 .dash-card-d{font-size:12px;color:var(--ink-3);text-align:left}
 .dash-card-d.sig{color:var(--signal)}
 .dash-spark{width:76px;height:22px;flex:none}
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:12px}
-.dash-finding,.dash-cover{border:1px solid var(--line);border-radius:14px;padding:15px 18px;background:#fff}
+/* the two cards fill the row height; content spreads top-to-bottom so neither reads empty */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:12px;min-height:326px}
+.dash-finding,.dash-cover{border:1px solid var(--line);border-radius:14px;padding:17px 18px;background:#fff;
+  display:flex;flex-direction:column;justify-content:space-between}
 .dash-kicker{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;
   font-size:10.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--signal)}
 .dash-kicker i{width:11px;height:11px;border-radius:50%;border:1.6px solid var(--signal);flex:none}
-.dash-finding h4{font-family:'Inter Tight',sans-serif;font-weight:700;font-size:17px;letter-spacing:-.01em;
-  color:var(--ink);line-height:1.28;margin:14px 0 8px}
-.dash-finding p{font-size:13.5px;color:var(--ink-2);line-height:1.55}
+.dash-finding-b{margin-top:14px}
+.dash-finding h4{font-family:'Inter Tight',sans-serif;font-weight:700;font-size:19px;letter-spacing:-.015em;
+  color:var(--ink);line-height:1.28;margin:0 0 9px}
+.dash-finding p{font-size:14px;color:var(--ink-2);line-height:1.55}
+.dash-cover{gap:13px}
 .dash-cover-t{display:block;text-align:center;font-family:'JetBrains Mono',monospace;font-size:10.5px;
-  font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px}
-.dash-bar-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:7px 10px;margin-bottom:13px}
-.dash-bar-row:last-child{margin-bottom:0}
+  font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.dash-bar-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:7px 10px}
 .dash-bar-l{font-size:13.5px;color:var(--ink);font-weight:500}
 .dash-bar-v{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums}
 .dash-bar-track{grid-column:1/3;height:5px;background:var(--bg-2);border-radius:3px;overflow:hidden}
 .dash-bar-fill{display:block;height:100%;width:0;background:var(--g700);border-radius:3px}
 .dash-bar-fill.sig{background:var(--signal)}
-.dash-query{margin-top:12px;border:1px solid var(--line);border-radius:14px;padding:13px 18px;background:#fff}
-.dash-q-text{display:block;font-size:15px;color:var(--ink);margin-bottom:11px}
-.dash-q-foot{display:flex;align-items:center;gap:10px}
-.dash-q-chips{display:inline-flex;align-items:center}
-.dash-av{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;
-  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--g700);
-  background:var(--bg-2);margin-left:-6px;box-shadow:0 0 0 1.5px #fff}
-.dash-av:first-child{margin-left:0}
-.dash-more{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-3);margin-left:8px}
-.dash-q-tag{font-size:12.5px;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:5px 12px}
-.dash-q-send{margin-left:auto;width:36px;height:36px;border-radius:50%;background:var(--g900);color:#fff;
-  display:grid;place-items:center;font-size:15px;cursor:pointer;transition:background .2s ease}
-.dash-q-send:hover{background:var(--g800)}
 @media(max-width:860px){
   .dash-tabs{flex-wrap:wrap}
   .dash-body{grid-template-columns:1fr}
   .dash-side{display:none}
   .dash-stats{grid-template-columns:1fr}
-  .dash-grid{grid-template-columns:1fr}
+  .dash-grid{grid-template-columns:1fr;min-height:0}
 }
+
+/* ── statement band — the one serif on the page, sat between the standards
+   marquee and the record cards. Light ground like every other section; the
+   contrast comes from the typeface, not a colour block. ── */
+.stmt{padding:82px 0 74px;text-align:center}
+.stmt-t{font-family:'Newsreader',Georgia,serif;font-weight:400;letter-spacing:-.015em;
+  line-height:1.14;font-size:clamp(30px,4vw,52px);color:var(--ink);
+  max-width:19ch;margin:0 auto}
+.stmt-t em{font-style:italic;font-weight:500;color:var(--g600)}
+.stmt-d{font-size:clamp(15px,1.3vw,17.5px);color:var(--ink-2);line-height:1.62;
+  max-width:60ch;margin:20px auto 0}
+/* Arabic keeps the same face and weight as every other heading on the page —
+   the serif has no Arabic glyphs, and a synthesised italic on Arabic script
+   reads as a rendering fault. Matches the h2 declaration exactly. */
+[dir="rtl"] .stmt-t{font-family:'Inter Tight',sans-serif;font-weight:700;
+  letter-spacing:-.032em;max-width:22ch}
+[dir="rtl"] .stmt-t em{font-style:normal;font-weight:700;color:var(--g600)}
+@media(max-width:700px){ .stmt{padding:58px 0 52px} }
 
 /* ── platform: three record cards ── */
 .plat{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:44px}
@@ -509,25 +521,16 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 
 /* padding stays constant on hover — only the background changes, so a row
    never shifts height and pushes its neighbours */
-.mega-item{display:flex;align-items:flex-start;gap:12px;
-  margin:0 -8px;padding:12px 8px;border-radius:10px;
+/* no monogram tile — the row is title over description */
+.mega-item{display:block;margin:0 -8px;padding:10px 8px;border-radius:10px;
   transition:background .2s ease}
 .mega-item:hover,.mega-item:focus-visible{background:rgba(6,36,80,.03)}
-
-.mt{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
-  background:rgba(6,36,80,.05);
-  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.04em;
-  color:#568cbe;transition:background .2s ease,color .2s ease}
-.mega-item:hover .mt{background:rgba(6,36,80,.08);color:#062450}
 
 .mega-item b{display:block;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;
   letter-spacing:-.01em;line-height:1.3;color:#051f47;transition:color .2s ease}
 .mega-item:hover b{color:#062450}
 .mega-item span.d{display:block;font-size:12.5px;font-weight:400;letter-spacing:-.01em;
   line-height:1.5;color:#6394c1;margin-top:2px}
-.mega-item.split{margin-top:16px;padding-top:20px;position:relative}
-.mega-item.split::before{content:'';position:absolute;top:0;left:8px;right:8px;
-  height:1px;background:rgba(0,0,0,.06)}
 
 /* ── resources dropdown (compact) ── */
 .nav-drop{position:relative;display:inline-flex;align-items:center}
@@ -552,29 +555,56 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
   padding:3px 8px;border-radius:4px}
 
 /* ── demo panel ── */
-.mega-demo{position:relative;overflow:hidden;background:#f8fafd;
-  border:1px solid rgba(0,0,0,.04);border-radius:16px;padding:32px 28px;text-align:center;
+.mega-demo{position:relative;overflow:hidden;
+  background:linear-gradient(165deg,#0e3269 0%,#051a3f 100%);
+  border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:26px 24px 22px;text-align:center;
   display:flex;flex-direction:column}
 .mega-demo::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;
-  background-image:radial-gradient(rgba(6,36,80,.14) 1px,transparent 1px);
-  background-size:12px 12px;
-  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 118%,#000,transparent 72%);
-  mask-image:radial-gradient(ellipse 80% 60% at 50% 118%,#000,transparent 72%)}
+  background-image:radial-gradient(rgba(255,255,255,.09) 1px,transparent 1px);
+  background-size:13px 13px;
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000,transparent 74%);
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000,transparent 74%)}
 .mega-demo > *{position:relative;z-index:1}
-.demo-ic{width:48px;height:48px;margin:0 auto 18px;border-radius:14px;display:grid;place-items:center;
-  background:rgba(6,36,80,.06);color:#062450;font-size:17px;line-height:1;
-  transition:transform .4s var(--e-back)}
-.mega-demo:hover .demo-ic{transform:rotate(90deg)}
-.demo-k{display:block;font-family:'Inter',sans-serif;font-size:10px;font-weight:600;
-  letter-spacing:.11em;text-transform:uppercase;color:#6394c1}
-.mega-demo h4{font-family:'Inter',sans-serif;font-size:18px;font-weight:600;color:#062450;
-  letter-spacing:-.015em;line-height:1.25;margin:10px 0 8px}
-.mega-demo p{font-size:13px;line-height:1.5;color:#6394c1;margin-bottom:20px}
-.demo-btn{display:block;width:100%;margin-top:auto;background:#062450;color:#fff;
-  font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
-  padding:11px 14px;border-radius:10px;text-align:center;
-  transition:background .2s ease,transform .3s var(--e-out),box-shadow .25s ease}
-.demo-btn:hover{background:#041b3e;transform:translateY(-1px);box-shadow:0 10px 24px rgba(6,36,80,.24)}
+.demo-k{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:#7ea6d8}
+.mega-demo h4{font-family:'Inter Tight',sans-serif;font-size:19px;font-weight:700;color:#fff;
+  letter-spacing:-.02em;line-height:1.2;margin:8px 0}
+.mega-demo p{font-size:12.5px;line-height:1.5;color:#9db8db;margin-bottom:4px}
+/* what-we-walk-through timeline — steps spread to fill; loops continuously */
+.demo-walk-k{display:block;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:#5f83b8;margin:18px 0 4px;text-align:left}
+.demo-steps{flex:1;display:flex;flex-direction:column;justify-content:space-between;
+  list-style:none;position:relative;margin:0 0 18px;padding:8px 0 0 2px;text-align:left}
+.demo-steps::before{content:'';position:absolute;left:9px;top:18px;bottom:18px;width:2px;
+  background:rgba(255,255,255,.14);border-radius:2px}
+.demo-steps::after{content:'';position:absolute;left:9px;top:18px;width:2px;height:0;
+  background:linear-gradient(180deg,#79a6e6,#3f6fc0);border-radius:2px}
+.mega.open .demo-steps::after{animation:demoFill 4.4s linear infinite}
+@keyframes demoFill{0%{height:0;opacity:1}72%{height:calc(100% - 36px)}90%{opacity:1}100%{height:calc(100% - 36px);opacity:0}}
+.demo-step{display:flex;align-items:center;gap:14px;
+  font-family:'Inter Tight',sans-serif;font-size:14.5px;font-weight:600;color:#cdddf5}
+.demo-dot{width:18px;height:18px;border-radius:50%;flex:none;position:relative;z-index:1;box-sizing:border-box;
+  border:2px solid rgba(255,255,255,.28);background:#0a234c}
+.mega.open .demo-dot{animation:demoNode 4.4s linear infinite;animation-delay:calc(var(--si) * 1.1s)}
+@keyframes demoNode{
+  0%,7%{border-color:rgba(255,255,255,.28);background:#0a234c;box-shadow:0 0 0 0 rgba(121,166,230,0)}
+  13%{border-color:#79a6e6;background:#79a6e6;box-shadow:0 0 0 6px rgba(121,166,230,.3)}
+  25%{border-color:#79a6e6;background:#79a6e6;box-shadow:0 0 0 0 rgba(121,166,230,0)}
+  33%,100%{border-color:rgba(255,255,255,.28);background:#0a234c}}
+.demo-si{width:17px;height:17px;margin-left:auto;flex:none;color:#79a6e6;opacity:.22;transform:scale(.8)}
+.mega.open .demo-si{animation:demoIcon 4.4s linear infinite;animation-delay:calc(var(--si) * 1.1s)}
+@keyframes demoIcon{
+  0%,7%{opacity:.22;transform:scale(.8)}
+  13%{opacity:1;transform:scale(1.15)}
+  25%{opacity:1;transform:scale(1)}
+  33%,100%{opacity:.22;transform:scale(.8)}}
+.demo-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:auto;
+  background:#fff;color:#062450;font-family:'Inter Tight',sans-serif;font-size:13.5px;font-weight:600;
+  padding:12px 14px;border-radius:11px;text-align:center;
+  transition:transform .3s var(--e-out),box-shadow .25s ease}
+.demo-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,0,0,.32)}
+.demo-btn .arw{transition:transform .3s var(--e-out)}
+.demo-btn:hover .arw{transform:translateX(3px)}
 
 .mega-scrim{position:fixed;inset:0;z-index:60;background:rgba(3,24,56,.20);
   opacity:0;pointer-events:none;visibility:hidden;
@@ -586,6 +616,19 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
    Hero
    ════════════════════════════════════════════════════════════ */
 .hero{padding:66px 0 34px;text-align:center;position:relative}
+/* Warm bloom behind the hero and dashboard — the one non-blue note on the page.
+   Anchored to .hero rather than the fixed .bg layers on purpose: .bg is
+   position:fixed, so a gradient there would follow the viewport down every
+   section instead of belonging to the first screen. z-index -2 keeps it above
+   .bg and the drifting blobs (-3) but under the grid and noise (-1). */
+.hero::before{content:'';position:absolute;z-index:-2;pointer-events:none;
+  top:-230px;right:-280px;width:1060px;height:840px;
+  background:radial-gradient(closest-side,
+    rgba(236,220,242,.9) 0%, rgba(236,220,242,.48) 46%, transparent 74%);
+  filter:blur(30px)}
+@media(max-width:900px){
+  .hero::before{top:-140px;right:-180px;width:660px;height:560px}
+}
 .hero h1{margin:0 auto 20px;max-width:none;font-weight:800;
   font-size:clamp(30px,4.4vw,52px);line-height:1.06;
   font-family:'Plus Jakarta Sans','Inter Tight',sans-serif;letter-spacing:-.022em}
@@ -844,7 +887,11 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
   background:linear-gradient(90deg,var(--g600),var(--g400));
   transform:scaleX(0);transform-origin:left;transition:transform .65s var(--e-out)}
 .dossier:hover .dossier-body::before{transform:scaleX(1)}
-.dossier h3{margin-bottom:12px}
+/* Reserve two lines for every title so the rule and the first bullet start on
+   the same baseline across all four cards — otherwise a one-line title like
+   "Governance system" pulls its list up above a two-line neighbour. Only a
+   floor: a three-line title still grows. */
+.dossier h3{margin-bottom:12px;min-height:2.5em}
 .d-rule{height:2px;width:46px;background:var(--g600);border-radius:2px;margin-bottom:18px;
   transform:scaleX(0);transform-origin:left;
   transition:transform .7s var(--e-out) calc(var(--i,0)*130ms + .5s)}
@@ -870,7 +917,7 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 /* ════════════════════════════════════════════════════════════
    6 · FRAMEWORK SEALS + field guides
    ════════════════════════════════════════════════════════════ */
-.frames{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:48px}
+.frames{display:grid;grid-template-columns:repeat(7,1fr);gap:14px;margin-bottom:48px}
 .seal{position:relative;background:var(--g900);border-radius:16px;padding:18px 12px 16px;text-align:center;
   color:#fff;overflow:hidden;opacity:0;transform:translateY(20px) scale(.94);
   transition:opacity .55s ease calc(var(--i)*90ms),
@@ -925,7 +972,11 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 .q-item.on .cv{opacity:1;transform:none}
 .q-slide{position:absolute;left:0;width:2px;background:var(--g600);border-radius:2px;
   transition:top .45s var(--e-out),height .45s var(--e-out)}
-.q-panel{position:relative;background:rgba(249,251,253,.94);backdrop-filter:blur(6px);
+/* With twelve questions the index column runs far taller than any one answer.
+   Sticky keeps the panel beside whatever you're reading rather than stranding
+   white space next to the bottom half of the list. Offset clears the sticky
+   header. The grid's align-items:start is what gives it room to travel. */
+.q-panel{position:sticky;top:92px;background:rgba(249,251,253,.94);backdrop-filter:blur(6px);
   border:1px solid var(--line);border-radius:18px;padding:30px;min-height:250px;overflow:hidden}
 .q-panel .mesh{position:absolute;inset:0;opacity:.55;pointer-events:none;
   background-image:linear-gradient(var(--line) 1px,transparent 1px),
@@ -1269,9 +1320,12 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
   .stack-mark{position:relative;inset:auto;margin-top:30px;opacity:1;transform:none}
   .mark-ring,.orbit,.mark-glow{display:none}
   .stack-item{opacity:1}
-  .frames{grid-template-columns:repeat(3,1fr)}
+  /* 4 then 3 — at three columns seven seals would strand one on its own row */
+  .frames{grid-template-columns:repeat(4,1fr)}
   .foot-grid{grid-template-columns:1fr 1fr 1fr;gap:26px}
   .faq-grid{grid-template-columns:1fr;gap:14px}
+  /* stacked single column — the panel sits under the list, nothing to follow */
+  .q-panel{position:relative;top:auto}
   .q-panel{min-height:0}
 }
 @media(max-width:860px){
@@ -1393,6 +1447,8 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
    ════════════════════════════════════════════════════════════ */
 .seal{cursor:pointer}
 .seal:focus-visible{outline:2px solid var(--g400);outline-offset:3px}
+/* no mapping detail behind it yet — don't advertise a click that does nothing */
+.seal-inert{cursor:default}
 .drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,92vw);z-index:95;
   background:var(--paper);border-left:1px solid var(--line);
   box-shadow:-30px 0 70px rgba(3,24,56,.18);
@@ -1486,10 +1542,8 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
 .mlogo{position:absolute;left:50%;top:50%;width:48px;height:48px;object-fit:contain;
   transform:translate(-50%,-50%);transform-origin:center;
   transition:opacity .2s ease-out,transform .2s ease-out}
-.mlogo.hover{opacity:0}
+/* one full-colour mark per chip — nothing to cross-fade to, so hover just scales */
 .mchip:hover .mlogo{transform:translate(-50%,-50%) scale(1.1)}
-.mchip:hover .mlogo.base{opacity:0}
-.mchip:hover .mlogo.hover{opacity:1}
 
 /* geometric fallback — used only when a brand has no reliable single-colour
    mark, or a logo request 404s */
@@ -1582,4 +1636,14 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
 [dir="rtl"] .console-side a:hover{transform:translateX(-3px)}
 [dir="rtl"] .mega-item:hover{transform:translateX(-3px)}
 [dir="rtl"] .q-index{border-left:none}
+/* physical margin-left:auto pushes the wrong way once the row reverses */
+[dir="rtl"] .demo-si{margin-left:0;margin-right:auto}
+[dir="rtl"] .prow-tag{margin-left:0;margin-right:auto}
+[dir="rtl"] .demo-walk-k,[dir="rtl"] .demo-steps{text-align:right}
+[dir="rtl"] .demo-steps::before,[dir="rtl"] .demo-steps::after{left:auto;right:9px}
+[dir="rtl"] .dash-card-d{text-align:right}
+[dir="rtl"] .dash-nav-item{border-left:none;border-right:2px solid transparent}
+[dir="rtl"] .dash-nav-item.on{border-right-color:var(--g700)}
+[dir="rtl"] .dash-side{border-right:none;border-left:1px solid var(--line)}
+/* sparklines are left alone on purpose — a trend line is data, not text */
 
