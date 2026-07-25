@@ -1312,13 +1312,20 @@ window.TaharaI18N = (function(){
     'cta.body':    { en:'Thirty minutes on your own estate: what we would find, and what we would block.',
                      ar:'ثلاثون دقيقة على بيئتك الخاصة: ما الذي سنكتشفه، وما الذي سنمنعه.' },
 
-    'ribbon.text': { en:'The 2026 Agentic AI Assurance Report', ar:'تقرير ضمان الذكاء الاصطناعي الوكيل لعام 2026' },
+    'ribbon.tag':  { en:'Free', ar:'مجاني' },
+    'ribbon.text': { en:'Run an AI surface check on your endpoint', ar:'شغّل فحص سطح الذكاء الاصطناعي على نقطتك الطرفية' },
+    'surface.kicker': { en:'Surface check', ar:'فحص السطح' },
+    'surface.title':  { en:'See what your AI exposes', ar:'اطّلع على ما يكشفه ذكاؤك الاصطناعي' },
+    'surface.desc':   { en:'Point us at a public endpoint. We map the models, agents and prompts behind it, then rank what an attacker would reach for first.',
+                        ar:'وجِّهنا إلى نقطة طرفية عامة. نرسم النماذج والوكلاء والطلبات خلفها، ثم نرتّب ما قد يستهدفه المهاجم أولًا.' },
+    'surface.cta':    { en:'Run check', ar:'شغّل الفحص' },
+    'surface.note':   { en:'Illustrative preview. Nothing is sent from your browser.', ar:'معاينة توضيحية. لا يُرسَل شيء من متصفحك.' },
 
     'hero.title': { en:'Know what your AI did, and <span class="accent">prove it</span>.',
                     ar:'اعرف ما فعله ذكاؤك الاصطناعي، و<span class="accent">أثبت ذلك</span>.' },
-    'hero.built': { en:'Built for AI', ar:'مصمّم للذكاء الاصطناعي' },
-    'hero.lede': { en:'Discovery, live enforcement and audit-ready evidence — for every model, agent and prompt you run.',
-                   ar:'الاكتشاف والإنفاذ الحي وأدلة جاهزة للتدقيق — لكل نموذج ووكيل وطلب تشغّله.' },
+    'hero.built': { en:'Know what your AI did, and', ar:'اعرف ما فعله ذكاؤك الاصطناعي، و' },
+    'hero.lede': { en:'Discovery, live enforcement and audit-ready evidence.',
+                   ar:'الاكتشاف والإنفاذ الحي وأدلة جاهزة للتدقيق.' },
     'hero.note': { en:'Runs in your tenancy. Nothing leaves your boundary.',
                    ar:'يعمل داخل بيئتك الخاصة. لا شيء يغادر حدودك.' },
 
@@ -1328,9 +1335,9 @@ window.TaharaI18N = (function(){
     'eyebrow.alignment':   { en:'Alignment', ar:'التوافق' },
     'eyebrow.answers':     { en:'Answers', ar:'الإجابات' },
 
-    'platform.title': { en:'One record of truth for every AI system you run.',
-                        ar:'سجل حقيقة واحد لكل نظام ذكاء اصطناعي تشغّله.' },
-    'platform.lede':  { en:'Discovery, enforcement and evidence on a single timeline.',
+    'platform.title': { en:'One record of truth.',
+                        ar:'سجل حقيقة واحد.' },
+    'platform.lede':  { en:'Discovery, enforcement and evidence on one timeline.',
                         ar:'الاكتشاف والإنفاذ والأدلة على جدول زمني واحد.' },
 
     'rec.discovery.title': { en:'Find the AI nobody registered.', ar:'اعثر على الذكاء الاصطناعي الذي لم يسجّله أحد.' },
@@ -1682,7 +1689,7 @@ window.TaharaI18N = (function(){
   window.TaharaI18N && window.TaharaI18N.init();
   UI.connectors(); UI.pointer(); UI.ripple();
   const consoleEl = $('#console');
-  UI.feed(consoleEl);
+  if (document.getElementById('feedList')) UI.feed(consoleEl);   /* feed removed by the dashboard */
   $$('.spark path').forEach(p => p.style.setProperty('--len', Math.ceil(p.getTotalLength())));
   $$('.mark-ring circle').forEach(c => {
     try { c.style.setProperty('--rl', Math.ceil(c.getTotalLength())); }
@@ -2037,6 +2044,191 @@ window.TaharaI18N = (function(){
   window.TaharaDrawer && window.TaharaDrawer.init();
   window.TaharaMarquee2 && window.TaharaMarquee2.init();
 
+  /* ── surface-check modal — opened by the ribbon, closed by X / scrim / Esc ── */
+  (function(){
+    const link  = document.getElementById('ribbonLink');
+    const modal = document.getElementById('surfaceModal');
+    const scrim = document.getElementById('surfaceScrim');
+    const closeX = document.getElementById('surfaceX');
+    if (!link || !modal || !scrim) return;
+    let open = false;
+    function set(v){
+      open = v;
+      modal.classList.toggle('on', v);
+      scrim.classList.toggle('on', v);
+      modal.setAttribute('aria-hidden', String(!v));
+      scrim.setAttribute('aria-hidden', String(!v));
+      document.body.style.overflow = v ? 'hidden' : '';
+      const inp = modal.querySelector('.surface-input');
+      if (v){ inp && setTimeout(() => inp.focus(), 80); }
+      else { if (inp) inp.value = ''; link.focus(); }   /* reset the field when closed */
+    }
+    link.addEventListener('click', e => { e.preventDefault(); set(true); });
+    closeX && closeX.addEventListener('click', () => set(false));
+    scrim.addEventListener('click', () => set(false));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && open) set(false); });
+  })();
+
+  /* ── assurance dashboard — 4 modules, tab-switched, animated on view / click ── */
+  (function(){
+    const tabs = document.getElementById('dashTabs');
+    const badge = document.getElementById('dashBadge');
+    const title = document.getElementById('dashTitle');
+    const sub = document.getElementById('dashSub');
+    const side = document.getElementById('dashSide');
+    const statsEl = document.getElementById('dashStats');
+    const findEl = document.getElementById('dashFinding');
+    const coverEl = document.getElementById('dashCover');
+    const queryEl = document.getElementById('dashQuery');
+    const card = document.getElementById('console');
+    if (!tabs || !statsEl || !coverEl) return;
+
+    const MODULES = [
+      { badge:'Module 01 · Discover', title:'Discovery',
+        sub:"What you're running, who owns it, and who is exposed by it.",
+        nav:['Discover','Connect','Dashboard','Agents','Inventory','Activity feed'], active:2,
+        stats:[
+          {k:'Systems in scope', v:412, d:'+18 this week', tone:'', spark:[22,20,18,15,12,10,7,4]},
+          {k:'Agents monitored', v:96, d:'14 with tool access', tone:'', spark:[19,20,15,17,12,13,8,7]},
+          {k:'Findings open', v:6, d:'3 major', tone:'sig', spark:[16,18,9,19,7,16,6,12]} ],
+        finding:{ kind:'Critical finding', t:'3 systems profile individuals with no owner on record',
+          d:'Each one is in scope for EU AI Act Art. 6(3). None can claim the derogation.' },
+        coverT:'Coverage by surface',
+        cover:[['Models','128',128/144,''],['Agents','96',96/144,''],['MCP servers','44',44/144,''],['Keys & tools','144',1,'']],
+        query:{ q:'Which systems have no owner on record?', tag:'High risk' } },
+      { badge:'Module 02 · Govern', title:'Applicability and evidence',
+        sub:'Every control mapped to a probe, and a probe to proof.',
+        nav:['Govern','Frameworks','Control mapping','Probes','Evidence','Findings'], active:2,
+        stats:[
+          {k:'Requirements assessed', v:61, d:'of 187 total', tone:'', spark:[21,19,17,14,12,9,7,5]},
+          {k:'Conforming', v:34, suf:'%', d:'of assessed', tone:'', spark:[18,17,16,14,13,12,11,10]},
+          {k:'Major findings', v:3, d:'2 new this week', tone:'sig', spark:[8,9,11,12,13,14,16,17]} ],
+        finding:{ kind:'Major non-conformity', t:'Access control does not match the documented policy',
+          d:'ISO 42001 A.4.2 — the IAM scan contradicts the policy on file. Human review pending.' },
+        coverT:'Conformance by framework',
+        cover:[['EU AI Act','18/33',18/33,''],['ISO/IEC 42001','24/76',24/76,''],['ISO/IEC 23894','11/41',11/41,''],['NIST AI RMF','8/37',8/37,'']],
+        query:{ q:'Show me every control blocked on evidence', tag:'Unresolved' } },
+      { badge:'Module 03 · Adversarial', title:'Attack simulation',
+        sub:'The OWASP LLM Top 10, run on a schedule against staging.',
+        nav:['Adversarial','Test sets','OWASP LLM Top 10','Runs','Findings','Retest'], active:2,
+        stats:[
+          {k:'Probes · 24h', v:8412, d:'across 10 categories', tone:'', spark:[16,10,18,9,17,8,15,11]},
+          {k:'Categories passing', v:5, d:'of 10', tone:'', spark:[14,13,14,12,13,12,13,12]},
+          {k:'Failing', v:2, d:'injection, disclosure', tone:'sig', spark:[8,9,11,12,13,14,16,17]} ],
+        finding:{ kind:'Open finding · LLM01', t:'468 of 1,204 indirect injection attempts succeeded',
+          d:'Instructions hidden inside an uploaded document were followed. Re-tested every six hours.' },
+        coverT:'Pass rate by category',
+        cover:[['LLM01 Prompt injection','61%',.61,'sig'],['LLM02 Disclosure','74%',.74,'sig'],['LLM06 Excessive agency','83%',.83,''],['LLM07 Prompt leakage','100%',1,'']],
+        query:{ q:'Why did LLM01 fail this run?', tag:'Highest priority' } },
+      { badge:'Module 04 · Guardrails', title:'Prompt inspection',
+        sub:'Every prompt checked before the model sees it.',
+        nav:['Guardrails','Inspection','Detectors','Policies','Prompt log','Escalations'], active:4,
+        stats:[
+          {k:'Inspected · 24h', v:12847, d:'prompts checked', tone:'', spark:[22,20,17,15,12,10,7,4]},
+          {k:'Masked', v:1204, d:'redacted, reversible', tone:'', spark:[19,20,16,17,13,14,9,8]},
+          {k:'Leaked', v:1, d:'escalated to DPO', tone:'sig', spark:[16,19,9,20,7,17,5,11]} ],
+        finding:{ kind:'Escalated', t:'A national ID reached the model unmasked',
+          d:'It arrived through a document the retrieval layer injected, not the typed prompt. The filter reads the prompt, not the assembled context.' },
+        coverT:'Detector hits · 24h',
+        cover:[['Name (NER)','1,204',1,''],['Email','1,118',1118/1204,''],['Phone','744',744/1204,''],['National ID','28',28/1204,'sig']],
+        query:{ q:'What leaked in the last 24 hours?', tag:'Escalated' } }
+    ];
+
+    const XS = [0,14,28,42,56,70,84,100];
+    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    function sparkSVG(pts, tone){
+      const d = pts.map((y,i)=>(i?'':'M')+XS[i]+' '+y).join(' ');
+      const col = tone==='sig' ? '#b5651d' : '#114086';
+      return '<svg class="dash-spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    }
+
+    /* build a module in its pre-animation state (0 counts, empty bars) */
+    function render(m){
+      badge.textContent = m.badge.toUpperCase();
+      title.textContent = m.title;
+      sub.textContent = m.sub;
+      side.innerHTML = m.nav.map((n,idx)=> idx===0
+        ? '<div class="dash-nav-mod"><span class="dash-ring"></span>'+esc(n)+'</div>'
+        : '<a class="dash-nav-item'+(idx===m.active?' on':'')+'" href="#" onclick="return false">'+esc(n)+'</a>').join('');
+      statsEl.innerHTML = m.stats.map(s=>
+        '<div class="dash-card"><div class="dash-card-k">'+esc(s.k)+'</div>'+
+        '<div class="dash-card-v" data-v="'+s.v+'" data-suf="'+(s.suf||'')+'">0'+(s.suf||'')+'</div>'+
+        '<div class="dash-card-foot"><span class="dash-card-d'+(s.tone==='sig'?' sig':'')+'">'+esc(s.d)+'</span>'+
+        sparkSVG(s.spark,s.tone)+'</div></div>').join('');
+      findEl.innerHTML = '<span class="dash-kicker"><i></i>'+esc(m.finding.kind).toUpperCase()+'</span>'+
+        '<h4>'+esc(m.finding.t)+'</h4><p>'+esc(m.finding.d)+'</p>';
+      coverEl.innerHTML = '<span class="dash-cover-t">'+esc(m.coverT).toUpperCase()+'</span>'+
+        m.cover.map(r=>'<div class="dash-bar-row"><span class="dash-bar-l">'+esc(r[0])+'</span>'+
+          '<span class="dash-bar-v">'+esc(r[1])+'</span>'+
+          '<span class="dash-bar-track"><i class="dash-bar-fill'+(r[3]==='sig'?' sig':'')+'" data-frac="'+r[2]+'"></i></span></div>').join('');
+      queryEl.innerHTML = '<span class="dash-q-text">'+esc(m.query.q)+'</span>'+
+        '<div class="dash-q-foot"><span class="dash-q-chips"><span class="dash-av">M</span><span class="dash-av">A</span><span class="dash-av">S</span><span class="dash-more">+3</span></span>'+
+        '<span class="dash-q-tag">'+esc(m.query.tag)+'</span>'+
+        '<button class="dash-q-send" type="button" aria-label="Send">&uarr;</button></div>';
+    }
+
+    /* animate the current module in */
+    function animate(){
+      statsEl.querySelectorAll('.dash-card-v').forEach(el=>{
+        const target = +el.dataset.v, suf = el.dataset.suf||'', t0 = performance.now(), dur = 1000;
+        (function step(now){
+          const p = Math.min(1,(now-t0)/dur), e = 1-Math.pow(1-p,3);
+          el.textContent = Math.round(target*e).toLocaleString('en-US')+suf;
+          if (p<1) requestAnimationFrame(step);
+        })(t0);
+      });
+      statsEl.querySelectorAll('.dash-spark path').forEach(p=>{
+        const len = p.getTotalLength();
+        p.style.transition='none'; p.style.strokeDasharray=len; p.style.strokeDashoffset=len;
+        p.getBoundingClientRect();
+        p.style.transition='stroke-dashoffset 1.1s cubic-bezier(.16,1,.3,1)'; p.style.strokeDashoffset='0';
+      });
+      coverEl.querySelectorAll('.dash-bar-fill').forEach(el=>{
+        const w = Math.max(0,Math.min(1,+el.dataset.frac))*100;
+        el.style.transition='none'; el.style.width='0%'; el.getBoundingClientRect();
+        el.style.transition='width .9s cubic-bezier(.16,1,.3,1)'; el.style.width=w+'%';
+      });
+    }
+
+    render(MODULES[0]);
+    tabs.querySelectorAll('.dash-tab').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        tabs.querySelectorAll('.dash-tab').forEach(b=>b.classList.toggle('on', b===btn));
+        render(MODULES[+btn.dataset.mod]);
+        animate();
+      });
+    });
+    /* first scroll into view animates the default module */
+    if ('IntersectionObserver' in window && card){
+      new IntersectionObserver((es,obs)=>{ if (es[0].isIntersecting){ animate(); obs.disconnect(); } }, { threshold:.2 }).observe(card);
+    } else { animate(); }
+  })();
+
+  /* ── platform "Scan" card — count the numbers up when it scrolls into view ── */
+  (function(){
+    const plat = document.querySelector('.plat');
+    if (!plat) return;
+    function run(){
+      plat.querySelectorAll('.pn[data-v]').forEach(el=>{
+        const target = +el.dataset.v, suf = el.dataset.suf||'', t0 = performance.now(), dur = 1100;
+        (function step(now){
+          const p = Math.min(1,(now-t0)/dur), e = 1-Math.pow(1-p,3);
+          el.textContent = Math.round(target*e).toLocaleString('en-US')+suf;
+          if (p<1) requestAnimationFrame(step);
+        })(t0);
+      });
+      /* type out the audit-trail search query */
+      const pq = plat.querySelector('.pq');
+      if (pq){
+        const full = pq.textContent; let i = 0; pq.textContent = '';
+        (function type(){ pq.textContent = full.slice(0, ++i); if (i < full.length) setTimeout(type, 55); })();
+      }
+    }
+    if ('IntersectionObserver' in window){
+      new IntersectionObserver((es,obs)=>{ if (es[0].isIntersecting){ run(); obs.disconnect(); } }, { threshold:.3 }).observe(plat);
+    } else run();
+  })();
+
   /* ── hero rotating word — soft blur cross-fade through the list, navy accent.
      On wide screens the slot is pre-sized to the widest word so the static
      "Built for AI" never shifts as words swap. ── */
@@ -2044,8 +2236,8 @@ window.TaharaI18N = (function(){
     const wrap = document.getElementById('heroRot');
     const el   = document.getElementById('heroRotWord');
     if (!wrap || !el) return;
-    const EN = ['Governance','Compliance','Testing','Monitoring','Security','Transparency'];
-    const AR = ['الحوكمة','الامتثال','الاختبار','المراقبة','الأمان','الشفافية'];
+    const EN = ['govern it.','test it.','prove it.','defend it.'];
+    const AR = ['احكمها.','اختبرها.','أثبتها.','دافع عنها.'];
     const list = () => (document.documentElement.getAttribute('dir') === 'rtl') ? AR : EN;
     let i = 0, swapping = false;
     function fit(){

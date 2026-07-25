@@ -10,11 +10,28 @@
 
 <!-- ══════════ announcement ══════════ -->
 <div class="ribbon">
-  <a href="#resources">
-    <span class="tag">New</span>
-    <span data-i18n="ribbon.text">The 2026 Agentic AI Assurance Report</span>
+  <a href="#faq" class="ribbon-link" id="ribbonLink">
+    <span class="ribbon-tag" data-i18n="ribbon.tag">Free</span>
+    <span data-i18n="ribbon.text">Run an AI surface check on your endpoint</span>
     <span class="arw" aria-hidden="true">→</span>
   </a>
+</div>
+
+<!-- surface-check modal, opened from the ribbon -->
+<div class="surface-scrim" id="surfaceScrim" aria-hidden="true"></div>
+<div class="surface-modal" id="surfaceModal" role="dialog" aria-modal="true" aria-labelledby="surfaceTitle" aria-hidden="true">
+  <button class="surface-x" id="surfaceX" aria-label="Close">
+    <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M2 2l10 10M12 2 2 12" stroke-linecap="round"/></svg>
+  </button>
+  <span class="surface-kicker" data-i18n="surface.kicker">Surface check</span>
+  <h3 id="surfaceTitle" data-i18n="surface.title">See what your AI exposes</h3>
+  <p class="surface-desc" data-i18n="surface.desc">Point us at a public endpoint. We map the models, agents and prompts behind it, then rank what an attacker would reach for first.</p>
+  <div class="surface-field">
+    <span class="surface-proto">https://</span>
+    <input class="surface-input" type="text" placeholder="your-app.com/chat" aria-label="Endpoint URL" spellcheck="false" />
+    <button class="surface-run" type="button"><span data-i18n="surface.cta">Run check</span> <span class="arw" aria-hidden="true">→</span></button>
+  </div>
+  <span class="surface-note" data-i18n="surface.note">Illustrative preview. Nothing is sent from your browser.</span>
 </div>
 
 <!-- ══════════ navigation ══════════ -->
@@ -93,61 +110,35 @@
 <div class="wrap">
   <section class="hero">
     <div class="aura" aria-hidden="true"></div>
-    <h1 class="hero-h1 r" style="--i:0"><span class="hero-static" data-i18n="hero.built">Built for AI</span> <span class="hero-rot" id="heroRot"><span class="hero-rot-w" id="heroRotWord">Governance</span></span></h1>
-    <p class="lede r" style="--i:6" data-i18n="hero.lede">Discovery, live enforcement and audit-ready evidence — for every model, agent and prompt you run.</p>
+    <h1 class="hero-h1 r" style="--i:0"><span class="hero-static" data-i18n="hero.built">Know what your AI did, and</span> <span class="hero-rot" id="heroRot"><span class="hero-rot-w" id="heroRotWord">govern it.</span></span></h1>
+    <p class="lede r" style="--i:6" data-i18n="hero.lede">Discovery, live enforcement and audit-ready evidence.</p>
     <div class="hero-cta r" style="--i:7">
       <button class="btn btn-solid" data-mag><span data-i18n="cta.explore">Explore platform</span> <span class="arw" aria-hidden="true">→</span></button>
       <button class="btn btn-line" data-mag><span data-i18n="cta.seehow">See how it works</span></button>
     </div>
 
     <div class="console-stage">
-      <div class="console" id="console" role="img" aria-label="Tahara assurance console: AI inventory counts, enforcement totals and a live decision feed">
-        <div class="console-bar">
-          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-          <span class="path">tahara / assurance console</span>
-          <span class="live"><span class="pulse"></span>Enforcing</span>
+      <div class="console dash" id="console" role="img" aria-label="Tahara assurance dashboard: four modules with live metrics">
+        <div class="dash-tabs" id="dashTabs" role="tablist" aria-label="Modules">
+          <button class="dash-tab on" type="button" data-mod="0">Discover</button>
+          <button class="dash-tab" type="button" data-mod="1">Govern</button>
+          <button class="dash-tab" type="button" data-mod="2">Adversarial</button>
+          <button class="dash-tab" type="button" data-mod="3">Guardrails</button>
         </div>
-        <div class="console-body">
-          <aside class="console-side">
-            <div class="label">Workspace</div>
-            <a class="on" href="#"><svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>Overview</a>
-            <a href="#"><svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 4.5 8 2l6 2.5-6 2.5z"/><path d="M2 8l6 2.5L14 8"/><path d="M2 11.5 8 14l6-2.5"/></svg>Inventory</a>
-            <a href="#"><svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="5" r="2.4"/><path d="M3 13.5c0-2.5 2.2-4 5-4s5 1.5 5 4"/></svg>Agents</a>
-            <a href="#"><svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1.8 13.5 4v4.2c0 3.2-2.3 5.4-5.5 6-3.2-.6-5.5-2.8-5.5-6V4z"/></svg>Policies</a>
-            <a href="#"><svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>Findings</a>
-            <a href="#"><svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3.5 2h6L12.5 5v9h-9z"/><path d="M5.5 8.5h5M5.5 11h3"/></svg>Evidence</a>
-          </aside>
-
-          <div class="console-main">
-            <div class="tiles">
-              <div class="tile" style="--i:0">
-                <div class="k">Systems in scope</div><div class="v" data-count="412">0</div>
-                <div class="d">+18 this week</div>
-                <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 22 14 20 28 17 42 15 56 11 70 10 84 6 100 3" fill="none" stroke="#114086" stroke-width="1.6"/></svg>
-              </div>
-              <div class="tile" style="--i:1">
-                <div class="k">Agents monitored</div><div class="v" data-count="96">0</div>
-                <div class="d">14 with tool access</div>
-                <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 20 14 21 28 16 42 18 56 12 70 13 84 8 100 7" fill="none" stroke="#114086" stroke-width="1.6"/></svg>
-              </div>
-              <div class="tile" style="--i:2">
-                <div class="k">Policies enforced</div><div class="v" data-count="38">0</div>
-                <div class="d">6 pending approval</div>
-                <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 18 14 18 28 14 42 14 56 10 70 10 84 7 100 7" fill="none" stroke="#114086" stroke-width="1.6"/></svg>
-              </div>
-              <div class="tile" style="--i:3">
-                <div class="k">Blocked · 24h</div><div class="v" data-count="1204">0</div>
-                <div class="d warn">Injections up 9%</div>
-                <svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 16 14 19 28 9 42 20 56 7 70 17 84 5 100 11" fill="none" stroke="#b5651d" stroke-width="1.6"/></svg>
-              </div>
+        <div class="dash-head">
+          <span class="dash-badge" id="dashBadge"></span>
+          <h3 id="dashTitle"></h3>
+          <p class="dash-sub" id="dashSub"></p>
+        </div>
+        <div class="dash-body">
+          <aside class="dash-side" id="dashSide"></aside>
+          <div class="dash-main">
+            <div class="dash-stats" id="dashStats"></div>
+            <div class="dash-grid">
+              <div class="dash-finding" id="dashFinding"></div>
+              <div class="dash-cover" id="dashCover"></div>
             </div>
-            <div class="feed">
-              <div class="feed-head">
-                <span class="label">Decision feed</span>
-                <span class="label" style="letter-spacing:.1em">Append-only</span>
-              </div>
-              <div class="feed-list" id="feedList"></div>
-            </div>
+            <div class="dash-query" id="dashQuery"></div>
           </div>
         </div>
       </div>
@@ -157,10 +148,6 @@
 
 <!-- ══════════ standards marquee ══════════ -->
 <section class="strip">
-  <div class="proof" id="proof">
-    <p class="label" data-i18n="proof.label">Trusted by security teams at</p>
-    <div class="proof-row" id="proofRow"></div>
-  </div>
   <p class="label" data-i18n="standards.label">Mapped to the standards your board reads</p>
   <div class="marquee" id="marquee" aria-hidden="true"></div>
 </section>
@@ -170,99 +157,46 @@
   <section class="band" id="platform">
     <div class="head">
       <span class="eyebrow r-fade"><i></i><span data-i18n="eyebrow.platform">The platform</span></span>
-      <h2 style="margin-top:16px" data-split data-i18n="platform.title">One record of truth for every AI system you run.</h2>
-      <p class="lede r" data-i18n="platform.lede">Discovery, enforcement and evidence on a single timeline.</p>
+      <h2 style="margin-top:16px" data-split data-i18n="platform.title">One record of truth.</h2>
+      <p class="lede r" data-i18n="platform.lede">Discovery, enforcement and evidence on one timeline.</p>
     </div>
 
-    <div class="recs">
-      <article class="rec rec-tall r" style="--i:0">
-        <span class="rec-mesh" aria-hidden="true"></span>
-        <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
-        <div class="rec-tag"><span class="lv"></span>REC-01 <b>· Discovery &amp; red team</b></div>
-        <div class="rec-art">
-          <div class="radar" aria-hidden="true">
-            <div class="sweep"></div>
-            <div class="r0"></div><div class="r0 r1"></div><div class="r0 r2"></div>
-            <div class="blip" style="left:32%;top:28%;animation-delay:.4s"></div>
-            <div class="blip" style="left:70%;top:40%;animation-delay:.6s"></div>
-            <div class="blip" style="left:56%;top:74%;animation-delay:.8s"></div>
-            <div class="blip" style="left:24%;top:62%;animation-delay:1s"></div>
-            <div class="blip unk" style="left:80%;top:70%;animation-delay:1.2s"></div>
-            <div class="blip unk" style="left:18%;top:44%;animation-delay:1.4s"></div>
-            <div class="core">SCANNING</div>
-            <span class="probe" style="--ang:33.9deg;--len:81px;animation-delay:0s"></span>
-            <span class="probe" style="--ang:190.6deg;--len:74px;animation-delay:1.5s"></span>
-            <span class="probe" style="--ang:-26.5deg;--len:51px;animation-delay:3s"></span>
-            <span class="hit" style="left:80%;top:70%;animation-delay:0s"></span>
-            <span class="hit" style="left:18%;top:44%;animation-delay:1.5s"></span>
-            <span class="hit" style="left:70%;top:40%;animation-delay:3s"></span>
-          </div>
-          <span class="rt-badge"><i></i>Red team</span>
-        </div>
-        <div>
-          <h3 data-i18n="rec.discovery.title">Find the AI nobody registered.</h3>
-          <p data-i18n="rec.discovery.desc">Models, agents, MCP servers and keys — mapped, owned and risk-tiered, then probed the way an attacker would.</p>
-          <div class="rt-note">
-            <span class="k"><i></i>What the red team does</span>
-            <p>Finding a system is only half of it. Every model and agent we discover is then attacked
-               the way an outsider would — prompt injection, jailbreaks, tool-chain abuse and attempts to
-               pull data out — and each finding is scored against OWASP LLM Top 10, handed to the owning
-               team, and retested once it is fixed.</p>
-          </div>
-          <div class="rt-stats">
-            <div class="rt-stat"><div class="k">Probes fired</div><div class="v">2,318</div></div>
-            <div class="rt-stat"><div class="k">Findings</div><div class="v warn">14</div></div>
-            <div class="rt-stat"><div class="k">Retest</div><div class="v">Auto</div></div>
+    <div class="plat">
+      <div class="pcol r" style="--i:0">
+        <div class="pcard">
+          <span class="pchip"><i></i>Scan</span>
+          <div class="pscan">
+            <div class="pscan-row"><span class="pn" data-v="412">0</span><span class="pl">agents found</span></div>
+            <div class="pscan-row"><span class="pn sig" data-v="3">0</span><span class="pl">unmanaged</span></div>
+            <div class="pscan-row"><span class="pn" data-v="97" data-suf="%">0%</span><span class="pl">governed</span></div>
           </div>
         </div>
-      </article>
+        <h3>Expose the AI nobody approved</h3>
+        <p>Every model, agent, MCP server and key running in your estate, with an owner and a risk tier.</p>
+      </div>
 
-      <div class="rec-col">
-        <article class="rec r" style="--i:1">
-          <span class="rec-mesh" aria-hidden="true"></span>
-          <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
-          <div class="rec-tag"><span class="lv"></span>REC-02 <b>· Runtime</b></div>
-          <div class="rec-art rec-art-sm">
-            <svg class="gate" viewBox="0 0 300 136" aria-hidden="true">
-              <path class="lane" d="M14 34h272M14 68h272M14 102h272"/>
-              <path class="wall" d="M148 16v104"/>
-              <rect class="pk g1" x="20" y="29" width="13" height="10" rx="2"/>
-              <rect class="pk g2" x="20" y="63" width="13" height="10" rx="2"/>
-              <rect class="pk-b g3" x="20" y="97" width="13" height="10" rx="2"/>
-              <circle cx="148" cy="102" r="13" fill="none" stroke="#b5651d" stroke-width="1.6"/>
-              <path d="M143 97l10 10M153 97l-10 10" stroke="#b5651d" stroke-width="1.8" stroke-linecap="round"/>
-              <text x="148" y="132" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#4884bc" letter-spacing="1.4">POLICY</text>
-            </svg>
-          </div>
-          <h3 data-i18n="rec.runtime.title">Stop unsafe calls while they run.</h3>
-          <p data-i18n="rec.runtime.desc">Allow, redact, escalate or block — before the model ever sees it.</p>
-        </article>
+      <div class="pcol r" style="--i:1">
+        <div class="pcard">
+          <span class="pchip"><i></i>Runtime policy</span>
+          <p class="ppolicy"><span class="pw">Allow</span> <span class="ptok" style="--d:0">customer records</span> <span class="pw">only when</span> <span class="ptok hot" style="--d:1">checks pass</span> <span class="pw">and</span> <span class="ptok" style="--d:2">egress is internal</span><span class="pw">.</span></p>
+          <div class="peval"><span class="peval-dot"></span>Policy enforced</div>
+        </div>
+        <h3>Enforce before the call fires</h3>
+        <p>Allow, redact, escalate or block at the execution layer, not after the fact.</p>
+      </div>
 
-        <article class="rec r" style="--i:2">
-          <span class="rec-mesh" aria-hidden="true"></span>
-          <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
-          <div class="rec-tag"><span class="lv"></span>REC-03 <b>· Evidence</b></div>
-          <div class="rec-art rec-art-sm">
-            <div class="ledger" aria-hidden="true">
-              <div class="row" style="--i:0"><span class="h">A-1042</span><span class="bar"><i style="--w:100%"></i></span><span class="ok">SEALED</span></div>
-              <div class="row" style="--i:1"><span class="h">A-1043</span><span class="bar"><i style="--w:100%"></i></span><span class="ok">SEALED</span></div>
-              <div class="row" style="--i:2"><span class="h">A-1044</span><span class="bar"><i style="--w:62%"></i></span><span class="ok">WRITING</span></div>
-            </div>
-            <span class="spark-burst" aria-hidden="true">
-              <i style="--dx:-22px;--dy:-18px"></i><i style="--dx:16px;--dy:-24px"></i>
-              <i style="--dx:26px;--dy:6px"></i><i style="--dx:-14px;--dy:14px"></i>
-              <i style="--dx:6px;--dy:22px"></i><i style="--dx:-28px;--dy:-2px"></i>
-            </span>
-            <svg class="seal-stamp" viewBox="0 0 56 56" aria-hidden="true">
-              <circle cx="28" cy="28" r="25"/>
-              <circle class="rim" cx="28" cy="28" r="20"/>
-              <path d="M28 20 34 28 28 36 22 28Z"/>
-              <text x="28" y="49" text-anchor="middle">SEALED</text>
-            </svg>
+      <div class="pcol r" style="--i:2">
+        <div class="pcard">
+          <span class="pchip"><i></i>Audit trail</span>
+          <div class="psearch">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14" stroke-linecap="round"/></svg>
+            <span class="pq">ISO 42001 A.4.2</span><span class="pcaret"></span>
           </div>
-          <h3 data-i18n="rec.evidence.title">Evidence an auditor can read alone.</h3>
-          <p data-i18n="rec.evidence.desc">Append-only log, packaged against the control it satisfies.</p>
-        </article>
+          <div class="prow" style="--d:0"><span class="prow-ic"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-6.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="prow-id">A-1044</span><span class="prow-tag">Sealed</span></div>
+          <div class="prow" style="--d:1"><span class="prow-ic"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3.5 5.5 7 9l3.5-3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="prow-id">A-1043</span><span class="prow-tag">Sealed</span></div>
+        </div>
+        <h3>Evidence you can hand over</h3>
+        <p>Continuous documentation mapped to the EU AI Act, ISO/IEC 42001, NIST AI RMF and SOC 2.</p>
       </div>
     </div>
   </section>
@@ -274,7 +208,6 @@
         <span class="eyebrow r-fade"><i></i><span data-i18n="eyebrow.whatwedo">What we do</span></span>
         <h2 style="margin-top:16px" data-split data-i18n="lifecycle.title">Cover the whole life of a model.</h2>
       </div>
-      <p class="lede r" data-i18n="lifecycle.lede">Four stages, one engagement — each handing the next its evidence.</p>
     </div>
 
     <div class="journey" id="journey" aria-hidden="true">
@@ -290,7 +223,6 @@
           <ul>
             <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.assess.b1">Risk tiering for models and agents</span></li>
             <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.assess.b2">Bias, robustness and privacy tests</span></li>
-            <li style="--j:2"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.assess.b3">Treatment plan with named owners</span></li>
           </ul>
           <a class="more" href="#"><span data-i18n="dossier.assess.cta">See the method</span> <span class="arw">→</span></a>
         </div>
@@ -304,7 +236,6 @@
           <ul>
             <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.govern.b1">Policy set aligned to ISO/IEC 42001</span></li>
             <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.govern.b2">Approvals with evidence attached</span></li>
-            <li style="--j:2"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.govern.b3">A register that stays current</span></li>
           </ul>
           <a class="more" href="#"><span data-i18n="dossier.govern.cta">See the framework</span> <span class="arw">→</span></a>
         </div>
@@ -318,7 +249,6 @@
           <ul>
             <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.test.b1">Jailbreak sets mapped to OWASP LLM Top 10</span></li>
             <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.test.b2">Tool-chain and agent abuse cases</span></li>
-            <li style="--j:2"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.test.b3">Retest on every material change</span></li>
           </ul>
           <a class="more" href="#"><span data-i18n="dossier.test.cta">See the test set</span> <span class="arw">→</span></a>
         </div>
@@ -332,7 +262,6 @@
           <ul>
             <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.monitor.b1">Drift, refusal and grounding failures</span></li>
             <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.monitor.b2">Policy hits and overrides</span></li>
-            <li style="--j:2"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.monitor.b3">Alerts routed into your SOC</span></li>
           </ul>
           <a class="more" href="#"><span data-i18n="dossier.monitor.cta">See the signals</span> <span class="arw">→</span></a>
         </div>
@@ -347,7 +276,6 @@
     <div class="stack-intro">
       <span class="eyebrow r-fade"><i></i><span data-i18n="eyebrow.architecture">Architecture</span></span>
       <h2 style="margin-top:16px" data-split data-i18n="stack.title">Assurance runs the full depth of the stack.</h2>
-      <p class="lede r" data-i18n="stack.lede">A guardrail at one layer is easy to walk around. Tahara instruments five — then reads them as one.</p>
     </div>
   </div>
 
@@ -447,11 +375,7 @@
     </div>
 
     <div class="connect2-hub">
-      <div class="hub-mark" aria-hidden="true">
-        <span class="dia"></span><b>Tahara AI</b><i data-i18n="mark.assurance">Assurance</i>
-      </div>
       <h2 data-split data-i18n="connect.title">Sits next to the stack you already run.</h2>
-      <p class="sub" data-i18n="connect.sub">Model providers, vector stores, agent frameworks, identity and SIEM — via your gateway or a sidecar.</p>
       <button class="btn btn-solid" data-mag><span data-i18n="cta.browse">Browse connectors</span> <span class="arw" aria-hidden="true">→</span></button>
     </div>
   </section>
