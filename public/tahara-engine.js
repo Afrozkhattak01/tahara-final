@@ -2585,3 +2585,35 @@ window.TaharaI18N = (function(){
   }
 })();
 
+/* ── narrow-screen header ────────────────────────────────────
+   On a phone the header can't hold the brand, the language switch, Sign in,
+   the demo button AND the burger — everything wraps and the brand breaks onto
+   two lines. Below 700px the switch and Sign in move into the drawer, leaving
+   the demo button as the only call to action in the bar.
+
+   The nodes are MOVED, not cloned: their listeners were bound directly at boot
+   (langSwitch by id, Sign in via [data-signin]) and survive relocation, where a
+   clone would arrive inert and a duplicate id would break getElementById.
+   ────────────────────────────────────────────────────────── */
+(function(){
+  const nav    = document.querySelector('nav');
+  const links  = document.getElementById('navLinks');
+  const right  = nav && nav.querySelector('.nav-right');
+  const lang   = document.getElementById('langSwitch');
+  const signin = document.getElementById('signinBtn');
+  const demo   = right && right.querySelector('.btn');
+  if (!links || !right || !lang || !signin || !demo) return;
+
+  const mq = window.matchMedia('(max-width:700px)');
+  function place(){
+    if (mq.matches){
+      if (signin.parentElement !== links){ links.appendChild(signin); links.appendChild(lang); }
+    } else if (signin.parentElement !== right){
+      right.insertBefore(signin, demo);      /* restore original order: */
+      right.insertBefore(lang, signin);      /* lang · signin · demo · burger */
+    }
+  }
+  place();
+  mq.addEventListener ? mq.addEventListener('change', place) : mq.addListener(place);
+})();
+

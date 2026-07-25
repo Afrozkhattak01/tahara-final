@@ -17,7 +17,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#eaf1e9'
+  // Light-only design — emits <meta name="color-scheme" content="light">, which
+  // stops mobile browsers with forced dark mode from repainting the page.
+  colorScheme: 'light',
+  themeColor: '#eaf0f9'
 };
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {

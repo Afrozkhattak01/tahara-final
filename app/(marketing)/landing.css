@@ -48,7 +48,10 @@
 
 /* ── reset ── */
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+/* This is a light-only design. Without this, mobile browsers with a forced
+   dark mode (Samsung Internet, Chrome's force-dark) repaint every colour
+   themselves and the page arrives inverted. "only light" opts out of that. */
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;color-scheme:only light}
 body{
   font-family:'Inter',system-ui,-apple-system,sans-serif;
   color:var(--ink);
@@ -1343,6 +1346,10 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
     transform:none;pointer-events:auto;transition:none}
   .res-menu::before{display:none}
   .res-menu a.mega-item{padding:9px 0}
+  /* the language switch is a <button>, so the .nav-links.open a rule above
+     doesn't reach it — give it its own spacing inside the drawer */
+  .nav-links.open .lang-switch{align-self:flex-start;margin-top:14px}
+  .nav-links.open #signinBtn{font-weight:500}
   .mega{padding:8px 12px 0}
   .mega-card{max-height:calc(100vh - 84px);-webkit-overflow-scrolling:touch;padding:26px 20px 30px}
   .mega-inner{grid-template-columns:1fr;gap:22px}
@@ -1364,6 +1371,13 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
   .proof-row{gap:12px 20px}
   .proof-slot{width:104px;height:36px}
   .drawer{width:100%}
+}
+/* phone header — the switch and Sign in have moved into the drawer by now
+   (see the relocator in tahara-engine.js); keep what's left on one line */
+@media(max-width:700px){
+  nav{gap:12px;padding:12px var(--gutter)}
+  .brand{white-space:nowrap;font-size:17px}
+  .nav-right .btn{padding:9px 14px;font-size:13.5px;white-space:nowrap}
 }
 @media(max-width:560px){
   .frames{grid-template-columns:repeat(2,1fr)}
