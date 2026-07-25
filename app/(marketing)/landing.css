@@ -440,9 +440,19 @@ h4{font-family:'Inter Tight',sans-serif;font-weight:600;letter-spacing:-.015em;f
 .pn.sig{color:var(--signal)}
 .pl{font-size:14.5px;color:var(--ink-2)}
 /* runtime policy */
-.ppolicy{margin-top:18px;font-size:15px;line-height:2.05;color:var(--ink-2)}
-.ptok{display:inline-block;background:#fff;border:1px solid var(--line-2);border-radius:7px;padding:2px 9px;
+/* text-wrap:balance evens the two lines out, so a connector like "and" is
+   never left stranded on its own at a break */
+.ppolicy{margin-top:18px;font-size:15px;line-height:1.95;color:var(--ink-2);text-wrap:balance}
+/* nowrap keeps a boxed phrase whole: without it "customer records" can split
+   across two lines and the token renders as two broken half-boxes */
+.ptok{display:inline-block;white-space:nowrap;background:#fff;border:1px solid var(--line-2);
+  border-radius:7px;padding:2px 9px;
   color:var(--ink);font-weight:500;opacity:0;transform:translateY(4px)}
+/* This card carries less content than its two siblings, so the sentence sat at
+   the top with a visible void above the status line. Centre it in the space
+   between the chip and the pinned status line instead. */
+.pcard:has(.ppolicy){display:flex;flex-direction:column}
+.pcard:has(.ppolicy) .ppolicy{margin-block:auto;padding-bottom:30px}
 .ptok.hot{border-color:var(--g600);color:var(--g700)}
 .pcol.in .ptok{animation:ptokIn .45s var(--e-out) forwards;animation-delay:calc(.3s + var(--d) * .28s)}
 @keyframes ptokIn{to{opacity:1;transform:none}}
