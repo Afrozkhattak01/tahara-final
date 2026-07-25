@@ -382,14 +382,14 @@ window.TAHARA_DATA = (function(){
        'Supplier and third-party records','Change control on model versions']],
     'NIST AI RMF': ['Risk framework',
       'A voluntary framework organised around Govern, Map, Measure and Manage.',
-      ['Govern — policy set and approval workflow','Map — inventory, ownership and risk tiering',
-       'Measure — drift, refusal and adversarial results','Manage — treatment plans and retest']],
+      ['Govern: policy set and approval workflow','Map: inventory, ownership and risk tiering',
+       'Measure: drift, refusal and adversarial results','Manage: treatment plans and retest']],
     'EU AI Act': ['Regulation',
       'Obligations scale with risk tier. High-risk systems carry documentation, logging, oversight and accuracy duties.',
       ['Risk classification per system','Technical documentation assembled from the register',
        'Automatic event logging retained','Human oversight recorded at decision points']],
     'OWASP LLM Top 10': ['Application risk',
-      'The application-security view of LLM systems — the categories the red team tests against.',
+      'The application-security view of LLM systems, listing the categories the red team tests against.',
       ['Prompt injection probes, direct and indirect','Sensitive information disclosure checks',
        'Excessive agency and tool-abuse cases','Findings scored and retested after fix']],
     'MITRE ATLAS': ['Adversary tactics',
@@ -425,7 +425,7 @@ window.TAHARA_DATA = (function(){
      'and a record that stays open until it’s resolved.'],
     ['No. Tahara AI can raise a flag on its own.',
      'Only a stakeholder can confirm it’s resolved.'],
-    ['Tahara AI is built around a single Master Framework — a continuously updated map',
+    ['Tahara AI is built around a single Master Framework, a continuously updated map',
      'of global and regional AI and LLM regulations, including the EU AI Act, ISO/IEC 42001,',
      'ISO/IEC 23894, and NIST AI RMF, kept current as new frameworks emerge worldwide.',
      'One profile, checked against all of them at once.'],
@@ -435,7 +435,7 @@ window.TAHARA_DATA = (function(){
     ['No, it closes the gap between them.',
      'Tahara AI runs continuously, so what’s true about a system today is caught today,',
      'instead of surfacing months later at the next scheduled review.'],
-    ['Only what’s necessary to check configuration and access records — never production data,',
+    ['Only what’s necessary to check configuration and access records. Never production data,',
      'never customer content, never write access.',
      'Read-only, scoped, and revocable at any time.'],
     ['A named stakeholder on your team.',
@@ -855,7 +855,7 @@ window.TaharaUI = (function(){
       box.classList.add('done');
       const span = box.querySelector('span');
       span.setAttribute('data-i18n', 'faq.thanks');
-      span.textContent = window.TaharaI18N && window.TaharaI18N.current === 'ar' ? 'شكرًا — تم التسجيل.' : 'Thanks — noted.';
+      span.textContent = window.TaharaI18N && window.TaharaI18N.current === 'ar' ? 'شكرًا، تم التسجيل.' : 'Thanks, noted.';
       /* wire this to your endpoint when the form backend exists */
     });
   }
@@ -1265,7 +1265,7 @@ window.TaharaDrawer = (function(){
       if (!activeDetail[name]){ seal.classList.add('seal-inert'); return; }
       seal.setAttribute('role', 'button');
       seal.tabIndex = 0;
-      seal.setAttribute('aria-label', name + ' — open mapping detail');
+      seal.setAttribute('aria-label', name + ', open mapping detail');
       seal.addEventListener('click', () => open(name, seal));
       seal.addEventListener('keydown', e => {
         if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(name, seal); }
@@ -1373,8 +1373,8 @@ window.TaharaI18N = (function(){
 
     'stmt.title': { en:'The compliance, security, and privacy engine your AI <em>needs.</em>',
                     ar:'محرك الامتثال والأمن والخصوصية الذي <em>يحتاجه</em> ذكاؤك الاصطناعي.' },
-    'stmt.desc':  { en:"Tahara AI finds what laws apply, tests what could go wrong, and stops what shouldn't leak — all from one platform, checked continuously.",
-                    ar:'يكتشف Tahara AI القوانين المنطبقة، ويختبر ما قد يسوء، ويمنع ما لا ينبغي تسريبه — من منصة واحدة، بفحص مستمر.' },
+    'stmt.desc':  { en:"Tahara AI finds what laws apply, tests what could go wrong, and stops what shouldn't leak. All from one platform, checked continuously.",
+                    ar:'يكتشف Tahara AI القوانين المنطبقة، ويختبر ما قد يسوء، ويمنع ما لا ينبغي تسريبه. كل ذلك من منصة واحدة، بفحص مستمر.' },
 
     'platform.title': { en:'One record of truth.',
                         ar:'سجل حقيقة واحد.' },
@@ -1382,24 +1382,24 @@ window.TaharaI18N = (function(){
                         ar:'الاكتشاف والإنفاذ والأدلة على جدول زمني واحد.' },
 
     'rec.discovery.title': { en:'Find the AI nobody registered.', ar:'اعثر على الذكاء الاصطناعي الذي لم يسجّله أحد.' },
-    'rec.discovery.desc':  { en:'Models, agents, MCP servers and keys — mapped, owned and risk-tiered, then probed the way an attacker would.',
-                             ar:'النماذج والوكلاء وخوادم MCP والمفاتيح — مُخطَّطة ومملوكة ومصنّفة حسب المخاطر، ثم مختبَرة بالطريقة التي يتّبعها مهاجم.' },
+    'rec.discovery.desc':  { en:'Every model, agent, MCP server and key is mapped, owned and risk-tiered, then probed the way an attacker would.',
+                             ar:'كل نموذج ووكيل وخادم MCP ومفتاح مُخطَّط ومملوك ومصنَّف حسب المخاطر، ثم مختبَر بالطريقة التي يتّبعها مهاجم.' },
     'rec.runtime.title':   { en:'Stop unsafe calls while they run.', ar:'أوقف الاستدعاءات غير الآمنة أثناء تشغيلها.' },
-    'rec.runtime.desc':    { en:'Allow, redact, escalate or block — before the model ever sees it.',
-                             ar:'السماح أو التنقيح أو التصعيد أو الحظر — قبل أن يصل الأمر إلى النموذج أصلًا.' },
+    'rec.runtime.desc':    { en:'Allow, redact, escalate or block before the model ever sees it.',
+                             ar:'السماح أو التنقيح أو التصعيد أو الحظر قبل أن يصل الأمر إلى النموذج أصلًا.' },
     'rec.evidence.title':  { en:'Evidence an auditor can read alone.', ar:'أدلة يمكن للمدقق قراءتها بمفرده.' },
     'rec.evidence.desc':   { en:'Append-only log, packaged against the control it satisfies.',
                              ar:'سجلّ إلحاقي فقط، مُجهَّز مقابل الضابط الذي يستوفيه.' },
 
     'lifecycle.title': { en:'Cover the whole life of a model.', ar:'تغطية دورة حياة النموذج بأكملها.' },
-    'lifecycle.lede':  { en:'Four stages, one engagement — each handing the next its evidence.',
-                         ar:'أربع مراحل، تكليف واحد — كل مرحلة تسلّم التالية أدلتها.' },
+    'lifecycle.lede':  { en:'Four stages, one engagement, each handing the next its evidence.',
+                         ar:'أربع مراحل، تكليف واحد، وكل مرحلة تسلّم التالية أدلتها.' },
 
     'dossier.assess.title':  { en:'Risk assessment and treatment', ar:'تقييم المخاطر ومعالجتها' },
     'dossier.assess.b1': { en:'Tiering aligned to the EU AI Act, mapped straight to risk category',
                            ar:'تصنيف متوافق مع EU AI Act، مرتبط مباشرة بفئة المخاطر' },
-    'dossier.assess.b2': { en:"Extends to regional frameworks on request — SDAIA, UAE, and others as they're added",
-                           ar:'يمتدّ إلى الأطر الإقليمية عند الطلب — سدايا والإمارات وغيرها كلما أُضيفت' },
+    'dossier.assess.b2': { en:"Extends to regional frameworks on request, including SDAIA, UAE, and others as they're added",
+                           ar:'يمتدّ إلى الأطر الإقليمية عند الطلب، منها سدايا والإمارات وغيرها كلما أُضيفت' },
     'dossier.assess.b3': { en:'Treatment plan with named owners', ar:'خطة معالجة بمالكين محدَّدين' },
     'dossier.assess.cta':{ en:'See the method', ar:'اطّلع على المنهجية' },
 
@@ -1427,8 +1427,8 @@ window.TaharaI18N = (function(){
     'dossier.monitor.cta':{ en:'See the signals', ar:'اطّلع على المؤشرات' },
 
     'stack.title': { en:'Assurance runs the full depth of the stack.', ar:'يعمل الضمان عبر العمق الكامل للمنظومة.' },
-    'stack.lede':  { en:'A guardrail at one layer is easy to walk around. Tahara instruments five — then reads them as one.',
-                     ar:'يسهل الالتفاف حول حاجز حماية في طبقة واحدة. تُجهّز Tahara خمس طبقات — ثم تقرأها ككيان واحد.' },
+    'stack.lede':  { en:'A guardrail at one layer is easy to walk around. Tahara instruments five, then reads them as one.',
+                     ar:'يسهل الالتفاف حول حاجز حماية في طبقة واحدة. تُجهّز Tahara خمس طبقات، ثم تقرأها ككيان واحد.' },
     'stack.assembling': { en:'Assembling 05 layers', ar:'تجميع 05 طبقات' },
     'stack.item5.title': { en:'Governance and assurance', ar:'الحوكمة والضمان' },
     'stack.item5.desc':  { en:'Policy, approvals, risk register, evidence pack.', ar:'السياسات والموافقات وسجل المخاطر وحزمة الأدلة.' },
@@ -1454,8 +1454,8 @@ window.TaharaI18N = (function(){
                               ar:'غيّر النموذج، واحتفظ بحاجز الحماية والسجلّ الذي يثبت ذلك.' },
 
     'connect.title': { en:'Sits next to the stack you already run.', ar:'يعمل إلى جانب المنظومة التي تشغّلها بالفعل.' },
-    'connect.sub':   { en:'Model providers, vector stores, agent frameworks, identity and SIEM — via your gateway or a sidecar.',
-                       ar:'مزوّدو النماذج، مخازن المتجهات، أُطر الوكلاء، الهوية وأنظمة SIEM — عبر بوابتكم أو خدمة مرافقة.' },
+    'connect.sub':   { en:'Model providers, vector stores, agent frameworks, identity and SIEM, all via your gateway or a sidecar.',
+                       ar:'مزوّدو النماذج، مخازن المتجهات، أُطر الوكلاء، الهوية وأنظمة SIEM، عبر بوابتكم أو خدمة مرافقة.' },
 
     'frameworks.title': { en:'Aligned to the frameworks your regulator reads.', ar:'متوافق مع الأطر التي تعتمدها جهتكم التنظيمية.' },
     'frameworks.lede':  { en:'Every control ships with its mapping.', ar:'كل ضابط يأتي مصحوبًا بربطه المرجعي.' },
@@ -1484,14 +1484,14 @@ window.TaharaI18N = (function(){
     'faq.q5':  { en:'What happens when a policy is broken?', ar:'ماذا يحدث عند خرق سياسة؟' },
     'faq.q6':  { en:'Can a machine close a finding?', ar:'هل يمكن لآلة أن تُغلق نتيجة؟' },
     'faq.q7':  { en:'Which frameworks are covered?', ar:'ما الأطر المشمولة؟' },
-    'faq.q8':  { en:'What does Tahara AI actually check — documentation, or the real system?', ar:'ما الذي يفحصه Tahara AI فعليًا — التوثيق أم النظام الفعلي؟' },
+    'faq.q8':  { en:'What does Tahara AI actually check, documentation or the real system?', ar:'ما الذي يفحصه Tahara AI فعليًا، التوثيق أم النظام الفعلي؟' },
     'faq.q9':  { en:'Does this replace an annual audit?', ar:'هل يحلّ هذا محلّ التدقيق السنوي؟' },
     'faq.q10': { en:'What does Tahara AI need access to?', ar:'ما الصلاحيات التي يحتاجها Tahara AI؟' },
     'faq.q11': { en:'Who has to confirm a finding is real?', ar:'من الذي يؤكّد أن النتيجة حقيقية؟' },
     'faq.q12': { en:'Who uses Tahara AI day to day?', ar:'من يستخدم Tahara AI يوميًا؟' },
     'faq.mostasked': { en:'Most asked', ar:'الأكثر شيوعًا' },
     'faq.helpful':   { en:'Was this helpful?', ar:'هل كانت هذه الإجابة مفيدة؟' },
-    'faq.thanks':    { en:'Thanks — noted.', ar:'شكرًا — تم التسجيل.' },
+    'faq.thanks':    { en:'Thanks, noted.', ar:'شكرًا، تم التسجيل.' },
 
     'mega.demo.k':     { en:'Guided demo', ar:'عرض توضيحي موجَّه' },
     'mega.demo.title': { en:'See Tahara in action', ar:'شاهد Tahara في العمل' },
@@ -1517,7 +1517,7 @@ window.TaharaI18N = (function(){
     'acct.name':   { en:'Full name', ar:'الاسم الكامل' },
     'acct.org':    { en:'Organisation', ar:'المؤسسة' },
     'acct.email':  { en:'Work email', ar:'بريد العمل الإلكتروني' },
-    'acct.hint1':  { en:'Use your work address — we verify the domain', ar:'استخدم عنوان عملك — نتحقّق من النطاق' },
+    'acct.hint1':  { en:'Use your work address. We verify the domain', ar:'استخدم عنوان عملك. نتحقّق من النطاق' },
     'acct.pw':     { en:'Password', ar:'كلمة المرور' },
     'acct.hint2':  { en:'10 characters, a number and a symbol', ar:'10 أحرف، ورقم، ورمز' },
     'acct.agree':  { en:'I agree to the terms and the privacy notice', ar:'أوافق على الشروط وإشعار الخصوصية' },
@@ -1643,7 +1643,7 @@ window.TaharaI18N = (function(){
      'مع سجلّ يبقى مفتوحًا حتى تُعالَج.'],
     ['لا. يستطيع Tahara AI رفع العلامة بنفسه.',
      'وحده أحد المعنيين يمكنه تأكيد معالجتها.'],
-    ['بُني Tahara AI حول إطار رئيسي واحد — خريطة محدَّثة باستمرار',
+    ['بُني Tahara AI حول إطار رئيسي واحد، وهو خريطة محدَّثة باستمرار',
      'للتنظيمات العالمية والإقليمية للذكاء الاصطناعي والنماذج اللغوية الكبيرة، منها EU AI Act و ISO/IEC 42001',
      'و ISO/IEC 23894 و NIST AI RMF، تبقى محدَّثة كلما ظهرت أطر جديدة حول العالم.',
      'ملف واحد، يُفحص مقابلها جميعًا دفعة واحدة.'],
@@ -1653,7 +1653,7 @@ window.TaharaI18N = (function(){
     ['لا، بل يسدّ الفجوة بين عمليات التدقيق.',
      'يعمل Tahara AI باستمرار، فما يصحّ عن النظام اليوم يُكتشف اليوم،',
      'بدل أن يظهر بعد أشهر في المراجعة المجدولة التالية.'],
-    ['فقط ما يلزم لفحص الإعدادات وسجلات الوصول — لا بيانات إنتاج،',
+    ['فقط ما يلزم لفحص الإعدادات وسجلات الوصول. لا بيانات إنتاج،',
      'ولا محتوى عملاء، ولا صلاحية كتابة.',
      'قراءة فقط، محدَّدة النطاق، وقابلة للسحب في أي وقت.'],
     ['أحد المعنيين المسمَّين في فريقكم.',
@@ -1694,14 +1694,14 @@ window.TaharaI18N = (function(){
        'سجلّات الموردين والأطراف الثالثة','ضبط التغيير على إصدارات النماذج']],
     'NIST AI RMF': ['إطار المخاطر',
       'إطار طوعي منظَّم حول الحوكمة والتخطيط والقياس والإدارة.',
-      ['الحوكمة — مجموعة السياسات ومسار الموافقة','التخطيط — الجرد والملكية وتصنيف المخاطر',
-       'القياس — الانحراف والرفض ونتائج الاختبار العدائي','الإدارة — خطط المعالجة وإعادة الاختبار']],
+      ['الحوكمة: مجموعة السياسات ومسار الموافقة','التخطيط: الجرد والملكية وتصنيف المخاطر',
+       'القياس: الانحراف والرفض ونتائج الاختبار العدائي','الإدارة: خطط المعالجة وإعادة الاختبار']],
     'EU AI Act': ['التنظيم',
       'تتدرّج الالتزامات حسب مستوى المخاطر. تحمل الأنظمة عالية المخاطر واجبات توثيق وتسجيل ورقابة ودقة.',
       ['تصنيف المخاطر لكل نظام','التوثيق الفني المُجمَّع من السجلّ',
        'تسجيل الأحداث التلقائي المحتفَظ به','الرقابة البشرية المسجَّلة عند نقاط القرار']],
     'OWASP LLM Top 10': ['مخاطر التطبيق',
-      'المنظور الأمني التطبيقي لأنظمة النماذج اللغوية الكبيرة — الفئات التي يختبرها الفريق الأحمر.',
+      'المنظور الأمني التطبيقي لأنظمة النماذج اللغوية الكبيرة، وتضمّ الفئات التي يختبرها الفريق الأحمر.',
       ['اختبارات حقن الطلبات، المباشرة وغير المباشرة','فحوصات إفشاء المعلومات الحسّاسة',
        'حالات الصلاحية المفرطة وإساءة استخدام الأدوات','النتائج مُقيَّمة ومُعاد اختبارها بعد الإصلاح']],
     'MITRE ATLAS': ['تكتيكات الخصم',
@@ -2321,7 +2321,7 @@ window.TaharaI18N = (function(){
           {k:'Conforming', v:34, suf:'%', d:'of assessed', tone:'', spark:[18,17,16,14,13,12,11,10]},
           {k:'Major findings', v:3, d:'2 new this week', tone:'sig', spark:[8,9,11,12,13,14,16,17]} ],
         finding:{ kind:'Major non-conformity', t:'Access control does not match the documented policy',
-          d:'ISO 42001 A.4.2 — the IAM scan contradicts the policy on file. Human review pending.' },
+          d:'ISO 42001 A.4.2. The IAM scan contradicts the policy on file. Human review pending.' },
         coverT:'Conformance by framework',
         cover:[['EU AI Act','18/33',18/33,''],['ISO/IEC 42001','24/76',24/76,''],['ISO/IEC 23894','11/41',11/41,''],['NIST AI RMF','8/37',8/37,'']] },
       { badge:'Module 03 · Adversarial', title:'Attack simulation',
@@ -2367,7 +2367,7 @@ window.TaharaI18N = (function(){
         statK:['المتطلبات المُقيَّمة','المطابقة','النتائج الجوهرية'],
         statD:['من أصل 187','من المُقيَّم','2 جديدة هذا الأسبوع'],
         kind:'عدم مطابقة جوهري', t:'التحكم في الوصول لا يطابق السياسة الموثَّقة',
-        d:'ISO 42001 A.4.2 — فحص إدارة الهوية يناقض السياسة المحفوظة. المراجعة البشرية قيد الانتظار.',
+        d:'ISO 42001 A.4.2. فحص إدارة الهوية يناقض السياسة المحفوظة. المراجعة البشرية قيد الانتظار.',
         coverT:'المطابقة حسب الإطار',
         coverL:['EU AI Act','ISO/IEC 42001','ISO/IEC 23894','NIST AI RMF'] },
       { badge:'الوحدة 03 · الاختبار العدائي', title:'محاكاة الهجمات',

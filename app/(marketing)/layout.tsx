@@ -7,7 +7,7 @@ import './landing.css';
 // group, never for future /about, /pricing, /dashboard, etc.
 export const metadata: Metadata = {
   // `absolute` opts out of the root layout's "%s · Tahara AI" title template.
-  title: { absolute: 'Tahara AI — Know what your AI did, and prove it' },
+  title: { absolute: 'Tahara AI · Know what your AI did, and prove it' },
   description:
     'Discovery, live enforcement and audit-ready evidence for every model, agent and prompt your organisation runs.',
   icons: {
