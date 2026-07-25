@@ -277,7 +277,7 @@ h4{font-family:'Inter Tight',sans-serif;font-weight:600;letter-spacing:-.015em;f
   width:min(460px,calc(100vw - 32px));max-height:calc(100vh - 44px);overflow-y:auto;
   transform:translate(-50%,-46%) scale(.97);
   background:var(--paper);border:1px solid var(--line);border-radius:22px;
-  box-shadow:var(--sh-l);padding:24px 30px 22px;
+  box-shadow:var(--sh-l);padding:28px 32px 26px;scrollbar-gutter:stable;
   opacity:0;pointer-events:none;visibility:hidden;
   transition:opacity .4s var(--e-out),transform .4s var(--e-back),visibility 0s .4s}
 .acct-modal.on{opacity:1;pointer-events:auto;visibility:visible;transform:translate(-50%,-50%) scale(1);

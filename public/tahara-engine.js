@@ -2101,6 +2101,8 @@ window.TaharaI18N = (function(){
 
     document.querySelectorAll('[data-signin]').forEach(t =>
       t.addEventListener('click', e => { e.preventDefault(); lastTrigger = t; show(signin); }));
+    document.querySelectorAll('[data-signup]').forEach(t =>
+      t.addEventListener('click', e => { e.preventDefault(); lastTrigger = t; show(signup); }));
     document.querySelectorAll('[data-open-signup]').forEach(a =>
       a.addEventListener('click', e => { e.preventDefault(); show(signup); }));
     document.querySelectorAll('[data-open-signin]').forEach(a =>
