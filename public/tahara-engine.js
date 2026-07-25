@@ -1301,6 +1301,7 @@ window.TaharaI18N = (function(){
     'res.dc.t': { en:'Documentation', ar:'التوثيق' },
     'res.dc.d': { en:'API and integration guides', ar:'أدلة الواجهة البرمجية والتكامل' },
     'nav.signin':     { en:'Sign in', ar:'تسجيل الدخول' },
+    'nav.signup':     { en:'Sign up', ar:'إنشاء حساب' },
 
     'cta.demo':    { en:'Request a demo', ar:'اطلب عرضًا توضيحيًا' },
     'cta.explore': { en:'Explore platform', ar:'استكشف المنصة' },
@@ -2067,6 +2068,44 @@ window.TaharaI18N = (function(){
     closeX && closeX.addEventListener('click', () => set(false));
     scrim.addEventListener('click', () => set(false));
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && open) set(false); });
+  })();
+
+  /* ── create-account modal — opened by "Sign up", closed by X / scrim / Esc.
+     Illustrative only: the form never submits, nothing is sent. ── */
+  (function(){
+    const triggers = document.querySelectorAll('[data-signup]');
+    const modal = document.getElementById('acctModal');
+    const scrim = document.getElementById('acctScrim');
+    const closeX = document.getElementById('acctX');
+    if (!triggers.length || !modal || !scrim) return;
+    let open = false, lastTrigger = null;
+    function set(v){
+      open = v;
+      modal.classList.toggle('on', v);
+      scrim.classList.toggle('on', v);
+      modal.setAttribute('aria-hidden', String(!v));
+      scrim.setAttribute('aria-hidden', String(!v));
+      document.body.style.overflow = v ? 'hidden' : '';
+      if (v){ const f = modal.querySelector('input'); f && setTimeout(() => f.focus(), 80); }
+      else if (lastTrigger) lastTrigger.focus();
+    }
+    triggers.forEach(t => t.addEventListener('click', e => { e.preventDefault(); lastTrigger = t; set(true); }));
+    closeX && closeX.addEventListener('click', () => set(false));
+    scrim.addEventListener('click', () => set(false));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && open) set(false); });
+    const form = document.getElementById('acctForm');
+    form && form.addEventListener('submit', e => e.preventDefault());
+    /* password strength meter — visual only */
+    const pw = modal.querySelector('.acct-pw'), meter = document.getElementById('acctMeter');
+    if (pw && meter){
+      pw.addEventListener('input', () => {
+        let s = 0;
+        if (pw.value.length >= 10) s++;
+        if (/\d/.test(pw.value)) s++;
+        if (/[^A-Za-z0-9]/.test(pw.value)) s++;
+        meter.style.width = (s / 3 * 100) + '%';
+      });
+    }
   })();
 
   /* ── assurance dashboard — 4 modules, tab-switched, animated on view / click ── */

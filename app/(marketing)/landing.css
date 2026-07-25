@@ -268,6 +268,55 @@ h4{font-family:'Inter Tight',sans-serif;font-weight:600;letter-spacing:-.015em;f
   .surface-run{width:100%;justify-content:center}
 }
 
+/* ── create-account modal (opened from "Sign up") ── */
+.acct-scrim{position:fixed;inset:0;z-index:130;background:rgba(3,24,56,.42);
+  backdrop-filter:blur(6px);opacity:0;pointer-events:none;visibility:hidden;
+  transition:opacity .35s var(--e-out),visibility 0s .35s}
+.acct-scrim.on{opacity:1;pointer-events:auto;visibility:visible;transition:opacity .35s var(--e-out)}
+.acct-modal{position:fixed;z-index:131;left:50%;top:50%;
+  width:min(460px,calc(100vw - 32px));max-height:calc(100vh - 44px);overflow-y:auto;
+  transform:translate(-50%,-46%) scale(.97);
+  background:var(--paper);border:1px solid var(--line);border-radius:22px;
+  box-shadow:var(--sh-l);padding:24px 30px 22px;
+  opacity:0;pointer-events:none;visibility:hidden;
+  transition:opacity .4s var(--e-out),transform .4s var(--e-back),visibility 0s .4s}
+.acct-modal.on{opacity:1;pointer-events:auto;visibility:visible;transform:translate(-50%,-50%) scale(1);
+  transition:opacity .4s var(--e-out),transform .5s var(--e-back)}
+.acct-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.acct-brand{display:inline-flex;align-items:center;gap:9px;font-family:'Inter Tight',sans-serif;font-weight:700;font-size:16px;color:var(--ink)}
+.acct-dia{width:22px;height:22px;border-radius:7px;background:var(--bg-2);border:1px solid var(--line);position:relative;flex:none}
+.acct-dia::after{content:'';position:absolute;left:50%;top:50%;width:8px;height:8px;background:var(--g600);transform:translate(-50%,-50%) rotate(45deg);border-radius:1px}
+.acct-x{width:32px;height:32px;display:grid;place-items:center;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--ink-3);cursor:pointer;transition:color .2s,border-color .2s}
+.acct-x svg{width:12px;height:12px}
+.acct-x:hover{color:var(--ink);border-color:var(--g400)}
+.acct-kicker{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.acct-modal h3{font-family:'Plus Jakarta Sans','Inter Tight',sans-serif;font-weight:800;font-size:23px;letter-spacing:-.02em;color:var(--ink);margin:8px 0}
+.acct-desc{font-size:14.5px;line-height:1.55;color:var(--ink-2);margin-bottom:18px}
+.acct-checks{display:grid;gap:11px;margin-bottom:22px}
+.acct-checks li{display:grid;grid-template-columns:18px 1fr;gap:11px;align-items:center;font-size:14px;color:var(--ink)}
+.acct-tick{width:18px;height:18px}
+.acct-tick circle{fill:none;stroke:var(--g400);stroke-width:1.4}
+.acct-tick path{fill:none;stroke:var(--g600);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.acct-form{display:grid}
+.acct-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.acct-field{display:grid;gap:7px;margin-bottom:8px}
+.acct-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.acct-field input{border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;font-size:14.5px;color:var(--ink);background:#fff;transition:border-color .2s,box-shadow .2s}
+.acct-field input::placeholder{color:var(--ink-3)}
+.acct-field input:focus{outline:none;border-color:var(--g600);box-shadow:0 0 0 4px rgba(17,64,134,.1)}
+.acct-hint{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin:-3px 0 10px}
+.acct-meter{height:4px;border-radius:3px;background:var(--bg-2);overflow:hidden;margin:2px 0 4px}
+.acct-meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--signal),var(--g600));border-radius:3px;transition:width .3s var(--e-out)}
+.acct-agree{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-2);margin:8px 0 8px;cursor:pointer}
+.acct-agree input{width:17px;height:17px;accent-color:var(--g700);flex:none}
+.acct-submit{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border-radius:13px;padding:14px;
+  background:var(--g900);color:#fff;font-family:'Inter Tight',sans-serif;font-weight:600;font-size:15px;cursor:pointer;transition:background .25s}
+.acct-submit:hover{background:var(--g800)}
+.acct-alt{text-align:center;font-size:14px;color:var(--ink-2);margin-top:16px}
+.acct-alt a{color:var(--g700);font-weight:600;border-bottom:1px solid var(--g700)}
+.acct-note{display:block;text-align:center;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+@media(max-width:600px){ .acct-grid{grid-template-columns:1fr} .acct-modal{padding:22px 20px} }
+
 /* ── assurance dashboard (4-module tabbed console) ── */
 .dash{max-width:1160px;padding:0;overflow:hidden}
 .dash-tabs{display:flex;justify-content:center;gap:6px;padding:12px 14px 10px;
