@@ -5,3 +5,13 @@ out
 
 .vercel
 .env*
+
+# build artefacts
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
