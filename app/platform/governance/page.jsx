@@ -43,11 +43,7 @@ export default function GovernancePage() {
             <a href="/#faq">FAQ</a>
           </nav>
           <div className="gv-head-right">
-<<<<<<< HEAD
             <a className="gv-btn gv-btn-solid" data-cal-link="tahara-ai-xpf7u0/product-demo">Request a demo</a>
-=======
-            <a className="gv-btn gv-btn-solid" href="/platform/governance/master">Request a demo</a>
->>>>>>> origin/main
           </div>
         </div>
       </header>
@@ -63,11 +59,7 @@ export default function GovernancePage() {
             <a href="/#platform">Adversarial</a>
             <a href="/#platform">PII</a>
           </nav>
-<<<<<<< HEAD
           <a className="gv-btn gv-btn-solid gv-sub-cta" data-cal-link="tahara-ai-xpf7u0/product-demo">Start assessment</a>
-=======
-          <a className="gv-btn gv-btn-solid gv-sub-cta" href="/platform/governance/master">Start assessment</a>
->>>>>>> origin/main
         </div>
       </div>
 

@@ -15,9 +15,3 @@ tsconfig.tsbuildinfo
 Thumbs.db
 .idea/
 .vscode/
-
-# Python virtual environments
-venv/
-.venv/
-env/
-__pycache__/
