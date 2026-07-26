@@ -1238,7 +1238,10 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
    sized to anchor the 296px ring rather than sit above other type.
    It scales in without rotating: the old placeholder was an abstract
    diamond that could spin to 225deg, which a real mark cannot do. */
-.mark-dia{width:86px;height:110px;margin:0 auto 22px;position:relative;
+/* display:block is load-bearing — this is a <span>, and an inline box ignores
+   width/height/margin:auto, leaving a 0x0 content box with nowhere to paint
+   the background image. */
+.mark-dia{display:block;width:86px;height:110px;margin:0 auto 22px;position:relative;
   background:url('/logo-mark.png') center/contain no-repeat;
   transform:scale(0);transition:transform .85s var(--e-back) .1s}
 .stack-mark.on .mark-dia{transform:scale(1)}
@@ -1530,7 +1533,7 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
 @media(max-width:1000px){
   .ml{opacity:1;transform:none}
   .mark-sub{opacity:1;transform:none}
-  .mark-dia{transform:rotate(225deg) scale(1)}
+  .mark-dia{transform:scale(1)}   /* no rotation — it is a logo, not a diamond */
 }
 @media(max-width:860px){
   .life{grid-template-columns:1fr;gap:34px}
