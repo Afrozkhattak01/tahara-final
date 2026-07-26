@@ -1,0 +1,23 @@
+node_modules
+.next
+out
+.env*.local
+
+.vercel
+.env*
+
+# build artefacts
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Python virtual environments
+venv/
+.venv/
+env/
+__pycache__/
