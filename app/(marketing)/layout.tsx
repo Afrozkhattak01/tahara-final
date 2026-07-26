@@ -5,14 +5,35 @@ import './landing.css';
 // this route group only. Because Next.js loads a route's CSS per-segment, the
 // landing reset in landing.css is sent to the browser ONLY for pages in this
 // group, never for future /about, /pricing, /dashboard, etc.
+const TITLE = 'Tahara AI · Know what your AI did, and prove it';
+const DESCRIPTION =
+  'Discovery, live enforcement and audit-ready evidence for every model, agent and prompt your organisation runs.';
+
 export const metadata: Metadata = {
   // `absolute` opts out of the root layout's "%s · Tahara AI" title template.
-  title: { absolute: 'Tahara AI · Know what your AI did, and prove it' },
-  description:
-    'Discovery, live enforcement and audit-ready evidence for every model, agent and prompt your organisation runs.',
+  title: { absolute: TITLE },
+  description: DESCRIPTION,
   icons: {
-    icon:
-      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23eaf1e9'/%3E%3Crect x='8' y='8' width='16' height='16' rx='3' fill='%231f5238' transform='rotate(45 16 16)'/%3E%3C/svg%3E"
+    icon: [
+      { url: '/logo-mark.png', type: 'image/png', sizes: '100x128' },
+      { url: '/logo-mark-512.png', type: 'image/png', sizes: '399x512' }
+    ],
+    apple: '/logo-mark-512.png'
+  },
+  // Without these, sharing a link on LinkedIn, WhatsApp or Slack renders a
+  // blank card. og-image.png is the 1200x630 poster those unfurlers read.
+  openGraph: {
+    type: 'website',
+    siteName: 'Tahara AI',
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Tahara AI' }]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ['/og-image.png']
   }
 };
 

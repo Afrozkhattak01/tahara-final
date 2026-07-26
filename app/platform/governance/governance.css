@@ -151,20 +151,14 @@
   letter-spacing: -.02em;
   color: var(--ink);
 }
+/* company shield — matches the landing header */
 .gv-brand-mark {
-  position: relative;
-  width: 11px; height: 11px;
-  background: var(--g700);
-  transform: rotate(45deg);
+  width: 22px; height: 28px;
+  flex: none;
+  background: url('/logo-mark.png') center/contain no-repeat;
   transition: transform .5s var(--e-back);
 }
-.gv-brand-mark::after {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  background: var(--paper);
-}
-.gv-brand:hover .gv-brand-mark { transform: rotate(225deg); }
+.gv-brand:hover .gv-brand-mark { transform: translateY(-2px); }
 
 .gv-nav {
   display: flex;

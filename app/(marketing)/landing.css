@@ -291,8 +291,8 @@ h4{font-family:'Inter Tight',sans-serif;font-weight:600;letter-spacing:-.015em;f
 .acct-modal::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:9px;border:3px solid var(--paper);background-clip:padding-box}
 .acct-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .acct-brand{display:inline-flex;align-items:center;gap:9px;font-family:'Inter Tight',sans-serif;font-weight:700;font-size:16px;color:var(--ink)}
-.acct-dia{width:22px;height:22px;border-radius:7px;background:var(--bg-2);border:1px solid var(--line);position:relative;flex:none}
-.acct-dia::after{content:'';position:absolute;left:50%;top:50%;width:8px;height:8px;background:var(--g600);transform:translate(-50%,-50%) rotate(45deg);border-radius:1px}
+.acct-dia{width:20px;height:26px;flex:none;
+  background:url('/logo-mark.png') center/contain no-repeat}
 .acct-x{width:32px;height:32px;display:grid;place-items:center;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--ink-3);cursor:pointer;transition:color .2s,border-color .2s}
 .acct-x svg{width:12px;height:12px}
 .acct-x:hover{color:var(--ink);border-color:var(--g400)}
@@ -489,10 +489,13 @@ header.stuck{border-bottom-color:var(--line);box-shadow:0 6px 26px rgba(3,24,56,
 nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;align-items:center;gap:36px}
 .brand{display:flex;align-items:center;gap:9px;font-family:'Inter Tight',sans-serif;
   font-weight:700;font-size:19px;letter-spacing:-.03em}
-.brand-mark{width:11px;height:11px;background:var(--g700);transform:rotate(45deg);border-radius:2px;
-  position:relative;transition:transform .6s var(--e-back)}
-.brand-mark::after{content:'';position:absolute;inset:3px;background:var(--bg);border-radius:1px}
-.brand:hover .brand-mark{transform:rotate(225deg)}
+/* company shield. 0.78:1 artwork, so the box is sized off the height.
+   The old placeholder was an 11px rotated square that spun on hover; a real
+   mark should not spin, so it lifts slightly instead. */
+.brand-mark{width:22px;height:28px;flex:none;
+  background:url('/logo-mark.png') center/contain no-repeat;
+  transition:transform .5s var(--e-back)}
+.brand:hover .brand-mark{transform:translateY(-2px)}
 .nav-links{display:flex;gap:28px;font-size:14.5px;color:var(--ink-2);margin-right:auto}
 .nav-links a{position:relative;padding:4px 0;transition:color .25s ease}
 .nav-links a:hover{color:var(--ink)}
