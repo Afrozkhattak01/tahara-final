@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+<<<<<<< HEAD
       <head>
         <script
           type="text/javascript"
@@ -24,6 +25,8 @@ Cal("init", { origin: "https://cal.eu" });
           }}
         />
       </head>
+=======
+>>>>>>> origin/main
       <body>{children}</body>
     </html>
   );

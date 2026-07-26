@@ -136,7 +136,11 @@
   max-width: var(--maxw);
   margin: 0 auto;
   padding: 0 var(--gutter);
+<<<<<<< HEAD
   height: 68px;
+=======
+  height: 60px;
+>>>>>>> origin/main
   display: flex;
   align-items: center;
   gap: 26px;
@@ -153,6 +157,7 @@
 }
 /* company shield — matches the landing header */
 .gv-brand-mark {
+<<<<<<< HEAD
   width: 48px; height: 61px;
   flex: none;
   background: url('/logo.png') center/contain no-repeat;
@@ -160,6 +165,12 @@
   /* Ensure no pseudo-elements from other stylesheets interfere */
   position: static;
   border-radius: 0;
+=======
+  width: 22px; height: 28px;
+  flex: none;
+  background: url('/logo-mark.png') center/contain no-repeat;
+  transition: transform .5s var(--e-back);
+>>>>>>> origin/main
 }
 .gv-brand:hover .gv-brand-mark { transform: translateY(-2px); }
 
