@@ -1233,20 +1233,26 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
 .orbit i{position:absolute;left:50%;top:6px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;
   background:var(--g600);box-shadow:0 0 10px rgba(17,64,134,.5)}
 .orbit.slow i{background:var(--g400);width:5px;height:5px;margin-left:-2.5px}
-.mark-dia{width:26px;height:26px;background:var(--g700);border-radius:4px;margin:0 auto 20px;position:relative;
-  transform:rotate(45deg) scale(0);transition:transform .85s var(--e-back) .1s}
-.mark-dia::after{content:'';position:absolute;inset:6px;background:var(--bg-2);border-radius:2px}
-.stack-mark.on .mark-dia{transform:rotate(225deg) scale(1);animation:diaPulse 3.4s ease-in-out 1.2s infinite}
-@keyframes diaPulse{0%,100%{box-shadow:0 0 0 0 rgba(17,64,134,.32)}50%{box-shadow:0 0 0 14px rgba(17,64,134,0)}}
-.mark-word{position:relative;font-family:'Inter Tight',sans-serif;font-weight:700;letter-spacing:-.04em;
-  font-size:clamp(34px,4.4vw,56px);line-height:1;display:flex;justify-content:center}
-.ml{display:inline-block;opacity:0;transform:translateY(26px) rotate(5deg);
-  transition:opacity .5s ease,transform .85s var(--e-out);transition-delay:calc(var(--li) * 48ms)}
-.stack-mark.on .ml{opacity:1;transform:none}
-.mark-word.shine{background:linear-gradient(100deg,var(--ink) 42%,var(--g400) 50%,var(--ink) 58%);
-  background-size:280% 100%;-webkit-background-clip:text;background-clip:text;
-  animation:shine 4.6s linear infinite}
-.mark-word.shine .ml{color:transparent;-webkit-text-fill-color:transparent}
+/* Company shield, revealed once the stack finishes assembling. It stands
+   alone here — the wordmark that used to sit beneath it is gone — so it is
+   sized to anchor the 296px ring rather than sit above other type.
+   It scales in without rotating: the old placeholder was an abstract
+   diamond that could spin to 225deg, which a real mark cannot do. */
+.mark-dia{width:86px;height:110px;margin:0 auto 22px;position:relative;
+  background:url('/logo-mark.png') center/contain no-repeat;
+  transform:scale(0);transition:transform .85s var(--e-back) .1s}
+.stack-mark.on .mark-dia{transform:scale(1)}
+/* the pulse rides on a ring behind the shield. As a box-shadow it would
+   trace the PNG's rectangular border-box, not the shield silhouette. */
+.mark-dia::after{content:'';position:absolute;left:50%;top:50%;
+  width:132px;height:132px;margin:-66px 0 0 -66px;border-radius:50%;
+  border:1.5px solid rgba(17,64,134,.3);opacity:0;pointer-events:none}
+.stack-mark.on .mark-dia::after{animation:diaPulse 3.4s ease-in-out 1.2s infinite}
+@keyframes diaPulse{
+  0%{transform:scale(.66);opacity:.5}
+  70%{transform:scale(1.18);opacity:0}
+  100%{transform:scale(1.18);opacity:0}}
+/* @keyframes shine stays — it is shared with the closing-CTA heading */
 @keyframes shine{from{background-position:180% 0}to{background-position:-80% 0}}
 .mark-sub{margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;
   text-transform:uppercase;color:var(--ink-3);opacity:0;transform:translateY(8px);
