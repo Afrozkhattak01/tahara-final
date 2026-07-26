@@ -1359,7 +1359,6 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
   /* the language switch is a <button>, so the .nav-links.open a rule above
      doesn't reach it — give it its own spacing inside the drawer */
   .nav-links.open .lang-switch{align-self:flex-start;margin-top:14px}
-  .nav-links.open #signinBtn{font-weight:500}
   .mega{padding:8px 12px 0}
   .mega-card{max-height:calc(100vh - 84px);-webkit-overflow-scrolling:touch;padding:26px 20px 30px}
   .mega-inner{grid-template-columns:1fr;gap:22px}

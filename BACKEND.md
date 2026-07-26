@@ -182,7 +182,9 @@ the matching client-side messaging must be added (§20).
 ## 2.2 Sign in — **REQUIRED**
 
 **UI:** `tahara-body.html:72–99`, form `id="signinForm"`
-**Trigger:** `[data-signin]` on the nav "Sign in" link
+**Trigger:** `[data-signin]` on the hero **"Explore platform"** button. There is no
+"Sign in" link in the header — signing in is the gateway to the platform, so the hero CTA
+opens this modal.
 **Current behaviour:** identical no-op.
 
 | Field | Type | `autocomplete` |
@@ -808,7 +810,7 @@ frameworks (7 seals + drawer) → FAQ (12 questions) → closing CTA → footer.
 | Element | Endpoint | Currently |
 | --- | --- | --- |
 | Ribbon → surface-check modal → "Run check" | `POST /api/surface-check` | **no handler at all** |
-| Nav "Sign in" → modal | `POST /api/auth/signin` | submit is a no-op |
+| Hero "Explore platform" → sign-in modal | `POST /api/auth/signin` | submit is a no-op |
 | Create account modal | `POST /api/auth/signup` | submit is a no-op |
 | "Forgot password" link | `POST /api/auth/forgot-password` | `href="#"`, no handler |
 | All "Request a demo" buttons | `POST /api/contact` | no handler |
@@ -1463,11 +1465,15 @@ No spinner, skeleton, disabled state, toast or inline field-error markup exists 
 Until this is built, a working API has nowhere to report to. Needs CSS in `landing.css` and
 render logic in `tahara-engine.js`, in both LTR and RTL.
 
-## 20.2 Restore a route to the signup modal
-The Create account modal is currently reachable **only** from inside the Sign in modal. The
-hero button that opened it was removed and the nav has no "Sign up" link. Add `data-signup`
-to a nav element. The `nav.signup` dictionary entry still exists with its Arabic, so this
-is a one-line change.
+## 20.2 Signup is two clicks deep — acceptable, but know the path
+The Create account modal is reachable **only** from inside the Sign in modal, via its
+"New to Tahara? Create an account" link. The route in is: hero **"Explore platform"** →
+sign-in modal → **Create an account**.
+
+This is deliberate — the header carries no Sign in or Sign up link at all, since signing in
+is framed as the way into the platform rather than a separate destination. If a direct
+signup route is wanted later, add `data-signup` to any element; the `nav.signup` dictionary
+entry still exists with its Arabic, so it is a one-line change.
 
 ## 20.3 Build a contact / demo form
 Every "Request a demo" button is currently a bare button with no destination. A form must

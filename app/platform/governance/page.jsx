@@ -43,7 +43,6 @@ export default function GovernancePage() {
             <a href="/#faq">FAQ</a>
           </nav>
           <div className="gv-head-right">
-            <a className="gv-signin" href="/#">Sign in</a>
             <a className="gv-btn gv-btn-solid" href="/platform/governance/master">Request a demo</a>
           </div>
         </div>

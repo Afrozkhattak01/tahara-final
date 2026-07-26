@@ -1529,7 +1529,7 @@ window.TaharaI18N = (function(){
 
     /* ── sign-in modal ── */
     'si.kicker':  { en:'Sign in', ar:'تسجيل الدخول' },
-    'si.title':   { en:'Welcome back', ar:'أهلًا بعودتكم' },
+    'si.title':   { en:'Sign in to explore', ar:'سجّل الدخول للاستكشاف' },
     'si.desc':    { en:'Pick up where your last assurance run left off.', ar:'تابعوا من حيث انتهت آخر جولة ضمان لديكم.' },
     'si.keep':    { en:'Keep me signed in', ar:'أبقِ الجلسة مفتوحة' },
     'si.forgot':  { en:'Forgot password', ar:'نسيت كلمة المرور' },
@@ -2586,32 +2586,30 @@ window.TaharaI18N = (function(){
 })();
 
 /* ── narrow-screen header ────────────────────────────────────
-   On a phone the header can't hold the brand, the language switch, Sign in,
-   the demo button AND the burger — everything wraps and the brand breaks onto
-   two lines. Below 700px the switch and Sign in move into the drawer, leaving
-   the demo button as the only call to action in the bar.
+   On a phone the header can't hold the brand, the language switch, the demo
+   button AND the burger — everything wraps and the brand breaks onto two
+   lines. Below 700px the switch moves into the drawer, leaving the demo
+   button as the only call to action in the bar.
 
-   The nodes are MOVED, not cloned: their listeners were bound directly at boot
-   (langSwitch by id, Sign in via [data-signin]) and survive relocation, where a
-   clone would arrive inert and a duplicate id would break getElementById.
+   The node is MOVED, not cloned: its listeners were bound directly at boot
+   (langSwitch by id) and survive relocation, where a clone would arrive inert
+   and a duplicate id would break getElementById.
    ────────────────────────────────────────────────────────── */
 (function(){
-  const nav    = document.querySelector('nav');
-  const links  = document.getElementById('navLinks');
-  const right  = nav && nav.querySelector('.nav-right');
-  const lang   = document.getElementById('langSwitch');
-  const signin = document.getElementById('signinBtn');
-  const demo   = right && right.querySelector('.btn');
-  if (!links || !right || !lang || !signin || !demo) return;
+  const nav   = document.querySelector('nav');
+  const links = document.getElementById('navLinks');
+  const right = nav && nav.querySelector('.nav-right');
+  const lang  = document.getElementById('langSwitch');
+  const demo  = right && right.querySelector('.btn');
+  if (!links || !right || !lang || !demo) return;
 
   const mq = window.matchMedia('(max-width:700px)');
   function place(){
     if (mq.matches){
-      if (signin.parentElement !== links){ links.appendChild(signin); links.appendChild(lang); }
-    } else if (signin.parentElement !== right){
-      right.insertBefore(signin, demo);      /* restore original order: */
-      right.insertBefore(lang, signin);      /* lang · signin · demo · burger */
-    }
+      if (lang.parentElement !== links) links.appendChild(lang);
+    } else if (lang.parentElement !== right){
+      right.insertBefore(lang, demo);        /* restore original order: */
+    }                                        /* lang · demo · burger      */
   }
   place();
   mq.addEventListener ? mq.addEventListener('change', place) : mq.addListener(place);

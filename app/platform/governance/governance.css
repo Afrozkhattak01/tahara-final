@@ -193,8 +193,6 @@
   align-items: center;
   gap: 16px;
 }
-.gv-signin { font-size: 14.5px; color: var(--ink-2); }
-.gv-signin:hover { color: var(--ink); }
 
 /* ── buttons ── */
 .gv-btn {
