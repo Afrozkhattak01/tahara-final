@@ -291,13 +291,8 @@ h4{font-family:'Inter Tight',sans-serif;font-weight:600;letter-spacing:-.015em;f
 .acct-modal::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:9px;border:3px solid var(--paper);background-clip:padding-box}
 .acct-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .acct-brand{display:inline-flex;align-items:center;gap:9px;font-family:'Inter Tight',sans-serif;font-weight:700;font-size:16px;color:var(--ink)}
-<<<<<<< HEAD
 .acct-dia{width:42px;height:53px;flex:none;
   background:url('/logo.png') center/contain no-repeat}
-=======
-.acct-dia{width:20px;height:26px;flex:none;
-  background:url('/logo-mark.png') center/contain no-repeat}
->>>>>>> origin/main
 .acct-x{width:32px;height:32px;display:grid;place-items:center;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--ink-3);cursor:pointer;transition:color .2s,border-color .2s}
 .acct-x svg{width:12px;height:12px}
 .acct-x:hover{color:var(--ink);border-color:var(--g400)}
@@ -497,7 +492,6 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 /* company shield. 0.78:1 artwork, so the box is sized off the height.
    The old placeholder was an 11px rotated square that spun on hover; a real
    mark should not spin, so it lifts slightly instead. */
-<<<<<<< HEAD
 .brand-mark{width:48px;height:61px;flex:none;
   background:url('/logo.png') center/contain no-repeat;
   transition:transform .5s var(--e-back);
@@ -507,11 +501,6 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
   border-radius:0;
 }
 .brand-mark::after{content:none;}
-=======
-.brand-mark{width:22px;height:28px;flex:none;
-  background:url('/logo-mark.png') center/contain no-repeat;
-  transition:transform .5s var(--e-back)}
->>>>>>> origin/main
 .brand:hover .brand-mark{transform:translateY(-2px)}
 .nav-links{display:flex;gap:28px;font-size:14.5px;color:var(--ink-2);margin-right:auto}
 .nav-links a{position:relative;padding:4px 0;transition:color .25s ease}

@@ -15,20 +15,12 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   icons: {
     icon: [
-<<<<<<< HEAD
       { url: '/favicon.ico', sizes: 'any' },
       { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' }
     ],
     apple: '/apple-touch-icon.png'
   },
   manifest: '/site.webmanifest',
-=======
-      { url: '/logo-mark.png', type: 'image/png', sizes: '100x128' },
-      { url: '/logo-mark-512.png', type: 'image/png', sizes: '399x512' }
-    ],
-    apple: '/logo-mark-512.png'
-  },
->>>>>>> origin/main
   // Without these, sharing a link on LinkedIn, WhatsApp or Slack renders a
   // blank card. og-image.png is the 1200x630 poster those unfurlers read.
   openGraph: {
