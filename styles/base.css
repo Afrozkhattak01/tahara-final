@@ -236,7 +236,7 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 /* ════════════════════════════════════════════════════════════
    Hero
    ════════════════════════════════════════════════════════════ */
-.hero{padding:66px 0 34px;text-align:center;position:relative}
+.hero{padding:110px 0 34px;text-align:center;position:relative}
 .hero h1{margin:0 auto 20px;max-width:15ch}
 .hero .lede{margin:0 auto 28px;max-width:48ch}
 .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
@@ -251,8 +251,8 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 @keyframes breathe{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.12);opacity:1}}
 
 /* ── assurance console ── */
-.console-stage{perspective:1600px;margin-top:44px}
-.console{max-width:1000px;margin:0 auto;background:var(--paper);border:1px solid var(--line);
+.console-stage{perspective:1600px;margin-top:44px;width:100vw;position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw}
+.console{max-width:1320px;margin:0 auto;background:var(--paper);border:1px solid var(--line);
   border-radius:var(--r-l);box-shadow:var(--sh-l);overflow:hidden;text-align:left;
   transform-origin:50% 0%;
   transform:rotateX(calc((1 - var(--t,0)) * 14deg)) scale(calc(.92 + var(--t,0) * .08));

@@ -422,29 +422,7 @@ window.TAHARA_DATA = (function(){
      'It’s built to catch what a dashboard would just display without question.'],
     ['Tahara AI flags it the moment it’s found, not held for the next scheduled review.',
      'Every violation is logged with a status, an owner,',
-     'and a record that stays open until it’s resolved.'],
-    ['No. Tahara AI can raise a flag on its own.',
-     'Only a stakeholder can confirm it’s resolved.'],
-    ['Tahara AI is built around a single Master Framework, a continuously updated map',
-     'of global and regional AI and LLM regulations, including the EU AI Act, ISO/IEC 42001,',
-     'ISO/IEC 23894, and NIST AI RMF, kept current as new frameworks emerge worldwide.',
-     'One profile, checked against all of them at once.'],
-    ['Both, against each other. Tahara AI compares what a team says, what the policy states,',
-     'and what the live system actually shows and treats any mismatch between them as a finding,',
-     'even when no one was wrong on purpose.'],
-    ['No, it closes the gap between them.',
-     'Tahara AI runs continuously, so what’s true about a system today is caught today,',
-     'instead of surfacing months later at the next scheduled review.'],
-    ['Only what’s necessary to check configuration and access records. Never production data,',
-     'never customer content, never write access.',
-     'Read-only, scoped, and revocable at any time.'],
-    ['A named stakeholder on your team.',
-     'Tahara AI can observe and flag continuously, but sign-off always stays human,',
-     'a machine’s read of a system is evidence, not a verdict.'],
-    ['Compliance and security teams for the findings and reports,',
-     'engineering leads for what gets flagged in their systems,',
-     'and leadership for the standing view of where the organization actually sits',
-     'against every framework that applies.']
+     'and a record that stays open until it’s resolved.']
   ];
 
   return { FEED, STANDARDS, GLYPH, CONNECTORS, GRID_LAYOUT, PLATFORM_MENU, ANSWERS,
@@ -1042,9 +1020,11 @@ window.TaharaUI = (function(){
         b.classList.toggle('on', on);
         b.setAttribute('aria-selected', String(on));
       });
-      const r = btns[i].getBoundingClientRect(), pr = index.getBoundingClientRect();
-      slide.style.top = (r.top - pr.top + 12) + 'px';
-      slide.style.height = Math.max(0, r.height - 24) + 'px';
+      requestAnimationFrame(() => {
+        const r = btns[i].getBoundingClientRect(), pr = index.getBoundingClientRect();
+        slide.style.top = (r.top - pr.top) + 'px';
+        slide.style.height = r.height + 'px';
+      });
       const ar = window.TaharaI18N && window.TaharaI18N.current === 'ar';
       /* pad rather than prefixing a literal '0' — past nine that read "Answer · 010" */
       label.textContent = (ar ? 'الإجابة · ' : 'Answer · ') + String(i + 1).padStart(2, '0');
@@ -1102,8 +1082,18 @@ window.TaharaUI = (function(){
     });
   }
 
+  /* ── platform video chapters (decorative — no video wired yet) ── */
+  function pvideo(){
+    const chips = $$('.pv-chip'), time = $('.pv-time');
+    if (!chips.length) return;
+    chips.forEach(c => c.addEventListener('click', () => {
+      chips.forEach(x => x.classList.toggle('on', x === c));
+      if (time) time.textContent = c.querySelector('.pv-t').textContent;
+    }));
+  }
+
   return { nav, mega, proof, marquee, feed, counters, countersInstant, connectors,
-           faq, faqExtras, ripple, pointer, logoNode, footer, REDUCE };
+           faq, faqExtras, ripple, pointer, logoNode, footer, pvideo, REDUCE };
 })();
 
 /* ════════════════════════════════════════════════════════════
@@ -1371,10 +1361,10 @@ window.TaharaI18N = (function(){
     'eyebrow.alignment':   { en:'Alignment', ar:'التوافق' },
     'eyebrow.answers':     { en:'Answers', ar:'الإجابات' },
 
-    'stmt.title': { en:'The compliance, security, and privacy engine your AI <em>needs.</em>',
-                    ar:'محرك الامتثال والأمن والخصوصية الذي <em>يحتاجه</em> ذكاؤك الاصطناعي.' },
-    'stmt.desc':  { en:"Tahara AI finds what laws apply, tests what could go wrong, and stops what shouldn't leak. All from one platform, checked continuously.",
-                    ar:'يكتشف Tahara AI القوانين المنطبقة، ويختبر ما قد يسوء، ويمنع ما لا ينبغي تسريبه. كل ذلك من منصة واحدة، بفحص مستمر.' },
+    'stmt.title': { en:'Complete enterprise AI management.',
+                    ar:'إدارة متكاملة للذكاء الاصطناعي في المؤسسات.' },
+    'stmt.desc':  { en:'The layers every enterprise builds to adopt AI with confidence, from data foundation to governed transformation.',
+                    ar:'الطبقات التي تبنيها كل مؤسسة لتبنّي الذكاء الاصطناعي بثقة، من أساس البيانات إلى التحوّل المحكوم.' },
 
     'platform.title': { en:'One record of truth.',
                         ar:'سجل حقيقة واحد.' },
@@ -1482,13 +1472,6 @@ window.TaharaI18N = (function(){
     'faq.q3':  { en:'Can Tahara AI govern agents built outside the platform?', ar:'هل يستطيع Tahara AI حوكمة وكلاء بُنوا خارج المنصة؟' },
     'faq.q4':  { en:'How is Tahara AI different from an AI gateway or dashboard?', ar:'ما الفرق بين Tahara AI وبوابة الذكاء الاصطناعي أو لوحة المعلومات؟' },
     'faq.q5':  { en:'What happens when a policy is broken?', ar:'ماذا يحدث عند خرق سياسة؟' },
-    'faq.q6':  { en:'Can a machine close a finding?', ar:'هل يمكن لآلة أن تُغلق نتيجة؟' },
-    'faq.q7':  { en:'Which frameworks are covered?', ar:'ما الأطر المشمولة؟' },
-    'faq.q8':  { en:'What does Tahara AI actually check, documentation or the real system?', ar:'ما الذي يفحصه Tahara AI فعليًا، التوثيق أم النظام الفعلي؟' },
-    'faq.q9':  { en:'Does this replace an annual audit?', ar:'هل يحلّ هذا محلّ التدقيق السنوي؟' },
-    'faq.q10': { en:'What does Tahara AI need access to?', ar:'ما الصلاحيات التي يحتاجها Tahara AI؟' },
-    'faq.q11': { en:'Who has to confirm a finding is real?', ar:'من الذي يؤكّد أن النتيجة حقيقية؟' },
-    'faq.q12': { en:'Who uses Tahara AI day to day?', ar:'من يستخدم Tahara AI يوميًا؟' },
     'faq.mostasked': { en:'Most asked', ar:'الأكثر شيوعًا' },
     'faq.helpful':   { en:'Was this helpful?', ar:'هل كانت هذه الإجابة مفيدة؟' },
     'faq.thanks':    { en:'Thanks, noted.', ar:'شكرًا، تم التسجيل.' },
@@ -1640,29 +1623,7 @@ window.TaharaI18N = (function(){
      'صُمِّم ليلتقط ما تكتفي لوحة المعلومات بعرضه دون تدقيق.'],
     ['يرفع Tahara AI العلامة فور اكتشافها، لا انتظارًا للمراجعة المجدولة التالية.',
      'تُسجَّل كل مخالفة بحالتها ومالكها،',
-     'مع سجلّ يبقى مفتوحًا حتى تُعالَج.'],
-    ['لا. يستطيع Tahara AI رفع العلامة بنفسه.',
-     'وحده أحد المعنيين يمكنه تأكيد معالجتها.'],
-    ['بُني Tahara AI حول إطار رئيسي واحد، وهو خريطة محدَّثة باستمرار',
-     'للتنظيمات العالمية والإقليمية للذكاء الاصطناعي والنماذج اللغوية الكبيرة، منها EU AI Act و ISO/IEC 42001',
-     'و ISO/IEC 23894 و NIST AI RMF، تبقى محدَّثة كلما ظهرت أطر جديدة حول العالم.',
-     'ملف واحد، يُفحص مقابلها جميعًا دفعة واحدة.'],
-    ['كليهما، أحدهما مقابل الآخر. يقارن Tahara AI ما يقوله الفريق، وما تنصّ عليه السياسة،',
-     'وما يُظهره النظام الحيّ فعلًا، ويعتبر أي تعارض بينها نتيجة،',
-     'حتى وإن لم يخطئ أحد عن قصد.'],
-    ['لا، بل يسدّ الفجوة بين عمليات التدقيق.',
-     'يعمل Tahara AI باستمرار، فما يصحّ عن النظام اليوم يُكتشف اليوم،',
-     'بدل أن يظهر بعد أشهر في المراجعة المجدولة التالية.'],
-    ['فقط ما يلزم لفحص الإعدادات وسجلات الوصول. لا بيانات إنتاج،',
-     'ولا محتوى عملاء، ولا صلاحية كتابة.',
-     'قراءة فقط، محدَّدة النطاق، وقابلة للسحب في أي وقت.'],
-    ['أحد المعنيين المسمَّين في فريقكم.',
-     'يستطيع Tahara AI الملاحظة والتنبيه باستمرار، لكن الاعتماد يبقى بشريًا دائمًا،',
-     'فقراءة الآلة للنظام دليل، وليست حكمًا.'],
-    ['فرق الامتثال والأمن للنتائج والتقارير،',
-     'وقادة الهندسة لما يُرصد في أنظمتهم،',
-     'والقيادة للرؤية الدائمة لموقع المؤسسة الفعلي',
-     'مقابل كل إطار ينطبق عليها.']
+     'مع سجلّ يبقى مفتوحًا حتى تُعالَج.']
   ];
 
   const FOOTER_LINKS_AR = [
@@ -1826,7 +1787,7 @@ window.TaharaI18N = (function(){
   $$('[data-split]').forEach(split);
 
   const mw = $('#markWord');
-  if (mw){
+  if (mw && !mw.querySelector('img')){
     const txt = mw.textContent; mw.textContent = '';
     [...txt].forEach((ch, i) => {
       const s = document.createElement('span');
@@ -1848,7 +1809,7 @@ window.TaharaI18N = (function(){
   }
 
   /* ── 3 · one-off setup ── */
-  UI.nav(); UI.mega(); UI.proof(); UI.marquee(); UI.faq(); UI.faqExtras(); UI.footer();
+  UI.nav(); UI.mega(); UI.proof(); UI.marquee(); UI.faq(); UI.faqExtras(); UI.footer(); UI.pvideo();
   window.TaharaI18N && window.TaharaI18N.init();
   UI.connectors(); UI.pointer(); UI.ripple();
   const consoleEl = $('#console');
@@ -2298,6 +2259,7 @@ window.TaharaI18N = (function(){
     const statsEl = document.getElementById('dashStats');
     const findEl = document.getElementById('dashFinding');
     const coverEl = document.getElementById('dashCover');
+    const askEl = document.getElementById('dashAsk');
     const card = document.getElementById('console');
     if (!tabs || !statsEl || !coverEl) return;
 
@@ -2310,9 +2272,10 @@ window.TaharaI18N = (function(){
           {k:'Agents monitored', v:96, d:'14 with tool access', tone:'', spark:[19,20,15,17,12,13,8,7]},
           {k:'Findings open', v:6, d:'3 major', tone:'sig', spark:[16,18,9,19,7,16,6,12]} ],
         finding:{ kind:'Critical finding', t:'3 systems profile individuals with no owner on record',
-          d:'Each one is in scope for EU AI Act Art. 6(3). None can claim the derogation.' },
+          d:'Each one is in scope for EU AI Act Art. 6(3). None can claim the derogation.', cta:'Investigate' },
         coverT:'Coverage by surface',
-        cover:[['Models','128',128/144,''],['Agents','96',96/144,''],['MCP servers','44',44/144,''],['Keys & tools','144',1,'']] },
+        cover:[['Models','128',128/144,''],['Agents','96',96/144,''],['MCP servers','44',44/144,''],['Keys & tools','144',1,'']],
+        ask:{ q:'Which systems have no owner on record?', chip:'High risk', tone:'' } },
       { badge:'Module 02 · Govern', title:'Applicability and evidence',
         sub:'Every control mapped to a probe, and a probe to proof.',
         nav:['Govern','Frameworks','Control mapping','Probes','Evidence','Findings'], active:2,
@@ -2321,9 +2284,10 @@ window.TaharaI18N = (function(){
           {k:'Conforming', v:34, suf:'%', d:'of assessed', tone:'', spark:[18,17,16,14,13,12,11,10]},
           {k:'Major findings', v:3, d:'2 new this week', tone:'sig', spark:[8,9,11,12,13,14,16,17]} ],
         finding:{ kind:'Major non-conformity', t:'Access control does not match the documented policy',
-          d:'ISO 42001 A.4.2. The IAM scan contradicts the policy on file. Human review pending.' },
+          d:'ISO 42001 A.4.2. The IAM scan contradicts the policy on file. Human review pending.', cta:'Review evidence' },
         coverT:'Conformance by framework',
-        cover:[['EU AI Act','18/33',18/33,''],['ISO/IEC 42001','24/76',24/76,''],['ISO/IEC 23894','11/41',11/41,''],['NIST AI RMF','8/37',8/37,'']] },
+        cover:[['EU AI Act','18/33',18/33,''],['ISO/IEC 42001','24/76',24/76,''],['ISO/IEC 23894','11/41',11/41,''],['NIST AI RMF','8/37',8/37,'']],
+        ask:{ q:'Show me every control blocked on evidence', chip:'Unresolved', tone:'' } },
       { badge:'Module 03 · Adversarial', title:'Attack simulation',
         sub:'The OWASP LLM Top 10, run on a schedule against staging.',
         nav:['Adversarial','Test sets','OWASP LLM Top 10','Runs','Findings','Retest'], active:2,
@@ -2332,9 +2296,10 @@ window.TaharaI18N = (function(){
           {k:'Categories passing', v:5, d:'of 10', tone:'', spark:[14,13,14,12,13,12,13,12]},
           {k:'Failing', v:2, d:'injection, disclosure', tone:'sig', spark:[8,9,11,12,13,14,16,17]} ],
         finding:{ kind:'Open finding · LLM01', t:'468 of 1,204 indirect injection attempts succeeded',
-          d:'Instructions hidden inside an uploaded document were followed. Re-tested every six hours.' },
+          d:'Instructions hidden inside an uploaded document were followed. Re-tested every six hours.', cta:'View run detail' },
         coverT:'Pass rate by category',
-        cover:[['LLM01 Prompt injection','61%',.61,'sig'],['LLM02 Disclosure','74%',.74,'sig'],['LLM06 Excessive agency','83%',.83,''],['LLM07 Prompt leakage','100%',1,'']] },
+        cover:[['LLM01 Prompt injection','61%',.61,'sig'],['LLM02 Disclosure','74%',.74,'sig'],['LLM06 Excessive agency','83%',.83,''],['LLM07 Prompt leakage','100%',1,'']],
+        ask:{ q:'Why did LLM01 fail this run?', chip:'Highest priority', tone:'sig' } },
       { badge:'Module 04 · Guardrails', title:'Prompt inspection',
         sub:'Every prompt checked before the model sees it.',
         nav:['Guardrails','Inspection','Detectors','Policies','Prompt log','Escalations'], active:4,
@@ -2343,9 +2308,10 @@ window.TaharaI18N = (function(){
           {k:'Masked', v:1204, d:'redacted, reversible', tone:'', spark:[19,20,16,17,13,14,9,8]},
           {k:'Leaked', v:1, d:'escalated to DPO', tone:'sig', spark:[16,19,9,20,7,17,5,11]} ],
         finding:{ kind:'Escalated', t:'A national ID reached the model unmasked',
-          d:'It arrived through a document the retrieval layer injected, not the typed prompt. The filter reads the prompt, not the assembled context.' },
+          d:'It arrived through a document the retrieval layer injected, not the typed prompt. The filter reads the prompt, not the assembled context.', cta:'View escalation' },
         coverT:'Detector hits · 24h',
-        cover:[['Name (NER)','1,204',1,''],['Email','1,118',1118/1204,''],['Phone','744',744/1204,''],['National ID','28',28/1204,'sig']] }
+        cover:[['Name (NER)','1,204',1,''],['Email','1,118',1118/1204,''],['Phone','744',744/1204,''],['National ID','28',28/1204,'sig']],
+        ask:{ q:'What leaked in the last 24 hours?', chip:'Escalated', tone:'sig' } }
     ];
 
     /* Arabic is a TEXT-ONLY overlay: every number, sparkline and bar fraction
@@ -2360,7 +2326,8 @@ window.TaharaI18N = (function(){
         kind:'نتيجة حرجة', t:'3 أنظمة تُنشئ ملفات عن أفراد دون مالك مسجَّل',
         d:'كلٌّ منها يقع ضمن نطاق EU AI Act المادة 6(3)، ولا يمكن لأيٍّ منها الاستفادة من الاستثناء.',
         coverT:'التغطية حسب السطح',
-        coverL:['النماذج','الوكلاء','خوادم MCP','المفاتيح والأدوات'] },
+        coverL:['النماذج','الوكلاء','خوادم MCP','المفاتيح والأدوات'],
+        askQ:'ما الأنظمة التي بلا مالك مسجَّل؟', askChip:'مخاطر عالية', cta:'تحقيق' },
       { badge:'الوحدة 02 · الحوكمة', title:'قابلية التطبيق والأدلة',
         sub:'كل ضابط مرتبط باختبار، وكل اختبار بدليل.',
         nav:['الحوكمة','الأطر','ربط الضوابط','الاختبارات','الأدلة','النتائج'],
@@ -2369,7 +2336,8 @@ window.TaharaI18N = (function(){
         kind:'عدم مطابقة جوهري', t:'التحكم في الوصول لا يطابق السياسة الموثَّقة',
         d:'ISO 42001 A.4.2. فحص إدارة الهوية يناقض السياسة المحفوظة. المراجعة البشرية قيد الانتظار.',
         coverT:'المطابقة حسب الإطار',
-        coverL:['EU AI Act','ISO/IEC 42001','ISO/IEC 23894','NIST AI RMF'] },
+        coverL:['EU AI Act','ISO/IEC 42001','ISO/IEC 23894','NIST AI RMF'],
+        askQ:'أرني كل ضابط محظور على الدليل', askChip:'غير محلول', cta:'مراجعة الدليل' },
       { badge:'الوحدة 03 · الاختبار العدائي', title:'محاكاة الهجمات',
         sub:'قائمة OWASP LLM Top 10، تُنفَّذ وفق جدول على بيئة التجهيز.',
         nav:['الاختبار العدائي','مجموعات الاختبار','OWASP LLM Top 10','الجولات','النتائج','إعادة الاختبار'],
@@ -2378,7 +2346,8 @@ window.TaharaI18N = (function(){
         kind:'نتيجة مفتوحة · LLM01', t:'نجحت 468 محاولة حقن غير مباشر من أصل 1,204',
         d:'اتُّبعت تعليمات مخفية داخل مستند مرفوع. تُعاد الاختبارات كل ست ساعات.',
         coverT:'معدل النجاح حسب الفئة',
-        coverL:['LLM01 حقن الطلبات','LLM02 إفشاء المعلومات','LLM06 الصلاحية المفرطة','LLM07 تسريب الطلبات'] },
+        coverL:['LLM01 حقن الطلبات','LLM02 إفشاء المعلومات','LLM06 الصلاحية المفرطة','LLM07 تسريب الطلبات'],
+        askQ:'لماذا فشل LLM01 في هذه الجولة؟', askChip:'أولوية قصوى', cta:'عرض تفاصيل الجولة' },
       { badge:'الوحدة 04 · حواجز الحماية', title:'فحص الطلبات',
         sub:'كل طلب يُفحص قبل أن يصل إلى النموذج.',
         nav:['حواجز الحماية','الفحص','الكواشف','السياسات','سجل الطلبات','التصعيدات'],
@@ -2387,7 +2356,8 @@ window.TaharaI18N = (function(){
         kind:'مُصعَّد', t:'وصل رقم هوية وطنية إلى النموذج دون إخفاء',
         d:'وصل عبر مستند أدرجته طبقة الاسترجاع، لا عبر الطلب المكتوب. المرشِّح يقرأ الطلب، لا السياق المُجمَّع.',
         coverT:'إصابات الكواشف · 24 ساعة',
-        coverL:['الاسم (NER)','البريد الإلكتروني','الهاتف','رقم الهوية الوطنية'] }
+        coverL:['الاسم (NER)','البريد الإلكتروني','الهاتف','رقم الهوية الوطنية'],
+        askQ:'ما الذي تسرَّب خلال آخر 24 ساعة؟', askChip:'مُصعَّد', cta:'عرض التصعيد' }
     ];
 
     /* i18n.init() has already run by the time this IIFE executes, so read the
@@ -2403,9 +2373,10 @@ window.TaharaI18N = (function(){
       const a = MODULES_AR[i];
       return { badge:a.badge, title:a.title, sub:a.sub, nav:a.nav, active:m.active,
         stats: m.stats.map((s,j)=>Object.assign({}, s, { k:a.statK[j], d:a.statD[j] })),
-        finding:{ kind:a.kind, t:a.t, d:a.d },
+        finding:{ kind:a.kind, t:a.t, d:a.d, cta:a.cta },
         coverT:a.coverT,
-        cover: m.cover.map((r,j)=>[a.coverL[j], r[1], r[2], r[3]]) };
+        cover: m.cover.map((r,j)=>[a.coverL[j], r[1], r[2], r[3]]),
+        ask:{ q:a.askQ, chip:a.askChip, tone:m.ask.tone } };
     }
 
     const XS = [0,14,28,42,56,70,84,100];
@@ -2430,11 +2401,19 @@ window.TaharaI18N = (function(){
         '<div class="dash-card-foot"><span class="dash-card-d'+(s.tone==='sig'?' sig':'')+'">'+esc(s.d)+'</span>'+
         sparkSVG(s.spark,s.tone)+'</div></div>').join('');
       findEl.innerHTML = '<span class="dash-kicker"><i></i>'+esc(m.finding.kind).toUpperCase()+'</span>'+
-        '<div class="dash-finding-b"><h4>'+esc(m.finding.t)+'</h4><p>'+esc(m.finding.d)+'</p></div>';
+        '<div class="dash-finding-b"><h4>'+esc(m.finding.t)+'</h4><p>'+esc(m.finding.d)+'</p>'+
+        '<a class="dash-finding-cta" href="#" onclick="return false">'+esc(m.finding.cta)+' <span class="arw">→</span></a></div>';
       coverEl.innerHTML = '<span class="dash-cover-t">'+esc(m.coverT).toUpperCase()+'</span>'+
         m.cover.map(r=>'<div class="dash-bar-row"><span class="dash-bar-l">'+esc(r[0])+'</span>'+
           '<span class="dash-bar-v">'+esc(r[1])+'</span>'+
           '<span class="dash-bar-track"><i class="dash-bar-fill'+(r[3]==='sig'?' sig':'')+'" data-frac="'+r[2]+'"></i></span></div>').join('');
+      if (askEl) askEl.innerHTML =
+        '<p class="dash-ask-q">'+esc(m.ask.q)+'<i class="dash-caret"></i></p>'+
+        '<div class="dash-ask-foot">'+
+          '<span class="dash-avatars"><i>M</i><i>A</i><i>S</i><b>+3</b></span>'+
+          '<span class="dash-ask-tag'+(m.ask.tone==='sig'?' sig':'')+'">'+esc(m.ask.chip)+'</span>'+
+          '<button class="dash-ask-send" type="button" aria-label="Send"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'+
+        '</div>';
     }
 
     /* animate the current module in */

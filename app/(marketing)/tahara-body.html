@@ -206,6 +206,7 @@
               <div class="dash-finding" id="dashFinding"></div>
               <div class="dash-cover" id="dashCover"></div>
             </div>
+            <div class="dash-ask" id="dashAsk"></div>
           </div>
         </div>
       </div>
@@ -222,8 +223,8 @@
 <!-- ══════════ statement ══════════ -->
 <div class="wrap">
   <section class="stmt">
-    <h2 class="stmt-t r" data-i18n-html="stmt.title">The compliance, security, and privacy engine your AI <em>needs.</em></h2>
-    <p class="stmt-d r" data-i18n="stmt.desc">Tahara AI finds what laws apply, tests what could go wrong, and stops what shouldn't leak. All from one platform, checked continuously.</p>
+    <h2 class="stmt-t r" data-i18n-html="stmt.title">Complete enterprise AI management.</h2>
+    <p class="stmt-d r" data-i18n="stmt.desc">The layers every enterprise builds to adopt AI with confidence, from data foundation to governed transformation.</p>
   </section>
 </div>
 
@@ -236,42 +237,23 @@
       <p class="lede r" data-i18n="platform.lede">Discovery, enforcement and evidence on one timeline.</p>
     </div>
 
-    <div class="plat">
-      <div class="pcol r" style="--i:0">
-        <div class="pcard">
-          <span class="pchip"><i></i><span data-i18n="plat.scan">Scan</span></span>
-          <div class="pscan">
-            <div class="pscan-row"><span class="pn" data-v="412">0</span><span class="pl" data-i18n="plat.scan.l1">agents found</span></div>
-            <div class="pscan-row"><span class="pn sig" data-v="3">0</span><span class="pl" data-i18n="plat.scan.l2">unmanaged</span></div>
-            <div class="pscan-row"><span class="pn" data-v="97" data-suf="%">0%</span><span class="pl" data-i18n="plat.scan.l3">governed</span></div>
-          </div>
-        </div>
-        <h3 data-i18n="plat.scan.h">Expose the AI nobody approved</h3>
-        <p data-i18n="plat.scan.d">Every model, agent, MCP server and key running in your estate, with an owner and a risk tier.</p>
+    <div class="pvideo r">
+      <div class="pv-frame">
+        <span class="pv-glow" aria-hidden="true"></span>
+        <span class="pv-ring" aria-hidden="true"></span>
+        <span class="pv-dot" style="--i:0" aria-hidden="true"></span>
+        <span class="pv-dot" style="--i:1" aria-hidden="true"></span>
+        <button class="pv-play" type="button" aria-label="Play video">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <span class="pv-tag"><i></i><span>Tahara AI · Website walkthrough</span></span>
+        <span class="pv-time">00:00</span>
       </div>
-
-      <div class="pcol r" style="--i:1">
-        <div class="pcard">
-          <span class="pchip"><i></i><span data-i18n="plat.rt">Runtime policy</span></span>
-          <p class="ppolicy" data-i18n-html="plat.rt.policy"><span class="pw">Allow</span> <span class="ptok" style="--d:0">customer records</span> <span class="pw">only when</span> <span class="ptok hot" style="--d:1">checks pass</span> <span class="pw">and</span> <span class="ptok" style="--d:2">egress is internal</span><span class="pw">.</span></p>
-          <div class="peval"><span class="peval-dot"></span><span data-i18n="plat.rt.eval">Policy enforced</span></div>
-        </div>
-        <h3 data-i18n="plat.rt.h">Enforce before the call fires</h3>
-        <p data-i18n="plat.rt.d">Allow, redact, escalate or block at the execution layer, not after the fact.</p>
-      </div>
-
-      <div class="pcol r" style="--i:2">
-        <div class="pcard">
-          <span class="pchip"><i></i><span data-i18n="plat.audit">Audit trail</span></span>
-          <div class="psearch">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14" stroke-linecap="round"/></svg>
-            <span class="pq">ISO 42001 A.4.2</span><span class="pcaret"></span>
-          </div>
-          <div class="prow" style="--d:0"><span class="prow-ic"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2.5 7.5 6 11l5.5-6.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="prow-id">A-1044</span><span class="prow-tag" data-i18n="plat.audit.sealed">Sealed</span></div>
-          <div class="prow" style="--d:1"><span class="prow-ic"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3.5 5.5 7 9l3.5-3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="prow-id">A-1043</span><span class="prow-tag" data-i18n="plat.audit.sealed">Sealed</span></div>
-        </div>
-        <h3 data-i18n="plat.audit.h">Evidence you can hand over</h3>
-        <p data-i18n="plat.audit.d">Continuous documentation mapped to the EU AI Act, ISO/IEC 42001, NIST AI RMF and SOC 2.</p>
+      <div class="pv-chapters">
+        <button class="pv-chip on" type="button" data-t="0"><span class="pv-t">00:00</span><span class="pv-l">Discovery</span></button>
+        <button class="pv-chip" type="button" data-t="100"><span class="pv-t">01:40</span><span class="pv-l">Enforcement</span></button>
+        <button class="pv-chip" type="button" data-t="200"><span class="pv-t">03:20</span><span class="pv-l">Evidence</span></button>
+        <button class="pv-chip" type="button" data-t="310"><span class="pv-t">05:10</span><span class="pv-l">Reporting</span></button>
       </div>
     </div>
   </section>
@@ -392,7 +374,7 @@
                 </svg>
                 <span class="orbit"><i></i></span>
                 <span class="orbit slow"><i></i></span>
-                <div class="mark-word" id="markWord">Tahara AI</div>
+                <div class="mark-word mark-logo" id="markWord"><img src="/logo.png" alt="Tahara AI" /></div>
                 <div class="mark-sub" data-i18n="mark.sub">Five layers · one record</div>
               </div>
             </div>
@@ -507,13 +489,6 @@
         <button class="q-item" data-q="2" aria-selected="false"><span class="k">03</span><span><span data-i18n="faq.q3">Can Tahara AI govern agents built outside the platform?</span></span><span class="cv arw">→</span></button>
         <button class="q-item" data-q="3" aria-selected="false"><span class="k">04</span><span><span data-i18n="faq.q4">How is Tahara AI different from an AI gateway or dashboard?</span></span><span class="cv arw">→</span></button>
         <button class="q-item" data-q="4" aria-selected="false"><span class="k">05</span><span><span data-i18n="faq.q5">What happens when a policy is broken?</span></span><span class="cv arw">→</span></button>
-        <button class="q-item" data-q="5" aria-selected="false"><span class="k">06</span><span><span data-i18n="faq.q6">Can a machine close a finding?</span></span><span class="cv arw">→</span></button>
-        <button class="q-item" data-q="6" aria-selected="false"><span class="k">07</span><span><span data-i18n="faq.q7">Which frameworks are covered?</span></span><span class="cv arw">→</span></button>
-        <button class="q-item" data-q="7" aria-selected="false"><span class="k">08</span><span><span data-i18n="faq.q8">What does Tahara AI actually check, documentation or the real system?</span></span><span class="cv arw">→</span></button>
-        <button class="q-item" data-q="8" aria-selected="false"><span class="k">09</span><span><span data-i18n="faq.q9">Does this replace an annual audit?</span></span><span class="cv arw">→</span></button>
-        <button class="q-item" data-q="9" aria-selected="false"><span class="k">10</span><span><span data-i18n="faq.q10">What does Tahara AI need access to?</span></span><span class="cv arw">→</span></button>
-        <button class="q-item" data-q="10" aria-selected="false"><span class="k">11</span><span><span data-i18n="faq.q11">Who has to confirm a finding is real?</span></span><span class="cv arw">→</span></button>
-        <button class="q-item" data-q="11" aria-selected="false"><span class="k">12</span><span><span data-i18n="faq.q12">Who uses Tahara AI day to day?</span></span><span class="cv arw">→</span></button>
       </div>
 
       <div class="q-panel r" style="--i:1">
