@@ -647,7 +647,7 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 /* ════════════════════════════════════════════════════════════
    Hero
    ════════════════════════════════════════════════════════════ */
-.hero{padding:66px 0 34px;text-align:center;position:relative}
+.hero{padding:100px 0 34px;text-align:center;position:relative}
 /* Warm bloom behind the hero and dashboard — the one non-blue note on the page.
    Anchored to .hero rather than the fixed .bg layers on purpose: .bg is
    position:fixed, so a gradient there would follow the viewport down every
@@ -696,7 +696,7 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 @keyframes breathe{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.12);opacity:1}}
 
 /* ── assurance console ── */
-.console-stage{perspective:1600px;margin-top:44px}
+.console-stage{perspective:1600px;margin-top:64px}
 .console{max-width:none;margin:0 auto;background:var(--paper);border:1px solid var(--line);
   border-radius:var(--r-l);box-shadow:var(--sh-l);overflow:hidden;text-align:left;
   transform-origin:50% 0%;
@@ -961,31 +961,38 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 /* ════════════════════════════════════════════════════════════
    6 · FRAMEWORK SEALS + field guides
    ════════════════════════════════════════════════════════════ */
-.frames{display:grid;grid-template-columns:repeat(7,1fr);gap:14px;margin-bottom:48px}
-.seal{position:relative;background:var(--g900);border-radius:16px;padding:18px 12px 16px;text-align:center;
-  color:#fff;overflow:hidden;opacity:0;transform:translateY(20px) scale(.94);
+.frames{display:grid;grid-template-columns:repeat(7,1fr);gap:16px;margin-bottom:48px;counter-reset:seal}
+.seal{position:relative;background:#fff;border:1px solid var(--line);border-radius:20px;
+  aspect-ratio:1/1;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;color:var(--ink);overflow:hidden;opacity:0;transform:translateY(20px) scale(.94);
+  box-shadow:var(--sh-s);counter-increment:seal;cursor:pointer;
   transition:opacity .55s ease calc(var(--i)*90ms),
              transform .8s var(--e-out) calc(var(--i)*90ms),
-             background .35s ease 0s}
+             box-shadow .3s ease, border-color .3s ease}
 .frames.in .seal{opacity:1;transform:none}
-.seal:nth-child(even){background:var(--g800)}
-.seal:hover{background:var(--g700)}
-.seal-ring{width:46px;height:46px;margin:0 auto 12px;position:relative}
-.seal-ring > svg{width:100%;height:100%;transform:rotate(-90deg)}
-.seal-ring .bg{fill:none;stroke:rgba(255,255,255,.16);stroke-width:2.5}
-.seal-ring .fg{fill:none;stroke:var(--g400);stroke-width:2.5;stroke-linecap:round;
+.seal::before{content:counter(seal,decimal-leading-zero);position:absolute;top:12px;right:14px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;color:var(--ink-3);opacity:.55}
+.seal:hover{transform:translateY(-8px) scale(1.035) !important;box-shadow:var(--sh-l);border-color:var(--g400)}
+.seal-ring{width:64px;height:64px;margin:0 auto 16px;position:relative;border-radius:16px;
+  background:linear-gradient(180deg,rgba(85,139,189,.24),rgba(85,139,189,.1));
+  border:1px solid rgba(85,139,189,.3);
+  display:grid;place-items:center;transition:transform .4s var(--e-out)}
+.seal:hover .seal-ring{transform:scale(1.08)}
+.seal-ring > svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.seal-ring .bg{fill:none;stroke:rgba(17,64,134,.12);stroke-width:2.5}
+.seal-ring .fg{fill:none;stroke:var(--g600);stroke-width:3;stroke-linecap:round;
   stroke-dasharray:126;stroke-dashoffset:126;
   transition:stroke-dashoffset 1.2s var(--e-out) calc(.35s + var(--i)*90ms)}
 .frames.in .seal-ring .fg{stroke-dashoffset:0}
 .seal-ring .ck{position:absolute;inset:0;display:grid;place-items:center}
-.seal-ring .ck svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.2;
+.seal-ring .ck svg{width:28px;height:28px;stroke:var(--g700);fill:none;stroke-width:2.4;
   stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:20;stroke-dashoffset:20;
   transition:stroke-dashoffset .5s var(--e-out) calc(1.1s + var(--i)*90ms)}
 .frames.in .seal-ring .ck svg{stroke-dashoffset:0}
-.seal .k{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;color:var(--g400);
+.seal .k{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:.14em;color:var(--g600);
   text-transform:uppercase}
-.seal .v{font-family:'Inter Tight',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:-.02em;
-  margin-top:6px;line-height:1.2}
+.seal .v{font-family:'Inter Tight',sans-serif;font-weight:800;font-size:16px;letter-spacing:-.02em;
+  color:var(--g900);margin-top:8px;line-height:1.2}
 
 .res{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .res-card{position:relative;background:rgba(249,251,253,.92);backdrop-filter:blur(6px);
@@ -1285,7 +1292,11 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
 .mark-logo{opacity:0;transform:translateY(18px) scale(.9);
   transition:opacity .6s ease,transform .8s var(--e-out)}
 .stack-mark.on .mark-logo{opacity:1;transform:none}
-.mark-logo img{width:132px;height:auto;display:block;margin:0 auto}
+.mark-logo img{width:396px;max-width:80vw;height:auto;display:block;margin:0 auto}
+.mark-name{margin-top:18px;font-family:'Inter Tight',sans-serif;font-weight:600;font-size:34px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);text-align:center;
+  opacity:0;transform:translateY(10px);transition:opacity .6s ease .1s,transform .7s var(--e-out) .1s}
+.stack-mark.on .mark-name{opacity:1;transform:none}
 /* @keyframes shine is shared with the closing-CTA heading */
 @keyframes shine{from{background-position:180% 0}to{background-position:-80% 0}}
 .mark-sub{margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;
