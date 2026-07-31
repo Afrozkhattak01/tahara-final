@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tahara AI — Typography Showcase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Libre+Caslon+Text:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-display: 'Libre Caslon Text', serif;
+    --font-body: 'Archivo', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --bg: #e3ebf7;
+    --bg-2: #edf3fb;
+    --paper: #f9fbfd;
+    --ink: #03152f;
+    --ink-2: #103f86;
+    --ink-3: #5a7a9e;
+    --g400: #558bbd;
+    --g600: #114086;
+    --g700: #0b3472;
+    --g800: #082858;
+    --g900: #051e43;
+    --line: #d8e2ef;
+    --line-2: #c4d3e6;
+    --signal: #a8681a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.65;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── Type scale ── */
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -.015em;
+    line-height: 1.15;
+    font-size: clamp(38px, 5.6vw, 66px);
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -.01em;
+    line-height: 1.2;
+    font-size: clamp(28px, 3.6vw, 44px);
+  }
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -.005em;
+    font-size: 20px;
+    line-height: 1.3;
+  }
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0;
+    font-size: 16px;
+  }
+
+  .mono { font-family: var(--font-mono); }
+  code, pre { font-family: var(--font-mono); }
+  [data-mono] { font-family: var(--font-mono); }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .11em;
+    color: var(--ink-3);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    background: var(--g900);
+    color: #fff;
+    border-radius: 999px;
+    padding: 7px 15px 7px 12px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    box-shadow: 0 6px 18px rgba(3,24,56,.18);
+  }
+  .eyebrow i {
+    width: 6px; height: 6px;
+    background: var(--g400);
+    transform: rotate(45deg);
+    border-radius: 1px;
+  }
+
+  .lede {
+    font-size: clamp(15.5px, 1.35vw, 18px);
+    color: var(--ink-2);
+    line-height: 1.6;
+    max-width: 56ch;
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 15px;
+    padding: 13px 24px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform .3s ease, box-shadow .25s ease, background .25s ease;
+    text-decoration: none;
+  }
+  .btn-solid {
+    background: var(--g900);
+    color: #fff;
+  }
+  .btn-solid:hover {
+    background: var(--g800);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(3,24,56,.2);
+  }
+  .btn-line {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line-2);
+  }
+  .btn-line:hover {
+    border-color: var(--g400);
+    background: #fff;
+    transform: translateY(-2px);
+  }
+
+  /* ── Navigation demo ── */
+  .nav-demo {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    padding: 16px 24px;
+    background: rgba(230,237,248,.78);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-demo .brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 19px;
+    letter-spacing: -.01em;
+  }
+  .nav-demo .brand-mark {
+    width: 28px; height: 28px;
+    background: var(--g900);
+    border-radius: 6px;
+    transform: rotate(45deg);
+  }
+  .nav-demo .nav-links {
+    display: flex;
+    gap: 28px;
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--ink-2);
+  }
+  .nav-demo .nav-links a {
+    text-decoration: none;
+    color: inherit;
+    transition: color .25s ease;
+  }
+  .nav-demo .nav-links a:hover { color: var(--ink); }
+  .nav-demo .nav-cta { margin-left: auto; }
+
+  /* ── Data / console demo ── */
+  .console-demo {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(3,24,56,.08);
+  }
+  .console-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-2);
+  }
+  .console-bar .dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--line-2);
+  }
+  .console-bar .path {
+    margin-left: 10px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--ink-3);
+  }
+  .console-bar .live {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--g600);
+  }
+  .console-bar .pulse {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--g600);
+    animation: pulse 2.4s ease-out infinite;
+  }
+  @keyframes pulse { to { box-shadow: 0 0 0 11px rgba(17,64,134,0); } }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 18px;
+  }
+  .tile {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 13px 14px;
+    background: #fff;
+  }
+  .tile .k {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .tile .v {
+    font-family: var(--font-mono);
+    font-size: 27px;
+    font-weight: 500;
+    letter-spacing: -.02em;
+    margin: 6px 0 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .tile .d {
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    color: var(--g600);
+    font-weight: 500;
+  }
+
+  /* ── Sections ── */
+  section { padding: 64px 0; }
+  section + section { border-top: 1px solid var(--line); }
+
+  .hero-section { padding: 80px 0 64px; text-align: center; }
+  .hero-section .eyebrow { margin-bottom: 24px; }
+  .hero-section h1 { margin-bottom: 20px; }
+  .hero-section .lede { margin: 0 auto 28px; }
+  .hero-cta {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .spec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .spec-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .spec-card .label { margin-bottom: 14px; }
+  .spec-card .sample { margin-bottom: 16px; }
+  .spec-card .specs {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--ink-3);
+  }
+  .spec-card .specs b { color: var(--ink); font-weight: 500; }
+
+  /* ── Statement ── */
+  .stmt {
+    padding: 82px 0 74px;
+    text-align: center;
+  }
+  .stmt-t {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -.01em;
+    line-height: 1.25;
+    font-size: clamp(30px, 4vw, 52px);
+    color: var(--ink);
+    max-width: 22ch;
+    margin: 0 auto;
+  }
+  .stmt-t em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--g600);
+  }
+
+  /* ── Footer ── */
+  footer {
+    background: rgba(237,243,251,.8);
+    border-top: 1px solid var(--line);
+    padding: 48px 0 24px;
+    margin-top: 64px;
+  }
+  footer h5 {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+  footer li {
+    list-style: none;
+    margin-bottom: 9px;
+  }
+  footer li a {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+  .foot-bottom {
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+    margin-top: 32px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: var(--ink-3);
+  }
+
+  @media (max-width: 640px) {
+    .spec-grid { grid-template-columns: 1fr; }
+    .tiles { grid-template-columns: repeat(2, 1fr); }
+    .nav-demo { flex-wrap: wrap; gap: 16px; }
+    .nav-demo .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ NAVIGATION ══════════ -->
+<div class="nav-demo">
+  <div class="brand">
+    <span class="brand-mark"></span>
+    Tahara AI
+  </div>
+  <div class="nav-links">
+    <a href="#">Platform</a>
+    <a href="#">Lifecycle</a>
+    <a href="#">Architecture</a>
+    <a href="#">Resources</a>
+    <a href="#">FAQ</a>
+  </div>
+  <div class="nav-cta">
+    <button class="btn btn-solid">Request a demo</button>
+  </div>
+</div>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero-section">
+  <div class="wrap">
+    <span class="eyebrow"><i></i> AI Assurance Platform</span>
+    <h1>Built for AI you actually run</h1>
+    <p class="lede">Safety, governance and transparency for the AI you actually run. Tahara scans every model, agent and pipeline in your estate — then proves it.</p>
+    <div class="hero-cta">
+      <button class="btn btn-solid">Request a demo →</button>
+      <button class="btn btn-line">Read the docs</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ TYPE SPECIMEN ══════════ -->
+<section>
+  <div class="wrap">
+    <span class="label">Typography Specimen</span>
+    <h2 style="margin-top: 12px; margin-bottom: 8px;">Libre Caslon Text &middot; Archivo &middot; IBM Plex Mono</h2>
+    <p class="lede" style="margin-bottom: 32px;">Three fonts, one system. Libre Caslon Text for authoritative, regulatory headings. Archivo for clean, legible body and UI. IBM Plex Mono for structured data, audit logs, and technical values.</p>
+
+    <div class="spec-grid">
+      <!-- Libre Caslon Text -->
+      <div class="spec-card">
+        <span class="label">Display / Headings</span>
+        <div class="sample">
+          <h1 style="font-size: 38px;">Libre Caslon Text</h1>
+          <h3 style="margin-top: 8px; color: var(--ink-2);">Authoritative &middot; Regulatory &middot; Trustworthy</h3>
+        </div>
+        <div class="specs">
+          <b>Family:</b> Libre Caslon Text (Google Fonts)<br>
+          <b>Weights:</b> 400, 400 italic, 500<br>
+          <b>H1:</b> 400 / -.015em / 1.15 / clamp(38–66px)<br>
+          <b>H2:</b> 400 / -.01em / 1.2 / clamp(28–44px)<br>
+          <b>H3:</b> 400 / -.005em / 1.3 / 20px<br>
+          <b>Used for:</b> Hero, section headers, brand, statement
+        </div>
+      </div>
+
+      <!-- Archivo -->
+      <div class="spec-card">
+        <span class="label">Body / Navigation / Buttons</span>
+        <div class="sample">
+          <p style="font-size: 24px; font-weight: 500; color: var(--ink); font-family: var(--font-body);">Archivo — clean, neutral, legible</p>
+          <p style="margin-top: 8px; color: var(--ink-2);">The body text face. Reads cleanly at 17px with a 1.65 line height. Buttons and labels use 500 weight for emphasis without heaviness.</p>
+        </div>
+        <div class="specs">
+          <b>Family:</b> Archivo (Google Fonts)<br>
+          <b>Weights:</b> 400, 500, 600<br>
+          <b>Body:</b> 400 / 17px / 1.65 / 0em<br>
+          <b>Lede:</b> 400 / clamp(15.5–18px) / 1.6<br>
+          <b>Nav:</b> 500 / 14.5px<br>
+          <b>Buttons:</b> 500 / 15px<br>
+          <b>Labels:</b> 500 / 14px<br>
+          <b>Used for:</b> Body, nav, buttons, forms, labels
+        </div>
+      </div>
+
+      <!-- IBM Plex Mono -->
+      <div class="spec-card">
+        <span class="label">Data / Labels / Code</span>
+        <div class="sample">
+          <p class="mono" style="font-size: 20px; font-weight: 500; color: var(--g600);">IBM Plex Mono</p>
+          <p class="mono" style="margin-top: 8px; font-size: 13px; color: var(--ink-3); letter-spacing: .11em; text-transform: uppercase;">SCAN COMPLETE · 12 MODELS · 0 BLOCKED</p>
+        </div>
+        <div class="specs">
+          <b>Family:</b> IBM Plex Mono (Google Fonts)<br>
+          <b>Weights:</b> 400, 500<br>
+          <b>Labels:</b> 500 / 11px / .11em / uppercase<br>
+          <b>Console:</b> 400 / 11.5px<br>
+          <b>Badges:</b> 500 / 10.5px / .14em<br>
+          <b>Risk scores:</b> 500 / 27px / tabular-nums<br>
+          <b>Used for:</b> Labels, tags, console, API keys, audit logs
+        </div>
+      </div>
+
+      <!-- Statement -->
+      <div class="spec-card">
+        <span class="label">Statement / Quote</span>
+        <div class="sample">
+          <p style="font-family: var(--font-display); font-weight: 400; font-size: 28px; letter-spacing: -.01em; line-height: 1.25; color: var(--ink);">
+            Assurance is not a <em style="font-style: italic; font-weight: 400; color: var(--g600);">checkpoint</em> — it is a <em style="font-style: italic; font-weight: 400; color: var(--g600);">lifecycle</em>.
+          </p>
+        </div>
+        <div class="specs">
+          <b>Family:</b> Libre Caslon Text (italic for emphasis)<br>
+          <b>Weight:</b> 400 regular, 400 italic accent<br>
+          <b>Size:</b> clamp(30–52px)<br>
+          <b>Line height:</b> 1.25<br>
+          <b>Letter spacing:</b> -.01em<br>
+          <b>Used for:</b> Statement band between sections
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CONSOLE / DATA DEMO ══════════ -->
+<section>
+  <div class="wrap">
+    <span class="label">Live Console — IBM Plex Mono in action</span>
+    <h2 style="margin-top: 12px; margin-bottom: 24px;">Assurance Dashboard</h2>
+
+    <div class="console-demo">
+      <div class="console-bar">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="path">tahara://estate/scan</span>
+        <span class="live"><span class="pulse"></span> Live</span>
+      </div>
+      <div class="tiles">
+        <div class="tile">
+          <span class="k">Models</span>
+          <div class="v">12</div>
+          <span class="d">All scanned</span>
+        </div>
+        <div class="tile">
+          <span class="k">Agents</span>
+          <div class="v">47</div>
+          <span class="d">Active</span>
+        </div>
+        <div class="tile">
+          <span class="k">Blocked</span>
+          <div class="v" style="color: var(--signal);">3</div>
+          <span class="d" style="color: var(--signal);">Policy violations</span>
+        </div>
+        <div class="tile">
+          <span class="k">Coverage</span>
+          <div class="v">98%</div>
+          <span class="d">Compliant</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ STATEMENT ══════════ -->
+<section style="background: var(--bg-2);">
+  <div class="wrap">
+    <div class="stmt">
+      <p class="stmt-t">Assurance is not a <em>checkpoint</em> — it is a <em>lifecycle</em>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <div class="wrap">
+    <div style="display: grid; grid-template-columns: 1.7fr repeat(3, 1fr); gap: 32px; padding-bottom: 32px;">
+      <div>
+        <div class="brand" style="display: flex; align-items: center; gap: 9px; font-family: var(--font-display); font-weight: 400; font-size: 19px; letter-spacing: -.01em;">
+          <span class="brand-mark" style="width: 28px; height: 28px; background: var(--g900); border-radius: 6px; transform: rotate(45deg);"></span>
+          Tahara AI
+        </div>
+        <p style="font-size: 13.5px; color: var(--ink-3); margin-top: 12px; max-width: 28ch; line-height: 1.6;">
+          Safety, governance and transparency for the AI you actually run.
+        </p>
+      </div>
+      <div>
+        <h5>Platform</h5>
+        <ul>
+          <li><a href="#">Scan</a></li>
+          <li><a href="#">Runtime</a></li>
+          <li><a href="#">Evidence</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="#">Trust Center</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Docs</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>&copy; 2026 Tahara AI. All rights reserved.</span>
+      <span class="mono" style="font-size: 11.5px; letter-spacing: .08em; font-weight: 500;">SAFE &middot; ETHICAL &middot; TRANSPARENT</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

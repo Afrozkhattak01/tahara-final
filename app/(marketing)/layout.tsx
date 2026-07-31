@@ -48,14 +48,14 @@ export const viewport: Viewport = {
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      {/* Fonts referenced by landing.css by literal family names ('Inter Tight',
-          'Inter', 'JetBrains Mono'). Next hoists these <link> tags into <head>;
-          they load only on marketing routes. */}
+      {/* Fonts: Libre Caslon Text (display), Archivo (body), IBM Plex Mono (data).
+          IBM Plex Sans Arabic is loaded for RTL/Arabic pages. Next hoists these
+          <link> tags into <head>; they load only on marketing routes. */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link rel="preconnect" href="https://cdn.simpleicons.org" />
       <link
-        href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&family=Newsreader:ital,wght@0,400;0,500;1,500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Libre+Caslon+Text:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
         rel="stylesheet"
       />
       {children}
