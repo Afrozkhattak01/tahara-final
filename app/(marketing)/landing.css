@@ -1017,8 +1017,7 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
    7 · FAQ — index + answer panel
    ════════════════════════════════════════════════════════════ */
 .faq-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:20px;align-items:stretch}
-.q-index{position:relative;background:rgba(249,251,253,.94);backdrop-filter:blur(6px);
-  border:1px solid var(--line);border-radius:18px;padding:0 16px;overflow:hidden}
+.q-index{position:relative;background:transparent;padding:0 16px 0 0;overflow:hidden}
 .q-item{width:100%;display:grid;grid-template-columns:26px 1fr 14px;gap:12px;align-items:center;
   text-align:left;padding:17px 4px 17px 12px;border-bottom:1px solid var(--line);
   font-size:14.5px;font-weight:500;color:var(--ink-2);position:relative;
