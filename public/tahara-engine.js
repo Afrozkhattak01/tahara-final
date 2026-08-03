@@ -2303,9 +2303,9 @@ window.TaharaI18N = (function(){
           d:'437 of 504 probes hid instructions in white text inside an uploaded CV — and the model followed them, overriding a candidate\u2019s score. One fix recovers both categories.', cta:'Schedule a re-run' },
         coverType:'bars',
         coverT:'Categories by pass rate',
-        cover:[['Prompt injection','61%',.61,'sig'],['Sensitive disclosure','74%',.74,'sig'],['Supply chain','88%',.88,''],['Data poisoning','91%',.91,''],['Excessive agency','96%',.96,'']],
+        cover:[['Prompt injection','61%',.61,'sig'],['Sensitive disclosure','74%',.74,'sig'],['Supply chain','88%',.88,''],['Data poisoning','91%',.91,''],['Excessive agency','96%',.96,'good']],
         coverFoot:{ text:'5 of 10 pass 90%+', cta:'Open probe library' },
-        ask:{ q:'', chip:'High risk', tone:'' } },
+        ask:{ q:'Run a red team campaign', chip:'High risk', tone:'' } },
       { badge:'Module 04 · Guardrails', title:'Guardrails',
         sub:'Every prompt and response, inspected.',
         nav:['Guardrails','Activity monitor','Detectors','Event stream','Policies','Retrieval inspection','Policy simulation'], active:1,
@@ -2367,7 +2367,7 @@ window.TaharaI18N = (function(){
         coverL:['حقن الطلبات','إفشاء المعلومات الحسّاسة','سلسلة التوريد','تسميم البيانات','الصلاحية المفرطة'],
         coverVAr:['61%','74%','88%','91%','96%'],
         footText:'5 من 10 تتجاوز 90%', footCta:'فتح مكتبة الاختبارات',
-        askQ:'', askChip:'مخاطر عالية', cta:'' },
+        askQ:'تشغيل حملة اختبار اختراق', askChip:'مخاطر عالية', cta:'' },
       { badge:'الوحدة 04 · حواجز الحماية', title:'حواجز الحماية',
         sub:'كل طلب ورد يُفحص.',
         nav:['حواجز الحماية','مراقبة النشاط','الكواشف','سجل الأحداث','السياسات','فحص الاسترجاع','محاكاة السياسات'],
@@ -2425,16 +2425,26 @@ window.TaharaI18N = (function(){
       }
       return d;
     }
+    let sparkUid = 0;
     function sparkSVG(pts, tone){
-      const d = smoothPath(XS, pts);
+      const lineD = smoothPath(XS, pts);
+      const areaD = lineD+' L'+XS[XS.length-1]+' 26 L'+XS[0]+' 26 Z';
       const col = TONE_COL[tone] || TONE_COL[''];
       const lx = XS[XS.length-1], ly = pts[pts.length-1];
+      const gid = 'sparkGrad'+(sparkUid++);
       return '<svg class="dash-spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true">'+
-        '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'+
+        '<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1">'+
+          '<stop offset="0%" stop-color="'+col+'" stop-opacity=".3"/>'+
+          '<stop offset="100%" stop-color="'+col+'" stop-opacity="0"/>'+
+        '</linearGradient></defs>'+
+        '<path class="dash-spark-area" d="'+areaD+'" fill="url(#'+gid+')" stroke="none"/>'+
+        '<path class="dash-spark-line" d="'+lineD+'" fill="none" stroke="'+col+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'+
         '<circle class="dash-spark-dot" cx="'+lx+'" cy="'+ly+'" r="2.3" fill="'+col+'"/>'+
         '</svg>';
     }
     function toneClass(t){ return t==='bad'?'tone-bad':t==='warn'?'tone-warn':t==='good'?'tone-good':t==='sig'?'tone-warn':''; }
+    function barToneClass(t){ return t==='sig'?' sig':t==='good'?' good':''; }
+    const miniBarsHTML = '<span class="dash-mini-bars"><i style="height:6px"></i><i style="height:10px"></i><i style="height:15px"></i><i style="height:20px"></i></span>';
 
     /* build a module in its pre-animation state (0 counts, empty bars) */
     function render(m){
@@ -2457,26 +2467,28 @@ window.TaharaI18N = (function(){
       findEl.innerHTML = '<span class="dash-kicker"><i></i>'+esc(m.finding.kind).toUpperCase()+'</span>'+
         '<div class="dash-finding-b"><h4>'+esc(m.finding.t)+'</h4><p>'+esc(m.finding.d)+'</p>'+
         '<a class="dash-finding-cta" href="#" onclick="return false">'+esc(m.finding.cta)+' <span class="arw">→</span></a></div>';
-      const footHTML = m.coverFoot ? '<div class="dash-cover-foot"><span>'+esc(m.coverFoot.text)+'</span>'+
-        '<a href="#" onclick="return false">'+esc(m.coverFoot.cta)+' <span class="arw">→</span></a></div>' : '';
+      const footHTML = m.coverFoot ? '<div class="dash-cover-foot"><div class="dash-cover-foot-text"><span>'+esc(m.coverFoot.text)+'</span>'+
+        '<a href="#" onclick="return false">'+esc(m.coverFoot.cta)+' <span class="arw">→</span></a></div>'+miniBarsHTML+'</div>' : '';
       if (m.coverType === 'table'){
-        coverEl.innerHTML = '<span class="dash-cover-t">'+esc(m.coverT).toUpperCase()+'</span>'+
+        coverEl.innerHTML = '<span class="dash-cover-t">'+esc(m.coverT)+'</span>'+
           '<div class="dash-table">'+m.coverRows.map(r=>
             '<div class="dash-trow"><span class="dash-trow-name">'+esc(r[0])+'</span>'+
             '<span class="dash-trow-tag'+(r[2]==='sig'?' sig':'')+'">'+esc(r[1])+'</span>'+
             '<span class="dash-trow-n">'+esc(r[3].toLocaleString('en-US'))+'</span></div>').join('')+
           '</div>'+footHTML;
       } else {
-        coverEl.innerHTML = '<span class="dash-cover-t">'+esc(m.coverT).toUpperCase()+'</span>'+
+        coverEl.innerHTML = '<span class="dash-cover-t">'+esc(m.coverT)+'</span>'+
           m.cover.map(r=>'<div class="dash-bar-row'+(r[2]===null?' no-bar':'')+'"><span class="dash-bar-l">'+esc(r[0])+'</span>'+
+            (r[2]===null?'<span></span>':'<span class="dash-bar-track"><i class="dash-bar-fill'+barToneClass(r[3])+'" data-frac="'+r[2]+'"></i></span>')+
             '<span class="dash-bar-v">'+esc(r[1])+'</span>'+
-            (r[2]===null?'':'<span class="dash-bar-track"><i class="dash-bar-fill'+(r[3]==='sig'?' sig':'')+'" data-frac="'+r[2]+'"></i></span>')+
             '</div>').join('')+footHTML;
       }
       if (askEl) askEl.innerHTML =
-        '<p class="dash-ask-q">'+esc(m.ask.q)+'<i class="dash-caret"></i></p>'+
+        '<p class="dash-ask-q"><span class="dash-ask-q-text" data-full="'+esc(m.ask.q)+'"></span><i class="dash-caret"></i></p>'+
         '<div class="dash-ask-foot">'+
-          '<span class="dash-avatars"><i>M</i><i>A</i><i>S</i><b>+3</b></span>'+
+          '<button class="dash-ask-plus" type="button" aria-label="Add"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke-linecap="round"/></svg></button>'+
+          '<button class="dash-ask-attach" type="button" aria-label="Attach"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2.5" y="2.5" width="5" height="5" rx="1"/><rect x="8.5" y="8.5" width="5" height="5" rx="1"/></svg></button>'+
+          '<span class="dash-avatars"><i>RH</i><i>MK</i><i>SA</i><b>+3</b></span>'+
           '<span class="dash-ask-tag'+(m.ask.tone==='sig'?' sig':'')+'">'+esc(m.ask.chip)+'</span>'+
           '<button class="dash-ask-send" type="button" aria-label="Send"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'+
         '</div>';
@@ -2494,11 +2506,15 @@ window.TaharaI18N = (function(){
           if (p<1) requestAnimationFrame(step);
         })(t0);
       });
-      statsEl.querySelectorAll('.dash-spark path').forEach(p=>{
+      statsEl.querySelectorAll('.dash-spark-line').forEach(p=>{
         const len = p.getTotalLength();
         p.style.transition='none'; p.style.strokeDasharray=len; p.style.strokeDashoffset=len;
         p.getBoundingClientRect();
         p.style.transition='stroke-dashoffset 1.1s cubic-bezier(.16,1,.3,1)'; p.style.strokeDashoffset='0';
+      });
+      statsEl.querySelectorAll('.dash-spark-area').forEach(a=>{
+        a.style.transition='none'; a.style.opacity='0'; a.getBoundingClientRect();
+        a.style.transition='opacity 1.1s ease .2s'; a.style.opacity='1';
       });
       statsEl.querySelectorAll('.dash-spark-dot').forEach(c=>{
         c.style.opacity='0';
@@ -2509,6 +2525,29 @@ window.TaharaI18N = (function(){
         el.style.transition='none'; el.style.width='0%'; el.getBoundingClientRect();
         el.style.transition='width .9s cubic-bezier(.16,1,.3,1)'; el.style.width=w+'%';
       });
+      coverEl.querySelectorAll('.dash-mini-bars i').forEach((el,i)=>{
+        const h = el.style.height;
+        el.style.transition='none'; el.style.height='0px'; el.getBoundingClientRect();
+        el.style.transition='height .6s cubic-bezier(.16,1,.3,1) '+(i*90)+'ms'; el.style.height=h;
+      });
+      typeAsk();
+    }
+
+    /* type the ask question out character by character */
+    let typeToken = 0;
+    function typeAsk(){
+      const el = askEl && askEl.querySelector('.dash-ask-q-text');
+      if (!el) return;
+      const text = el.dataset.full || '';
+      const myToken = ++typeToken;
+      el.textContent = '';
+      let i = 0;
+      (function step(){
+        if (myToken !== typeToken) return;
+        el.textContent = text.slice(0,i);
+        i++;
+        if (i <= text.length) setTimeout(step, 32);
+      })();
     }
 
     render(view(0));
