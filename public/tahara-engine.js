@@ -2254,53 +2254,74 @@ window.TaharaI18N = (function(){
 
     const MODULES = [
       { badge:'Module 01 · Discover', title:'Discovery',
-        sub:"What you're running, who owns it, and who is exposed by it.",
-        nav:['Discover','Connect','Dashboard','Agents','Inventory','Activity feed'], active:2,
+        sub:"Who's exposed, and what to do about it.",
+        nav:['Discovery','Connect','Dashboard','Systems','Register','Activity feed','Data lineage'], active:2,
         stats:[
-          {k:'Systems in scope', v:412, d:'+18 this week', tone:'', spark:[22,20,18,15,12,10,7,4]},
-          {k:'Agents monitored', v:96, d:'14 with tool access', tone:'', spark:[19,20,15,17,12,13,8,7]},
-          {k:'Findings open', v:6, d:'3 major', tone:'sig', spark:[16,18,9,19,7,16,6,12]} ],
-        finding:{ kind:'Critical finding', t:'3 systems profile individuals with no owner on record',
-          d:'Each one is in scope for EU AI Act Art. 6(3). None can claim the derogation.', cta:'Investigate' },
-        coverT:'Coverage by surface',
-        cover:[['Models','128',128/144,''],['Agents','96',96/144,''],['MCP servers','44',44/144,''],['Keys & tools','144',1,'']],
-        ask:{ q:'Which systems have no owner on record?', chip:'High risk', tone:'' } },
-      { badge:'Module 02 · Govern', title:'Applicability and evidence',
-        sub:'Every control mapped to a probe, and a probe to proof.',
-        nav:['Govern','Frameworks','Control mapping','Probes','Evidence','Findings'], active:2,
+          {k:'Systems found', v:34, d:'4 this week', tone:'', spark:[20,19,17,15,13,10,7,4]},
+          {k:'Not in the register', v:12, d:'3 this week', tone:'bad', spark:[15,17,19,14,16,10,13,4]},
+          {k:'No named owner', v:6, d:'1 this week', tone:'warn', spark:[14,12,15,11,13,10,12,9]},
+          {k:'Contradictions open', v:3, d:'1 new this week', tone:'bad', spark:[16,15,17,16,18,14,17,5]},
+          {k:'AI calls · 24h', v:12.8, suf:'k', d:'18% vs yesterday', tone:'', spark:[21,19,17,15,13,10,8,5]} ],
+        finding:{ kind:'Critical finding', t:'12 systems are running that nobody declared.',
+          d:'Three of them process job applications, which puts them in Annex III of the EU AI Act. Two have no owner at all — so no control over them can be signed off by anyone.', cta:'Open the register' },
+        coverType:'table',
+        coverT:'Top systems by people affected',
+        coverRows:[
+          ['talentflow-prod','scores CVs','sig',2140],
+          ['cv-parser-batch','undeclared','sig',2140],
+          ['sanction-screening','reads records','',880],
+          ['support-copilot','reads tickets','',610],
+          ['interview-scoring-v2','undeclared','sig',0] ],
+        coverFoot:{ text:'22 of 34 in the register', cta:'Open the register' },
+        ask:{ q:'Summarise AI assets', chip:'High risk', tone:'' } },
+      { badge:'Module 02 · Govern', title:'Governance',
+        sub:"Conformance against the frameworks you're held to.",
+        nav:['Govern','Conformance','Frameworks','Findings','Evidence','Sign-off queue','Audit trail'], active:1,
         stats:[
-          {k:'Requirements assessed', v:61, d:'of 187 total', tone:'', spark:[21,19,17,14,12,9,7,5]},
-          {k:'Conforming', v:34, suf:'%', d:'of assessed', tone:'', spark:[18,17,16,14,13,12,11,10]},
-          {k:'Major findings', v:3, d:'2 new this week', tone:'sig', spark:[8,9,11,12,13,14,16,17]} ],
-        finding:{ kind:'Major non-conformity', t:'Access control does not match the documented policy',
-          d:'ISO 42001 A.4.2. The IAM scan contradicts the policy on file. Human review pending.', cta:'Review evidence' },
+          {k:'Requirements assessed', v:61, suf:'/187', d:'9 this week', tone:'', spark:[20,18,16,14,12,10,8,6]},
+          {k:'Major nonconformities', v:3, d:'1 this week', tone:'bad', spark:[18,17,16,14,13,11,9,6]},
+          {k:'Minor nonconformities', v:7, d:'2 closed', tone:'warn', spark:[12,14,11,13,10,12,9,11]},
+          {k:'Conforming', v:34, suf:'%', d:'21 of the 61 assessed', tone:'good', spark:[19,17,15,13,11,9,7,5]},
+          {k:'Awaiting sign-off', v:23, d:'Evidence gathered, no assessor yet', tone:'warn', spark:[19,18,16,14,12,10,8,5]} ],
+        finding:{ kind:'Critical finding', t:"This report can't be final until a person signs it.",
+          d:'38 of 61 requirements are attested by a named assessor. A machine can raise a finding; it can\u2019t clear one — so the other 23 stay open until someone accepts the evidence.', cta:'Open sign-off queue' },
+        coverType:'bars',
         coverT:'Conformance by framework',
-        cover:[['EU AI Act','18/33',18/33,''],['ISO/IEC 42001','24/76',24/76,''],['ISO/IEC 23894','11/41',11/41,''],['NIST AI RMF','8/37',8/37,'']],
-        ask:{ q:'Show me every control blocked on evidence', chip:'Unresolved', tone:'' } },
-      { badge:'Module 03 · Adversarial', title:'Attack simulation',
-        sub:'The OWASP LLM Top 10, run on a schedule against staging.',
-        nav:['Adversarial','Test sets','OWASP LLM Top 10','Runs','Findings','Retest'], active:2,
+        cover:[['EU AI Act','18/33',18/33,''],['ISO/IEC 42001','24/76',24/76,''],['ISO/IEC 23894','11/41',11/41,''],['NIST AI RMF','8/37',8/37,''],['Audit window','61 days · 30 Sep',null,'']],
+        coverFoot:{ text:'38 of 61 attested', cta:'Open sign-off queue' },
+        ask:{ q:'What is blocking sign-off?', chip:'Blocked', tone:'' } },
+      { badge:'Module 03 · Adversarial', title:'Adversarial testing',
+        sub:'Probed continuously, not once a year.',
+        nav:['Adversarial','Campaigns','Categories','Probe library','Findings','Schedule','Runbooks'], active:1,
         stats:[
-          {k:'Probes · 24h', v:8412, d:'across 10 categories', tone:'', spark:[16,10,18,9,17,8,15,11]},
-          {k:'Categories passing', v:5, d:'of 10', tone:'', spark:[14,13,14,12,13,12,13,12]},
-          {k:'Failing', v:2, d:'injection, disclosure', tone:'sig', spark:[8,9,11,12,13,14,16,17]} ],
-        finding:{ kind:'Open finding · LLM01', t:'468 of 1,204 indirect injection attempts succeeded',
-          d:'Instructions hidden inside an uploaded document were followed. Re-tested every six hours.', cta:'View run detail' },
-        coverT:'Pass rate by category',
-        cover:[['LLM01 Prompt injection','61%',.61,'sig'],['LLM02 Disclosure','74%',.74,'sig'],['LLM06 Excessive agency','83%',.83,''],['LLM07 Prompt leakage','100%',1,'']],
-        ask:{ q:'Why did LLM01 fail this run?', chip:'Highest priority', tone:'sig' } },
-      { badge:'Module 04 · Guardrails', title:'Prompt inspection',
-        sub:'Every prompt checked before the model sees it.',
-        nav:['Guardrails','Inspection','Detectors','Policies','Prompt log','Escalations'], active:4,
+          {k:'Failing', v:2, d:'1 this week', tone:'bad', spark:[18,17,15,13,12,10,8,5]},
+          {k:'Degraded', v:3, d:'Since the last model update', tone:'', spark:[13,14,12,13,11,13,12,11]},
+          {k:'Passing', v:5, d:'No successful attack today', tone:'good', spark:[8,9,10,12,13,14,13,11]},
+          {k:'Probes · 24h', v:8412, d:'Generated from your own traffic patterns', tone:'', spark:[20,18,16,14,12,10,8,5]},
+          {k:'Overall pass rate', v:91.4, suf:'%', d:'2.1 points this week', tone:'warn', spark:[7,8,9,10,12,14,16,17]} ],
+        finding:{ kind:'Critical finding', t:'Both failing categories share one cause.',
+          d:'437 of 504 probes hid instructions in white text inside an uploaded CV — and the model followed them, overriding a candidate\u2019s score. One fix recovers both categories.', cta:'Schedule a re-run' },
+        coverType:'bars',
+        coverT:'Categories by pass rate',
+        cover:[['Prompt injection','61%',.61,'sig'],['Sensitive disclosure','74%',.74,'sig'],['Supply chain','88%',.88,''],['Data poisoning','91%',.91,''],['Excessive agency','96%',.96,'']],
+        coverFoot:{ text:'5 of 10 pass 90%+', cta:'Open probe library' },
+        ask:{ q:'', chip:'High risk', tone:'' } },
+      { badge:'Module 04 · Guardrails', title:'Guardrails',
+        sub:'Every prompt and response, inspected.',
+        nav:['Guardrails','Activity monitor','Detectors','Event stream','Policies','Retrieval inspection','Policy simulation'], active:1,
         stats:[
-          {k:'Inspected · 24h', v:12847, d:'prompts checked', tone:'', spark:[22,20,17,15,12,10,7,4]},
-          {k:'Masked', v:1204, d:'redacted, reversible', tone:'', spark:[19,20,16,17,13,14,9,8]},
-          {k:'Leaked', v:1, d:'escalated to DPO', tone:'sig', spark:[16,19,9,20,7,17,5,11]} ],
-        finding:{ kind:'Escalated', t:'A national ID reached the model unmasked',
-          d:'It arrived through a document the retrieval layer injected, not the typed prompt. The filter reads the prompt, not the assembled context.', cta:'View escalation' },
-        coverT:'Detector hits · 24h',
-        cover:[['Name (NER)','1,204',1,''],['Email','1,118',1118/1204,''],['Phone','744',744/1204,''],['National ID','28',28/1204,'sig']],
-        ask:{ q:'What leaked in the last 24 hours?', chip:'Escalated', tone:'sig' } }
+          {k:'Prompts inspected', v:12847, d:'18% vs yesterday', tone:'', spark:[20,18,16,14,12,10,8,5]},
+          {k:'Masked', v:1204, d:'Redacted before the model saw it', tone:'good', spark:[19,17,15,13,11,9,7,5]},
+          {k:'Blocked', v:38, d:'Too sensitive to mask', tone:'warn', spark:[12,14,11,14,12,15,11,13]},
+          {k:'Leaked', v:1, d:'First in 30 days · escalated 04:12', tone:'bad', spark:[20,20,20,20,20,19,20,4]},
+          {k:'Retrieval coverage', v:0, suf:'%', d:'Retrieved documents are not inspected', tone:'', spark:[13,13,13,13,13,13,13,13]} ],
+        finding:{ kind:'Critical finding', t:'The filter is in the wrong place.',
+          d:'Inspection covers the prompt, not the context retrieval assembles afterward — which is what the model actually sees. A candidate\u2019s national ID reached the model that way this morning.', cta:'View the event' },
+        coverType:'bars',
+        coverT:'Detectors by hits · 24h',
+        cover:[['Name','1,204',1,''],['Email','1,118',1118/1204,''],['Phone','744',744/1204,''],['Address','312',312/1204,''],['National ID','28',28/1204,'sig']],
+        coverFoot:{ text:'1 leak this week', cta:'View the event' },
+        ask:{ q:'Explain how the leak at 04:12 got past every detector.', chip:'The leak', tone:'' } }
     ];
 
     /* Arabic is a TEXT-ONLY overlay: every number, sparkline and bar fraction
@@ -2308,45 +2329,57 @@ window.TaharaI18N = (function(){
        apart on the data. Framework names, LLM0x codes and NER stay Latin. */
     const MODULES_AR = [
       { badge:'الوحدة 01 · الاكتشاف', title:'الاكتشاف',
-        sub:'ما الذي تشغّلونه، ومن يملكه، ومن يتعرّض له.',
-        nav:['الاكتشاف','الربط','لوحة المعلومات','الوكلاء','الجرد','سجل النشاط'],
-        statK:['الأنظمة ضمن النطاق','الوكلاء المراقَبون','النتائج المفتوحة'],
-        statD:['+18 هذا الأسبوع','14 منها يصل إلى الأدوات','3 جوهرية'],
-        kind:'نتيجة حرجة', t:'3 أنظمة تُنشئ ملفات عن أفراد دون مالك مسجَّل',
-        d:'كلٌّ منها يقع ضمن نطاق EU AI Act المادة 6(3)، ولا يمكن لأيٍّ منها الاستفادة من الاستثناء.',
-        coverT:'التغطية حسب السطح',
-        coverL:['النماذج','الوكلاء','خوادم MCP','المفاتيح والأدوات'],
-        askQ:'ما الأنظمة التي بلا مالك مسجَّل؟', askChip:'مخاطر عالية', cta:'تحقيق' },
-      { badge:'الوحدة 02 · الحوكمة', title:'قابلية التطبيق والأدلة',
-        sub:'كل ضابط مرتبط باختبار، وكل اختبار بدليل.',
-        nav:['الحوكمة','الأطر','ربط الضوابط','الاختبارات','الأدلة','النتائج'],
-        statK:['المتطلبات المُقيَّمة','المطابقة','النتائج الجوهرية'],
-        statD:['من أصل 187','من المُقيَّم','2 جديدة هذا الأسبوع'],
-        kind:'عدم مطابقة جوهري', t:'التحكم في الوصول لا يطابق السياسة الموثَّقة',
-        d:'ISO 42001 A.4.2. فحص إدارة الهوية يناقض السياسة المحفوظة. المراجعة البشرية قيد الانتظار.',
+        sub:'من المعرَّض، وماذا نفعل حياله.',
+        nav:['الاكتشاف','الربط','لوحة المعلومات','الأنظمة','السجل','سجل النشاط','نسب البيانات'],
+        statK:['الأنظمة المكتشَفة','ليست في السجل','بلا مالك مسجَّل','تناقضات مفتوحة','استدعاءات الذكاء الاصطناعي · 24 س'],
+        statD:['4 هذا الأسبوع','3 هذا الأسبوع','1 هذا الأسبوع','1 جديد هذا الأسبوع','18% مقارنة بالأمس'],
+        kind:'نتيجة حرجة', t:'12 نظامًا يعمل دون أن يعلن عنه أحد.',
+        d:'ثلاثة منها تعالج طلبات التوظيف، ما يضعها ضمن الملحق الثالث من EU AI Act. اثنان بلا مالك على الإطلاق — فلا يمكن لأحد اعتماد ضبطهما.',
+        coverT:'أكثر الأنظمة تأثيرًا على الأفراد',
+        coverRowsAr:[
+          ['talentflow-prod','يُقيّم السير الذاتية',2140],
+          ['cv-parser-batch','غير مُعلَن',2140],
+          ['sanction-screening','يقرأ السجلات',880],
+          ['support-copilot','يقرأ التذاكر',610],
+          ['interview-scoring-v2','غير مُعلَن',0] ],
+        footText:'22 من 34 في السجل', footCta:'فتح السجل',
+        askQ:'تلخيص أصول الذكاء الاصطناعي', askChip:'مخاطر عالية', cta:'فتح السجل' },
+      { badge:'الوحدة 02 · الحوكمة', title:'الحوكمة',
+        sub:'المطابقة مقابل الأطر التي تُحاسَبون عليها.',
+        nav:['الحوكمة','المطابقة','الأطر','النتائج','الأدلة','قائمة الاعتماد','سجل التدقيق'],
+        statK:['المتطلبات المُقيَّمة','عدم مطابقة جوهري','عدم مطابقة طفيف','المطابقة','بانتظار الاعتماد'],
+        statD:['9 هذا الأسبوع','1 هذا الأسبوع','2 مغلقة','21 من أصل 61 مُقيَّم','أُعِدَّت الأدلة، لا مُقيِّم بعد'],
+        kind:'نتيجة حرجة', t:'لا يمكن اعتماد هذا التقرير حتى يوقّعه شخص.',
+        d:'38 من أصل 61 متطلبًا مُعتمَد من قِبل مُقيِّم مُسمّى. يمكن للآلة رفع نتيجة، لكن لا يمكنها إغلاقها — لذا تبقى الـ23 الأخرى مفتوحة حتى يقبل أحد الأدلة.',
         coverT:'المطابقة حسب الإطار',
-        coverL:['EU AI Act','ISO/IEC 42001','ISO/IEC 23894','NIST AI RMF'],
-        askQ:'أرني كل ضابط محظور على الدليل', askChip:'غير محلول', cta:'مراجعة الدليل' },
-      { badge:'الوحدة 03 · الاختبار العدائي', title:'محاكاة الهجمات',
-        sub:'قائمة OWASP LLM Top 10، تُنفَّذ وفق جدول على بيئة التجهيز.',
-        nav:['الاختبار العدائي','مجموعات الاختبار','OWASP LLM Top 10','الجولات','النتائج','إعادة الاختبار'],
-        statK:['الاختبارات · 24 ساعة','الفئات الناجحة','الفئات الراسبة'],
-        statD:['عبر 10 فئات','من أصل 10','الحقن والإفشاء'],
-        kind:'نتيجة مفتوحة · LLM01', t:'نجحت 468 محاولة حقن غير مباشر من أصل 1,204',
-        d:'اتُّبعت تعليمات مخفية داخل مستند مرفوع. تُعاد الاختبارات كل ست ساعات.',
+        coverL:['EU AI Act','ISO/IEC 42001','ISO/IEC 23894','NIST AI RMF','نافذة التدقيق'],
+        coverVAr:['18/33','24/76','11/41','8/37','61 يومًا · 30 سبتمبر'],
+        footText:'38 من 61 مُعتمَد', footCta:'فتح قائمة الاعتماد',
+        askQ:'ما الذي يعطّل الاعتماد؟', askChip:'محظور', cta:'فتح قائمة الاعتماد' },
+      { badge:'الوحدة 03 · الاختبار العدائي', title:'الاختبار العدائي',
+        sub:'يُفحص باستمرار، لا مرة واحدة في السنة.',
+        nav:['الاختبار العدائي','الحملات','الفئات','مكتبة الاختبارات','النتائج','الجدولة','كتيبات التشغيل'],
+        statK:['راسب','متدهور','ناجح','الاختبارات · 24 س','معدل النجاح الإجمالي'],
+        statD:['1 هذا الأسبوع','منذ آخر تحديث للنموذج','لا هجوم ناجح اليوم','مولَّدة من حركة مرورك الخاصة','2.1 نقطة هذا الأسبوع'],
+        kind:'نتيجة حرجة', t:'الفئتان الراسبتان تشتركان في سبب واحد.',
+        d:'أخفى 437 من أصل 504 اختبارًا تعليمات بنص أبيض داخل سيرة ذاتية مرفوعة — واتّبعها النموذج، متجاوزًا تقييم أحد المرشحين. إصلاح واحد يُعالج الفئتين معًا.',
         coverT:'معدل النجاح حسب الفئة',
-        coverL:['LLM01 حقن الطلبات','LLM02 إفشاء المعلومات','LLM06 الصلاحية المفرطة','LLM07 تسريب الطلبات'],
-        askQ:'لماذا فشل LLM01 في هذه الجولة؟', askChip:'أولوية قصوى', cta:'عرض تفاصيل الجولة' },
-      { badge:'الوحدة 04 · حواجز الحماية', title:'فحص الطلبات',
-        sub:'كل طلب يُفحص قبل أن يصل إلى النموذج.',
-        nav:['حواجز الحماية','الفحص','الكواشف','السياسات','سجل الطلبات','التصعيدات'],
-        statK:['المفحوصة · 24 ساعة','المُخفاة','المُسرَّبة'],
-        statD:['طلبًا جرى فحصه','مُنقَّحة وقابلة للاسترجاع','صُعِّدت إلى مسؤول حماية البيانات'],
-        kind:'مُصعَّد', t:'وصل رقم هوية وطنية إلى النموذج دون إخفاء',
-        d:'وصل عبر مستند أدرجته طبقة الاسترجاع، لا عبر الطلب المكتوب. المرشِّح يقرأ الطلب، لا السياق المُجمَّع.',
+        coverL:['حقن الطلبات','إفشاء المعلومات الحسّاسة','سلسلة التوريد','تسميم البيانات','الصلاحية المفرطة'],
+        coverVAr:['61%','74%','88%','91%','96%'],
+        footText:'5 من 10 تتجاوز 90%', footCta:'فتح مكتبة الاختبارات',
+        askQ:'', askChip:'مخاطر عالية', cta:'' },
+      { badge:'الوحدة 04 · حواجز الحماية', title:'حواجز الحماية',
+        sub:'كل طلب ورد يُفحص.',
+        nav:['حواجز الحماية','مراقبة النشاط','الكواشف','سجل الأحداث','السياسات','فحص الاسترجاع','محاكاة السياسات'],
+        statK:['الطلبات المفحوصة','المُخفاة','المحظورة','المُسرَّبة','تغطية الاسترجاع'],
+        statD:['18% مقارنة بالأمس','مُنقَّحة قبل أن يراها النموذج','حسّاسة أكثر من أن تُخفى','الأولى منذ 30 يومًا · صُعِّدت 04:12','المستندات المسترجَعة غير مفحوصة'],
+        kind:'نتيجة حرجة', t:'المرشِّح في المكان الخطأ.',
+        d:'الفحص يغطي الطلب، لا السياق الذي تجمعه طبقة الاسترجاع لاحقًا — وهو ما يراه النموذج فعليًا. وصل رقم هوية وطنية إلى النموذج بهذه الطريقة صباح اليوم.',
         coverT:'إصابات الكواشف · 24 ساعة',
-        coverL:['الاسم (NER)','البريد الإلكتروني','الهاتف','رقم الهوية الوطنية'],
-        askQ:'ما الذي تسرَّب خلال آخر 24 ساعة؟', askChip:'مُصعَّد', cta:'عرض التصعيد' }
+        coverL:['الاسم','البريد الإلكتروني','الهاتف','العنوان','رقم الهوية الوطنية'],
+        coverVAr:['1,204','1,118','744','312','28'],
+        footText:'تسريب واحد هذا الأسبوع', footCta:'عرض الحدث',
+        askQ:'اشرح كيف تجاوز التسريب الساعة 04:12 كل كاشف.', askChip:'التسريب', cta:'عرض الحدث' }
     ];
 
     /* i18n.init() has already run by the time this IIFE executes, so read the
@@ -2360,42 +2393,86 @@ window.TaharaI18N = (function(){
       const m = MODULES[i];
       if (lang !== 'ar') return m;
       const a = MODULES_AR[i];
-      return { badge:a.badge, title:a.title, sub:a.sub, nav:a.nav, active:m.active,
+      const out = { badge:a.badge, title:a.title, sub:a.sub, nav:a.nav, active:m.active,
         stats: m.stats.map((s,j)=>Object.assign({}, s, { k:a.statK[j], d:a.statD[j] })),
         finding:{ kind:a.kind, t:a.t, d:a.d, cta:a.cta },
-        coverT:a.coverT,
-        cover: m.cover.map((r,j)=>[a.coverL[j], r[1], r[2], r[3]]),
+        coverType:m.coverType, coverT:a.coverT,
+        coverFoot:{ text:a.footText, cta:a.footCta },
         ask:{ q:a.askQ, chip:a.askChip, tone:m.ask.tone } };
+      if (m.coverType === 'table'){
+        out.coverRows = m.coverRows.map((r,j)=>[a.coverRowsAr[j][0], a.coverRowsAr[j][1], r[2], a.coverRowsAr[j][2]]);
+      } else {
+        out.cover = m.cover.map((r,j)=>[a.coverL[j], a.coverVAr[j], r[2], r[3]]);
+      }
+      return out;
     }
 
     const XS = [0,14,28,42,56,70,84,100];
     const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    function sparkSVG(pts, tone){
-      const d = pts.map((y,i)=>(i?'':'M')+XS[i]+' '+y).join(' ');
-      const col = tone==='sig' ? '#b5651d' : '#114086';
-      return '<svg class="dash-spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    const TONE_COL = { bad:'#c0392b', warn:'#b5651d', good:'#1f8a4c', sig:'#b5651d', '':'#114086' };
+    /* Catmull-Rom → cubic-bezier smoothing, so the sparkline reads as a real
+       chart curve rather than a jagged connect-the-dots line. */
+    function smoothPath(xs, ys){
+      let d = 'M'+xs[0]+' '+ys[0];
+      for (let i=0;i<xs.length-1;i++){
+        const x0 = xs[i-1] !== undefined ? xs[i-1] : xs[i], y0 = ys[i-1] !== undefined ? ys[i-1] : ys[i];
+        const x1 = xs[i], y1 = ys[i];
+        const x2 = xs[i+1], y2 = ys[i+1];
+        const x3 = xs[i+2] !== undefined ? xs[i+2] : x2, y3 = ys[i+2] !== undefined ? ys[i+2] : y2;
+        const c1x = x1 + (x2-x0)/6, c1y = y1 + (y2-y0)/6;
+        const c2x = x2 - (x3-x1)/6, c2y = y2 - (y3-y1)/6;
+        d += ' C'+c1x+' '+c1y+','+c2x+' '+c2y+','+x2+' '+y2;
+      }
+      return d;
     }
+    function sparkSVG(pts, tone){
+      const d = smoothPath(XS, pts);
+      const col = TONE_COL[tone] || TONE_COL[''];
+      const lx = XS[XS.length-1], ly = pts[pts.length-1];
+      return '<svg class="dash-spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true">'+
+        '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'+
+        '<circle class="dash-spark-dot" cx="'+lx+'" cy="'+ly+'" r="2.3" fill="'+col+'"/>'+
+        '</svg>';
+    }
+    function toneClass(t){ return t==='bad'?'tone-bad':t==='warn'?'tone-warn':t==='good'?'tone-good':t==='sig'?'tone-warn':''; }
 
     /* build a module in its pre-animation state (0 counts, empty bars) */
     function render(m){
-      badge.textContent = m.badge.toUpperCase();
       title.textContent = m.title;
       sub.textContent = m.sub;
-      side.innerHTML = m.nav.map((n,idx)=> idx===0
-        ? '<div class="dash-nav-mod"><span class="dash-ring"></span>'+esc(n)+'</div>'
-        : '<a class="dash-nav-item'+(idx===m.active?' on':'')+'" href="#" onclick="return false">'+esc(n)+'</a>').join('');
+      const lastIdx = m.nav.length - 1;
+      side.innerHTML = m.nav.map((n,idx)=>{
+        if (idx===0) return '<div class="dash-nav-mod"><button class="dash-back" type="button" aria-label="Back"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M10 3 5 8l5 5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="dash-ring"></span>'+esc(n)+'</div>';
+        const cls = ['dash-nav-item'];
+        if (idx===m.active) cls.push('on');
+        if (idx===lastIdx) cls.push('muted');
+        const chev = idx===2 ? '<svg class="dash-chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
+        return '<a class="'+cls.join(' ')+'" href="#" onclick="return false"><span>'+esc(n)+'</span>'+chev+'</a>';
+      }).join('');
       statsEl.innerHTML = m.stats.map(s=>
         '<div class="dash-card"><div class="dash-card-k">'+esc(s.k)+'</div>'+
-        '<div class="dash-card-v" data-v="'+s.v+'" data-suf="'+(s.suf||'')+'">0'+(s.suf||'')+'</div>'+
-        '<div class="dash-card-foot"><span class="dash-card-d'+(s.tone==='sig'?' sig':'')+'">'+esc(s.d)+'</span>'+
+        '<div class="dash-card-v '+toneClass(s.tone)+'" data-v="'+s.v+'" data-suf="'+(s.suf||'')+'">0'+(s.suf||'')+'</div>'+
+        '<div class="dash-card-foot"><span class="dash-card-d'+(s.tone?' sig':'')+'">'+esc(s.d)+'</span>'+
         sparkSVG(s.spark,s.tone)+'</div></div>').join('');
       findEl.innerHTML = '<span class="dash-kicker"><i></i>'+esc(m.finding.kind).toUpperCase()+'</span>'+
         '<div class="dash-finding-b"><h4>'+esc(m.finding.t)+'</h4><p>'+esc(m.finding.d)+'</p>'+
         '<a class="dash-finding-cta" href="#" onclick="return false">'+esc(m.finding.cta)+' <span class="arw">→</span></a></div>';
-      coverEl.innerHTML = '<span class="dash-cover-t">'+esc(m.coverT).toUpperCase()+'</span>'+
-        m.cover.map(r=>'<div class="dash-bar-row"><span class="dash-bar-l">'+esc(r[0])+'</span>'+
-          '<span class="dash-bar-v">'+esc(r[1])+'</span>'+
-          '<span class="dash-bar-track"><i class="dash-bar-fill'+(r[3]==='sig'?' sig':'')+'" data-frac="'+r[2]+'"></i></span></div>').join('');
+      const footHTML = m.coverFoot ? '<div class="dash-cover-foot"><span>'+esc(m.coverFoot.text)+'</span>'+
+        '<a href="#" onclick="return false">'+esc(m.coverFoot.cta)+' <span class="arw">→</span></a></div>' : '';
+      if (m.coverType === 'table'){
+        coverEl.innerHTML = '<span class="dash-cover-t">'+esc(m.coverT).toUpperCase()+'</span>'+
+          '<div class="dash-table">'+m.coverRows.map(r=>
+            '<div class="dash-trow"><span class="dash-trow-name">'+esc(r[0])+'</span>'+
+            '<span class="dash-trow-tag'+(r[2]==='sig'?' sig':'')+'">'+esc(r[1])+'</span>'+
+            '<span class="dash-trow-n">'+esc(r[3].toLocaleString('en-US'))+'</span></div>').join('')+
+          '</div>'+footHTML;
+      } else {
+        coverEl.innerHTML = '<span class="dash-cover-t">'+esc(m.coverT).toUpperCase()+'</span>'+
+          m.cover.map(r=>'<div class="dash-bar-row'+(r[2]===null?' no-bar':'')+'"><span class="dash-bar-l">'+esc(r[0])+'</span>'+
+            '<span class="dash-bar-v">'+esc(r[1])+'</span>'+
+            (r[2]===null?'':'<span class="dash-bar-track"><i class="dash-bar-fill'+(r[3]==='sig'?' sig':'')+'" data-frac="'+r[2]+'"></i></span>')+
+            '</div>').join('')+footHTML;
+      }
       if (askEl) askEl.innerHTML =
         '<p class="dash-ask-q">'+esc(m.ask.q)+'<i class="dash-caret"></i></p>'+
         '<div class="dash-ask-foot">'+
@@ -2408,10 +2485,12 @@ window.TaharaI18N = (function(){
     /* animate the current module in */
     function animate(){
       statsEl.querySelectorAll('.dash-card-v').forEach(el=>{
-        const target = +el.dataset.v, suf = el.dataset.suf||'', t0 = performance.now(), dur = 1000;
+        const target = +el.dataset.v, suf = el.dataset.suf||'', dec = !Number.isInteger(target);
+        const t0 = performance.now(), dur = 1000;
         (function step(now){
           const p = Math.min(1,(now-t0)/dur), e = 1-Math.pow(1-p,3);
-          el.textContent = Math.round(target*e).toLocaleString('en-US')+suf;
+          const cur = target*e;
+          el.textContent = (dec ? cur.toFixed(1) : Math.round(cur).toLocaleString('en-US'))+suf;
           if (p<1) requestAnimationFrame(step);
         })(t0);
       });
@@ -2420,6 +2499,10 @@ window.TaharaI18N = (function(){
         p.style.transition='none'; p.style.strokeDasharray=len; p.style.strokeDashoffset=len;
         p.getBoundingClientRect();
         p.style.transition='stroke-dashoffset 1.1s cubic-bezier(.16,1,.3,1)'; p.style.strokeDashoffset='0';
+      });
+      statsEl.querySelectorAll('.dash-spark-dot').forEach(c=>{
+        c.style.opacity='0';
+        setTimeout(()=>{ c.style.opacity='1'; }, 1050);
       });
       coverEl.querySelectorAll('.dash-bar-fill').forEach(el=>{
         const w = Math.max(0,Math.min(1,+el.dataset.frac))*100;
