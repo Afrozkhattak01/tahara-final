@@ -998,7 +998,7 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 .frames.in .seal-ring .ck svg{stroke-dashoffset:0}
 .seal .k{font-family:var(--font-mono);font-size:10.5px;font-weight:500;letter-spacing:.14em;color:var(--g600);
   text-transform:uppercase}
-.seal .v{font-family:var(--font-mono);font-weight:500;font-size:16px;letter-spacing:-.01em;
+.seal .v{font-family:var(--font-body);font-weight:500;font-size:16px;letter-spacing:-.01em;
   color:var(--g900);margin-top:8px;line-height:1.2}
 
 .res{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
