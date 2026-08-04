@@ -9,6 +9,15 @@ Marketing website for **Tahara AI**, an AI assurance platform. Built with
 
 ---
 
+## GitHub / Git remotes
+
+- **Primary repo (push):** https://github.com/Afrozkhattak01/tahara-final — remote `afroz`
+- **Upstream / source repo:** https://github.com/zaynab-cyber/Tahara_core — remote `origin`
+- **Default branch:** `main`
+- **Auto-deploys to:** Vercel project `tahara-final1` on push to `main`
+
+---
+
 ## 🟢 START HERE (handoff for the next session)
 
 **What this is:** a mostly-finished landing page (`/`) plus one real React page
