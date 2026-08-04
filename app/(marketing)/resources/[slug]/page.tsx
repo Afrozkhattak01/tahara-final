@@ -78,11 +78,11 @@ export default function BlogPostPage() {
 
         main .wrap { padding-left: 48px; padding-right: 48px; }
         .post-wrap { max-width: 720px; }
-        .post-back { display: inline-flex; align-items: center; gap: 7px; margin-bottom: 28px;
-          font-family: var(--font-body); font-size: 13.5px; font-weight: 500; color: var(--ink-2);
-          background: #fff; border: 1px solid var(--line-2); border-radius: 999px; padding: 9px 16px 9px 12px;
+        .post-back { display: inline-flex; align-items: center; justify-content: center;
+          width: 40px; height: 40px; margin-bottom: 22px; color: var(--ink-2);
+          background: #fff; border: 1px solid var(--line-2); border-radius: 50%;
           box-shadow: var(--sh-s); transition: border-color .2s ease, color .2s ease, transform .3s var(--e-out); }
-        .post-back svg { width: 14px; height: 14px; flex: none; transition: transform .3s var(--e-out); }
+        .post-back svg { width: 18px; height: 18px; flex: none; transition: transform .3s var(--e-out); }
         .post-back:hover { color: var(--g900); border-color: var(--g600); transform: translateX(-2px); }
         .post-back:hover svg { transform: translateX(-2px); }
         .post-tag { display: inline-block; font-family: var(--font-mono); font-size: 9.5px;
@@ -94,6 +94,17 @@ export default function BlogPostPage() {
         .post-meta { font-size: 13.5px; color: var(--ink-3); margin-bottom: 26px; }
         .post-meta b { color: var(--ink); font-weight: 600; }
         .post-meta .sep { margin: 0 8px; }
+        .post-banner { position: relative; height: 240px; border-radius: 18px; overflow: hidden;
+          margin-bottom: 32px; background: linear-gradient(135deg, #a9c7e8 0%, #4d86c9 30%, var(--g700) 62%, var(--g900) 100%);
+          background-size: 180% 180%; animation: bannerDrift 8s ease-in-out infinite; }
+        .post-banner svg.motif { position: absolute; right: -30px; bottom: -30px; width: 220px; height: 220px;
+          opacity: .16; stroke: #fff; fill: none; stroke-width: 1.4; }
+        .post-banner svg.icon { position: absolute; left: 28px; bottom: 26px; width: 40px; height: 40px;
+          stroke: #fff; fill: none; stroke-width: 1.6; opacity: .92; }
+        @keyframes bannerDrift {
+          0%,100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
         .post-quote { background: radial-gradient(ellipse 90% 130% at 0% 0%, #0b3472, var(--g900) 70%);
           color: #fff; border-radius: 16px; padding: 26px 28px; margin-bottom: 36px; }
         .post-quote p { font-size: 17px; font-weight: 600; line-height: 1.5; margin: 0; color: #fff; }
@@ -140,11 +151,10 @@ export default function BlogPostPage() {
       <main style={{ minHeight: '60vh', padding: '150px 0 80px' }}>
         <div className="wrap">
           <div className="post-wrap">
-            <Link href="/resources" className="post-back">
+            <Link href="/resources" className="post-back" aria-label={tr('back_link', lang)}>
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                 <path d="M13 8H3M7 4 3 8l4 4" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              {tr('back_link', lang)}
             </Link>
 
             {post ? (
@@ -156,6 +166,18 @@ export default function BlogPostPage() {
                   <span className="sep">·</span>{post.readingTime}
                   <span className="sep">·</span>{post.date}
                 </p>
+                <div className="post-banner">
+                  <svg className="motif" viewBox="0 0 200 200" aria-hidden="true">
+                    <circle cx="150" cy="60" r="46" />
+                    <circle cx="150" cy="60" r="70" />
+                    <path d="M10 190 L70 130 L110 160 L190 60" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="5" y="11" width="14" height="9" rx="2" strokeLinejoin="round" />
+                    <path d="M8 11V7a4 4 0 0 1 7.6-1.8" strokeLinecap="round" />
+                    <circle cx="12" cy="15.5" r="1.4" fill="#fff" stroke="none" />
+                  </svg>
+                </div>
                 <div className="post-quote"><p>{post.excerpt}</p></div>
                 <div className="post-body">
                   {post.content.map((block, i) => {
