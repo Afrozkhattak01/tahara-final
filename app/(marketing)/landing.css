@@ -437,9 +437,9 @@ code,pre{font-family:var(--font-mono)}
 .dash-trow-tag.sig{background:rgba(181,101,29,.1);color:var(--signal)}
 .dash-trow-n{font-family:var(--font-mono);font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums;
   min-width:38px;text-align:right}
-.dash-ask{position:absolute;left:50%;bottom:-32px;transform:translateX(-50%);
-  width:min(560px,88%);z-index:6;border:1px solid var(--line);border-radius:16px;padding:14px 18px;
-  background:#fff;box-shadow:0 26px 50px -14px rgba(3,24,56,.2),0 3px 10px rgba(3,24,56,.06)}
+.dash-ask{position:relative;margin:0 20px 18px;border:1px solid var(--line);border-radius:16px;padding:14px 18px;
+  background:rgba(249,251,253,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  box-shadow:0 6px 20px -4px rgba(3,24,56,.12),0 1px 4px rgba(3,24,56,.04)}
 .dash-ask-q{font-size:14px;color:var(--ink);line-height:1.5;min-height:1.5em}
 .dash-caret{display:inline-block;width:1.5px;height:14px;margin-left:2px;vertical-align:-2px;
   background:var(--ink);animation:caretBlink 1s step-end infinite}
@@ -447,7 +447,8 @@ code,pre{font-family:var(--font-mono)}
 .dash-ask-foot{display:flex;align-items:center;gap:9px;margin-top:12px}
 .dash-ask-plus,.dash-ask-attach{flex:none;width:26px;height:26px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;color:var(--ink-3);
-  border:1px solid var(--line);background:#fff}
+  border:1px solid var(--line);background:rgba(255,255,255,.72);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .dash-ask-plus svg,.dash-ask-attach svg{width:13px;height:13px}
 .dash-avatars{display:flex;align-items:center;flex:none;margin-left:2px}
 .dash-avatars i,.dash-avatars b{display:flex;align-items:center;justify-content:center;
@@ -473,7 +474,7 @@ code,pre{font-family:var(--font-mono)}
   .dash-stats .dash-card{grid-column:auto}
   .dash-grid{grid-template-columns:1fr;min-height:0}
   .dash-ask-foot{flex-wrap:wrap}
-  .dash-ask{width:92%;bottom:-24px;padding:12px 14px}
+  .dash-ask{margin:0 14px 14px;padding:12px 14px}
 }
 
 /* ── statement band — the one serif on the page, sat between the standards
@@ -823,6 +824,7 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
   font-weight:400;font-size:16px;letter-spacing:-.01em;color:var(--g800);opacity:.72;transition:opacity .3s}
 .mq-item:hover{opacity:1}
 .mq-item i{width:5px;height:5px;background:var(--g400);transform:rotate(45deg);border-radius:1px}
+.mq-logo{width:20px;height:20px;flex:none;object-fit:contain;display:block}
 
 /* ════════════════════════════════════════════════════════════
    1 · RECORD PANELS — instrument-panel bento
@@ -1035,6 +1037,7 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
   stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:20;stroke-dashoffset:20;
   transition:stroke-dashoffset .5s var(--e-out) calc(1.1s + var(--i)*90ms)}
 .frames.in .seal-ring .ck svg{stroke-dashoffset:0}
+.seal-logo{width:36px;height:36px;object-fit:contain;filter:grayscale(100%)}
 .seal .k{font-family:var(--font-mono);font-size:10.5px;font-weight:500;letter-spacing:.14em;color:var(--g600);
   text-transform:uppercase}
 .seal .v{font-family:var(--font-body);font-weight:500;font-size:16px;letter-spacing:-.01em;
@@ -1103,7 +1106,8 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
    8 · CLOSING CTA
    ════════════════════════════════════════════════════════════ */
 .close-cta{position:relative;overflow:hidden;border-radius:26px;padding:76px 32px 80px;text-align:center;
-  color:#fff;background:radial-gradient(ellipse 80% 90% at 50% 0%,#0b3472,var(--g900) 68%)}
+  color:#fff;background:radial-gradient(ellipse 80% 90% at 50% 0%,#0b3472,var(--g900) 68%);
+  width:calc(100% + 2 * var(--gutter));margin-left:calc(-1 * var(--gutter))}
 .floor{position:absolute;left:-25%;right:-25%;bottom:-38%;height:78%;pointer-events:none;
   background-image:linear-gradient(rgba(85,139,189,.34) 1px,transparent 1px),
                    linear-gradient(90deg,rgba(85,139,189,.34) 1px,transparent 1px);
@@ -1219,7 +1223,8 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
 /* ════════════════════════════════════════════════════════════
    Closing CTA — shimmer headline, drawn checkmarks
    ════════════════════════════════════════════════════════════ */
-.close-cta h2{background:linear-gradient(100deg,#fff 42%,var(--g400) 50%,#fff 58%);
+.close-cta h2{font-size:clamp(28px,4.2vw,54px);letter-spacing:-.01em;
+  background:linear-gradient(100deg,#fff 42%,var(--g400) 50%,#fff 58%);
   background-size:280% 100%;-webkit-background-clip:text;background-clip:text;
   animation:shine 5.2s linear infinite}
 .close-cta.in h2 .wi{color:transparent;-webkit-text-fill-color:transparent}

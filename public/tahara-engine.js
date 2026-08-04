@@ -701,15 +701,6 @@ window.TaharaUI = (function(){
       if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); set(!open); }
     });
 
-    if (matchMedia('(hover:hover) and (pointer:fine)').matches && innerWidth > 860){
-      const show = () => { clearTimeout(hideT); set(true); };
-      const hide = () => { clearTimeout(hideT); hideT = setTimeout(() => set(false), 220); };
-      btn.addEventListener('mouseenter', show);
-      panel.addEventListener('mouseenter', () => clearTimeout(hideT));
-      header.addEventListener('mouseleave', hide);
-      panel.addEventListener('mouseleave', hide);
-    }
-
     panel.addEventListener('click', e => { if (e.target.closest('.mega-item')) set(false); });
     scrim && scrim.addEventListener('click', () => set(false));
     document.addEventListener('keydown', e => {
@@ -863,11 +854,25 @@ window.TaharaUI = (function(){
     const track = () => {
       const t = document.createElement('div');
       t.className = 'mq-track';
+      const slugs = {'ISO/IEC 42001':'iso','ISO/IEC 27001':'iso','NIST AI RMF':'nist','EU AI Act':'europeanunion','OWASP LLM':'owasp','MITRE ATLAS':'mitre'};
       D.STANDARDS.forEach(s => {
-        const i = document.createElement('span');
-        i.className = 'mq-item';
-        i.innerHTML = '<i></i>' + s;
-        t.appendChild(i);
+        const el = document.createElement('span');
+        el.className = 'mq-item';
+        const txt = document.createTextNode(s);
+        const slug = slugs[s];
+        if (slug){
+          const img = document.createElement('img');
+          img.className = 'mq-logo';
+          img.src = 'https://cdn.simpleicons.org/' + slug;
+          img.alt = s;
+          img.decoding = 'async';
+          img.addEventListener('error', () => { img.remove(); el.insertBefore(document.createElement('i'), txt); }, { once: true });
+          el.appendChild(img);
+        } else {
+          el.appendChild(document.createElement('i'));
+        }
+        el.appendChild(txt);
+        t.appendChild(el);
       });
       return t;
     };
