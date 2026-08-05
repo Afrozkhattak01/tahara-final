@@ -50,12 +50,29 @@ export default function ResourcesPage() {
   const [filter, setFilter] = useState<Filter>('all');
   const [subscribed, setSubscribed] = useState(false);
   const [email, setEmail] = useState('');
+  const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   function handleSubscribe(e: FormEvent) {
     e.preventDefault();
     if (!email.trim()) return;
     setSubscribed(true);
   }
+
+  const handleNewsletterSubscribe = async () => {
+    if (!email) return;
+    setNewsletterStatus('loading');
+    try {
+      await fetch('https://hook.eu1.make.com/gmndde1lm89azj8glxw485eu5s2233ub', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'newsletter' }),
+      });
+      setNewsletterStatus('success');
+      setEmail('');
+    } catch (err) {
+      setNewsletterStatus('error');
+    }
+  };
 
   useEffect(() => {
     // Read saved language from localStorage (set by landing page toggle)
@@ -98,7 +115,7 @@ export default function ResourcesPage() {
 
   return (
     <>
-      <style>{`
+      <style suppressHydrationWarning>{`
         footer { padding: 32px 0 18px !important; margin-top: 56px !important; }
         .foot-grid { gap: 24px !important; padding-bottom: 22px !important; }
         .foot-brand p { margin-top: 8px !important; }
@@ -143,7 +160,7 @@ export default function ResourcesPage() {
           background-size: 180% 180%; background-position: 0% 50%;
           animation: bannerDrift 7s ease-in-out infinite;
           overflow: hidden; }
-        .res-card-banner::after { content: ''; position: absolute; inset: 0;
+        .res-card-banner::after { content: ""; position: absolute; inset: 0;
           background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.28) 46%, transparent 62%);
           background-size: 220% 100%; background-position: 130% 0;
           animation: bannerShine 5.5s ease-in-out infinite; }
@@ -295,19 +312,22 @@ export default function ResourcesPage() {
               <h2>{tr('news_h2', lang)}</h2>
               <p>{tr('news_desc', lang)}</p>
             </div>
-            <form className="res-news-form" onSubmit={handleSubscribe}>
+            <form className="res-news-form" onSubmit={(e) => e.preventDefault()}>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={newsletterStatus === 'loading'}
                 placeholder={tr('news_email_ph', lang)}
                 aria-label={tr('news_email_ph', lang)}
               />
-              <button type="submit" className="btn btn-solid">
+              <button type="submit" className="btn btn-solid" onClick={handleNewsletterSubscribe} disabled={newsletterStatus === 'loading'}>
                 <span>{subscribed ? '✓' : tr('news_submit', lang)}</span>
                 {!subscribed && <span className="arw">→</span>}
               </button>
+              {newsletterStatus === 'success' && <p style={{ color: '#fff', fontSize: '13.5px', margin: 0, marginTop: '8px' }}>Thanks — check your inbox!</p>}
+              {newsletterStatus === 'error' && <p style={{ color: '#fff', fontSize: '13.5px', margin: 0, marginTop: '8px' }}>Something went wrong. Please try again.</p>}
             </form>
           </div>
         </section>
