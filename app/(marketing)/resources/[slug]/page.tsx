@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import Link from 'next/link';
+import AmbientBg from '../../AmbientBg';
 import { useParams } from 'next/navigation';
-import { getPost } from '../posts';
+import { getPost, type Rich } from '../posts';
 
 type Lang = 'en' | 'ar';
 
@@ -14,7 +15,9 @@ const T = {
   nav_resources:   { en: 'Resources',    ar: 'الموارد' },
   nav_faq:         { en: 'FAQ',          ar: 'الأسئلة الشائعة' },
   cta_demo:        { en: 'Request a demo', ar: 'اطلب عرضًا توضيحيًا' },
-  back_link:       { en: 'Back', ar: 'رجوع' },
+  back_link:       { en: 'All posts', ar: 'كل المقالات' },
+  written_by:      { en: 'Written by', ar: 'بقلم' },
+  author_role:     { en: 'Contributor', ar: 'مساهم' },
   not_found_title: { en: 'Post not found', ar: 'المقال غير موجود' },
   not_found_desc:  { en: "This entry doesn't exist yet.", ar: 'هذا المقال غير موجود بعد.' },
   footer_tagline:  { en: 'Safety, governance and transparency for the AI you actually run.', ar: 'السلامة والحوكمة والشفافية للذكاء الاصطناعي الذي تشغّلونه فعليًا.' },
@@ -24,6 +27,25 @@ const T = {
 
 function tr(key: keyof typeof T, lang: Lang) {
   return T[key][lang];
+}
+
+/**
+ * Render a paragraph or list item. Plain strings pass straight through; an
+ * array is a sequence of runs, any of which may be bold, italic or a link.
+ * Links open in a new tab with rel="noopener" since they point off-site.
+ */
+function rich(text: Rich) {
+  if (typeof text === 'string') return text;
+  return text.map((part, i) => {
+    if (typeof part === 'string') return <Fragment key={i}>{part}</Fragment>;
+    if ('b' in part) return <strong key={i}>{part.b}</strong>;
+    if ('i' in part) return <em key={i}>{part.i}</em>;
+    return (
+      <a key={i} href={part.href} target="_blank" rel="noopener noreferrer" className="post-link">
+        {part.t}
+      </a>
+    );
+  });
 }
 
 export default function BlogPostPage() {
@@ -68,6 +90,7 @@ export default function BlogPostPage() {
 
   return (
     <>
+      <AmbientBg />
       <style>{`
         footer { padding: 32px 0 18px !important; margin-top: 56px !important; }
         .foot-grid { gap: 24px !important; padding-bottom: 22px !important; }
@@ -77,44 +100,93 @@ export default function BlogPostPage() {
         .foot-bottom { padding-top: 14px !important; }
 
         main .wrap { padding-left: 48px; padding-right: 48px; }
-        .post-wrap { max-width: 720px; }
-        .post-back { display: inline-flex; align-items: center; justify-content: center;
-          width: 40px; height: 40px; margin-bottom: 22px; color: var(--ink-2);
-          background: #fff; border: 1px solid var(--line-2); border-radius: 50%;
-          box-shadow: var(--sh-s); transition: border-color .2s ease, color .2s ease, transform .3s var(--e-out); }
-        .post-back svg { width: 18px; height: 18px; flex: none; transition: transform .3s var(--e-out); }
-        .post-back:hover { color: var(--g900); border-color: var(--g600); transform: translateX(-2px); }
-        .post-back:hover svg { transform: translateX(-2px); }
-        .post-tag { display: inline-block; font-family: var(--font-mono); font-size: 9.5px;
-          font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2);
-          background: var(--bg-2); padding: 4px 9px; border-radius: 6px; margin-bottom: 16px; }
-        .post-title { margin: 0 0 14px; font-family: var(--font-body); font-weight: 700;
-          letter-spacing: -.02em; font-size: clamp(26px, 3.6vw, 42px); line-height: 1.16;
+        /* margin:0 auto is what centres the article. Without it the column
+           sat against the left edge of the 1132px .wrap. */
+        .post-wrap { max-width: 720px; margin: 0 auto; }
+        /* Plain text and an arrow, no pill or border. */
+        .post-back { display: inline-flex; align-items: center; gap: 9px; margin-bottom: 26px;
+          font-size: 14.5px; font-weight: 500; color: var(--ink-2);
+          transition: color .2s ease; }
+        .post-back svg { width: 17px; height: 17px; flex: none; transition: transform .3s var(--e-out); }
+        .post-back:hover { color: var(--g900); }
+        .post-back:hover svg { transform: translateX(-3px); }
+        [dir="rtl"] .post-back svg { transform: scaleX(-1); }
+        [dir="rtl"] .post-back:hover svg { transform: scaleX(-1) translateX(-3px); }
+
+        /* Category badge and date sit on one line above the headline. */
+        .post-topline { display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+          margin-bottom: 20px; }
+        .post-tag { display: inline-block; font-family: var(--font-mono); font-size: 10px;
+          font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: #fff;
+          background: var(--g700); padding: 6px 11px; border-radius: 8px; }
+        .post-date { display: inline-flex; align-items: center; gap: 7px;
+          font-size: 13.5px; color: var(--ink-3); }
+        .post-date svg { width: 15px; height: 15px; flex: none; }
+        /* Headings are Libre Caslon here, as they are everywhere else on the
+           site. This is the article's one headline: the banner below carries
+           no text, so the title is never repeated on screen. */
+        .post-title { margin: 0; font-family: var(--font-display); font-weight: 400;
+          letter-spacing: -.018em; font-size: clamp(30px, 4.2vw, 46px); line-height: 1.16;
           color: var(--g900); }
-        .post-meta { font-size: 13.5px; color: var(--ink-3); margin-bottom: 26px; }
-        .post-meta b { color: var(--ink); font-weight: 600; }
-        .post-meta .sep { margin: 0 8px; }
-        .post-banner { position: relative; height: 240px; border-radius: 18px; overflow: hidden;
-          margin-bottom: 32px; background: linear-gradient(135deg, #a9c7e8 0%, #4d86c9 30%, var(--g700) 62%, var(--g900) 100%);
+
+        /* Byline: rule, "Written by", name and role, with the read time and
+           date opposite. No avatar, as the posts carry no author images. */
+        .post-byline { display: flex; align-items: center; justify-content: space-between;
+          gap: 20px; flex-wrap: wrap;
+          border-top: 1px solid var(--line); margin: 26px 0 32px; padding-top: 20px; }
+        .post-byline-who { display: flex; flex-direction: column; gap: 1px; }
+        .post-written { font-size: 12.5px; color: var(--ink-3); }
+        .post-author { font-size: 15px; font-weight: 600; color: var(--ink); }
+        .post-role { font-size: 12.5px; color: var(--ink-3); }
+        .post-when { font-size: 13.5px; color: var(--ink-3); }
+
+        /* The banner repeats the headline, as the reference does. It is marked
+           aria-hidden so screen readers announce the title once, not twice. */
+        .post-banner { position: relative; min-height: 300px; border-radius: 18px; overflow: hidden;
+          margin-bottom: 34px; display: flex; align-items: center; justify-content: center;
+          padding: 46px 42px; text-align: center;
+          background: linear-gradient(135deg, #a9c7e8 0%, #4d86c9 30%, var(--g700) 62%, var(--g900) 100%);
           background-size: 180% 180%; animation: bannerDrift 8s ease-in-out infinite; }
+        .post-banner-t { position: relative; z-index: 1; margin: 0;
+          font-family: var(--font-display); font-weight: 400; letter-spacing: -.015em;
+          font-size: clamp(22px, 2.9vw, 34px); line-height: 1.26; color: #fff;
+          text-shadow: 0 1px 24px rgba(3,24,56,.35); }
+        [dir="rtl"] .post-banner-t { font-family: 'IBM Plex Sans Arabic', var(--font-body);
+          font-weight: 500; letter-spacing: -.02em; }
         .post-banner svg.motif { position: absolute; right: -30px; bottom: -30px; width: 220px; height: 220px;
           opacity: .16; stroke: #fff; fill: none; stroke-width: 1.4; }
-        .post-banner svg.icon { position: absolute; left: 28px; bottom: 26px; width: 40px; height: 40px;
-          stroke: #fff; fill: none; stroke-width: 1.6; opacity: .92; }
         @keyframes bannerDrift {
           0%,100% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
         }
-        .post-quote { background: radial-gradient(ellipse 90% 130% at 0% 0%, #0b3472, var(--g900) 70%);
-          color: #fff; border-radius: 16px; padding: 26px 28px; margin-bottom: 36px; }
-        .post-quote p { font-size: 17px; font-weight: 600; line-height: 1.5; margin: 0; color: #fff; }
-        .post-body h2 { font-family: var(--font-body); font-weight: 700; font-size: 19px;
-          letter-spacing: -.01em; color: var(--ink); margin: 34px 0 14px; }
-        .post-body p { font-size: 15.5px; line-height: 1.72; color: var(--ink-2); margin-bottom: 18px; }
-        .post-body ul { margin: 0 0 18px; padding-left: 20px; }
-        .post-body li { font-size: 15.5px; line-height: 1.6; color: var(--ink-2); margin-bottom: 8px;
+        @media (prefers-reduced-motion: reduce) { .post-banner { animation: none; } }
+
+        /* Opening paragraph: same words the card shows, set as a lede rather
+           than boxed, so the article reads straight from banner into prose. */
+        .post-lede { font-size: 19px; line-height: 1.65; color: var(--ink-2);
+          margin: 0 0 38px; }
+
+        .post-body h2 { font-family: var(--font-display); font-weight: 400; font-size: 27px;
+          letter-spacing: -.01em; line-height: 1.28; color: var(--ink); margin: 52px 0 18px; }
+        .post-body p { font-size: 17px; line-height: 1.75; color: var(--ink-2); margin-bottom: 22px; }
+        .post-body strong { font-weight: 600; color: var(--ink); }
+        .post-body em { font-style: italic; }
+        .post-link { color: var(--g600); font-weight: 500;
+          border-bottom: 1px solid rgba(17,64,134,.35); transition: color .2s, border-color .2s; }
+        .post-link:hover { color: var(--g900); border-bottom-color: var(--g900); }
+        .post-body ul { margin: 0 0 22px; padding-left: 22px; }
+        .post-body li { font-size: 17px; line-height: 1.7; color: var(--ink-2); margin-bottom: 10px;
           list-style: none; position: relative; padding-left: 4px; }
         .post-body li::before { content: '–'; position: absolute; left: -18px; color: var(--ink-3); }
+
+        /* Libre Caslon carries no Arabic glyphs, and a synthesised serif reads as
+           a rendering fault, so Arabic headings fall back like the landing page's. */
+        [dir="rtl"] .post-title,
+        [dir="rtl"] .post-body h2 { font-family: 'IBM Plex Sans Arabic', var(--font-body);
+          font-weight: 500; letter-spacing: -.02em; }
+        [dir="rtl"] .post-body li { padding-left: 0; padding-right: 4px; }
+        [dir="rtl"] .post-body li::before { left: auto; right: -18px; }
+        [dir="rtl"] .post-body ul { padding-left: 0; padding-right: 22px; }
       `}</style>
 
       <header id="siteHeader">
@@ -148,48 +220,59 @@ export default function BlogPostPage() {
         </nav>
       </header>
 
-      <main style={{ minHeight: '60vh', padding: '150px 0 80px' }}>
+      <main style={{ minHeight: '60vh', padding: '120px 0 80px' }}>
         <div className="wrap">
           <div className="post-wrap">
-            <Link href="/resources" className="post-back" aria-label={tr('back_link', lang)}>
+            <Link href="/resources" className="post-back">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                 <path d="M13 8H3M7 4 3 8l4 4" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
+              {tr('back_link', lang)}
             </Link>
 
             {post ? (
               <>
-                <span className="post-tag">{post.featured ? `Featured · ${post.tag}` : post.tag}</span>
+                <div className="post-topline">
+                  <span className="post-tag">{post.featured ? `Featured · ${post.tag}` : post.tag}</span>
+                  <span className="post-date">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
+                      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="3.5" y="5" width="17" height="16" rx="2.2" />
+                      <path d="M8 2.8v4.4M16 2.8v4.4M3.5 10h17" />
+                    </svg>
+                    {post.date}
+                  </span>
+                </div>
                 <h1 className="post-title">{post.title}</h1>
-                <p className="post-meta">
-                  <b>{post.author}</b>
-                  <span className="sep">·</span>{post.readingTime}
-                  <span className="sep">·</span>{post.date}
-                </p>
+                <div className="post-byline">
+                  <div className="post-byline-who">
+                    <span className="post-written">{tr('written_by', lang)}</span>
+                    <span className="post-author">{post.author}</span>
+                    <span className="post-role">{post.authorRole ?? tr('author_role', lang)}</span>
+                  </div>
+                  <span className="post-when">{post.readingTime}</span>
+                </div>
                 <div className="post-banner">
                   <svg className="motif" viewBox="0 0 200 200" aria-hidden="true">
                     <circle cx="150" cy="60" r="46" />
                     <circle cx="150" cy="60" r="70" />
                     <path d="M10 190 L70 130 L110 160 L190 60" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                  <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <rect x="5" y="11" width="14" height="9" rx="2" strokeLinejoin="round" />
-                    <path d="M8 11V7a4 4 0 0 1 7.6-1.8" strokeLinecap="round" />
-                    <circle cx="12" cy="15.5" r="1.4" fill="#fff" stroke="none" />
-                  </svg>
+                  {/* visual repeat of the headline; hidden from screen readers */}
+                  <p className="post-banner-t" aria-hidden="true">{post.title}</p>
                 </div>
-                <div className="post-quote"><p>{post.excerpt}</p></div>
+                <p className="post-lede">{post.excerpt}</p>
                 <div className="post-body">
                   {post.content.map((block, i) => {
                     if (block.type === 'h2') return <h2 key={i}>{block.text}</h2>;
                     if (block.type === 'list') {
                       return (
                         <ul key={i}>
-                          {block.items.map((item, j) => <li key={j}>{item}</li>)}
+                          {block.items.map((item, j) => <li key={j}>{rich(item)}</li>)}
                         </ul>
                       );
                     }
-                    return <p key={i}>{block.text}</p>;
+                    return <p key={i}>{rich(block.text)}</p>;
                   })}
                 </div>
               </>
