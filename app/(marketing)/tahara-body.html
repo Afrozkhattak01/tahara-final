@@ -167,42 +167,34 @@
 </aside>
 
 <!-- ══════════ hero ══════════ -->
-<div class="wrap">
-  <section class="hero">
-    <div class="aura" aria-hidden="true"></div>
+<section class="hero">
+  <div class="aura" aria-hidden="true"></div>
+  <div class="wrap">
     <h1 class="hero-h1 r" style="--i:0"><span class="hero-static" data-i18n="hero.built">Know what your AI did, and</span> <span class="hero-rot" id="heroRot"><span class="hero-rot-w" id="heroRotWord">govern it.</span></span></h1>
     <p class="lede r" style="--i:6" data-i18n="hero.lede">Discovery, live enforcement and audit-ready evidence.</p>
     <div class="hero-cta r" style="--i:7">
       <button class="btn btn-solid" type="button" data-mag data-signin><span data-i18n="cta.explore">Explore platform</span> <span class="arw" aria-hidden="true">→</span></button>
     </div>
+  </div>
 
+  <!-- the dashboard runs wider than the hero copy: its own wrapper, not .wrap -->
+  <div class="wrap wrap-wide">
     <div class="console-stage">
-      <div class="console dash" id="console" role="img" aria-label="Tahara assurance dashboard: four modules with live metrics">
+      <div class="dash-shell">
         <div class="dash-tabs" id="dashTabs" role="tablist" aria-label="Modules">
           <button class="dash-tab on" type="button" data-mod="0" data-i18n="dash.tab.discover">Discover</button>
-          <button class="dash-tab" type="button" data-mod="1" data-i18n="dash.tab.govern">Govern</button>
-          <button class="dash-tab" type="button" data-mod="2" data-i18n="dash.tab.adversarial">Adversarial</button>
+          <button class="dash-tab" type="button" data-mod="1" data-i18n="dash.tab.adversarial">Adversarial</button>
+          <button class="dash-tab" type="button" data-mod="2" data-i18n="dash.tab.govern">Govern</button>
           <button class="dash-tab" type="button" data-mod="3" data-i18n="dash.tab.guardrails">Guardrails</button>
         </div>
-        <div class="dash-body">
-          <aside class="dash-side" id="dashSide"></aside>
-          <div class="dash-main">
-            <div class="dash-page-head">
-              <h3 id="dashTitle"></h3>
-              <p class="dash-sub" id="dashSub"></p>
-            </div>
-            <div class="dash-stats" id="dashStats"></div>
-            <div class="dash-grid">
-              <div class="dash-finding" id="dashFinding"></div>
-              <div class="dash-cover" id="dashCover"></div>
-            </div>
-          </div>
+        <div class="console dash" id="console" role="img" aria-label="Tahara AI assurance dashboard: four modules with live metrics">
+          <div class="dash-panel" id="dashPanel"></div>
+          <div class="dash-ask" id="dashAsk"></div>
         </div>
-        <div class="dash-ask" id="dashAsk"></div>
       </div>
     </div>
-  </section>
-</div>
+  </div>
+</section>
 
 <!-- ══════════ standards marquee ══════════ -->
 <section class="strip">
@@ -219,13 +211,9 @@
 
 <!-- ══════════ 1 · platform ══════════ -->
 <div class="wrap">
+  <!-- No heading of its own: the video reads as the answer to the statement
+       above it ("Complete enterprise AI management."), so it follows directly. -->
   <section class="band" id="platform">
-    <div class="head">
-      <span class="eyebrow r-fade"><i></i><span data-i18n="eyebrow.platform">The platform</span></span>
-      <h2 style="margin-top:16px" data-split data-i18n="platform.title">One record of truth.</h2>
-      <p class="lede r" data-i18n="platform.lede">Discovery, enforcement and evidence on one timeline.</p>
-    </div>
-
     <div class="pvideo r">
       <div class="pv-frame">
         <span class="pv-glow" aria-hidden="true"></span>
@@ -249,69 +237,76 @@
 
   <!-- ══════════ 2 · dossier lifecycle ══════════ -->
   <section class="band" id="lifecycle">
-    <div class="head-row">
-      <div>
-        <span class="eyebrow r-fade"><i></i><span data-i18n="eyebrow.whatwedo">What we do</span></span>
-        <h2 style="margin-top:16px" data-split data-i18n="lifecycle.title">Cover the whole life of a model.</h2>
+    <!-- The four cards share one vertical position, so none can be activated by
+         its own scroll offset. The row is pinned and the highlight steps through
+         the four while it is held. Unpinned below 1050px, where the rail hides. -->
+    <div class="life-track" id="lifeTrack">
+      <div class="life-pin">
+        <div class="head-row">
+          <div>
+            <span class="eyebrow r-fade"><i></i><span data-i18n="eyebrow.whatwedo">What we do</span></span>
+            <h2 style="margin-top:16px" data-split data-i18n="lifecycle.title">Cover the whole life of a model.</h2>
+          </div>
+        </div>
+
+        <div class="journey" id="journey" aria-hidden="true">
+          <svg viewBox="0 0 1000 34" preserveAspectRatio="none"></svg>
+        </div>
+
+        <div class="life" id="life">
+          <article class="dossier" style="--i:0">
+            <span class="tab"><span class="no">01</span> <span data-i18n="stage.assess">Assess</span><svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
+            <div class="dossier-body">
+              <h3 data-i18n="dossier.assess.title">Risk assessment and treatment</h3>
+              <div class="d-rule"></div>
+              <ul>
+                <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.assess.b1">Risk tiering for models and agents</span></li>
+                <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.assess.b2">Bias, robustness and privacy tests</span></li>
+              </ul>
+              <a class="more" href="#"><span data-i18n="dossier.assess.cta">See the method</span> <span class="arw">→</span></a>
+            </div>
+          </article>
+
+          <article class="dossier" style="--i:1">
+            <span class="tab"><span class="no">02</span> <span data-i18n="stage.govern">Govern</span><svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
+            <div class="dossier-body">
+              <h3 data-i18n="dossier.govern.title">Governance system</h3>
+              <div class="d-rule"></div>
+              <ul>
+                <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.govern.b1">Policy set aligned to ISO/IEC 42001</span></li>
+                <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.govern.b2">Approvals with evidence attached</span></li>
+              </ul>
+              <a class="more" href="#"><span data-i18n="dossier.govern.cta">See the framework</span> <span class="arw">→</span></a>
+            </div>
+          </article>
+
+          <article class="dossier" style="--i:2">
+            <span class="tab"><span class="no">03</span> <span data-i18n="stage.test">Test</span><svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
+            <div class="dossier-body">
+              <h3 data-i18n="dossier.test.title">Adversarial testing</h3>
+              <div class="d-rule"></div>
+              <ul>
+                <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.test.b1">Jailbreak sets mapped to OWASP LLM Top 10</span></li>
+                <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.test.b2">Tool-chain and agent abuse cases</span></li>
+              </ul>
+              <a class="more" href="#"><span data-i18n="dossier.test.cta">See the test set</span> <span class="arw">→</span></a>
+            </div>
+          </article>
+
+          <article class="dossier" style="--i:3">
+            <span class="tab"><span class="no">04</span> <span data-i18n="stage.monitor">Monitor</span><svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
+            <div class="dossier-body">
+              <h3 data-i18n="dossier.monitor.title">Continuous monitoring</h3>
+              <div class="d-rule"></div>
+              <ul>
+                <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.monitor.b1">Drift, refusal and grounding failures</span></li>
+                <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.monitor.b2">Policy hits and overrides</span></li>
+              </ul>
+              <a class="more" href="#"><span data-i18n="dossier.monitor.cta">See the signals</span> <span class="arw">→</span></a>
+            </div>
+          </article>
+        </div>
       </div>
-    </div>
-
-    <div class="journey" id="journey" aria-hidden="true">
-      <svg viewBox="0 0 1000 34" preserveAspectRatio="none"></svg>
-    </div>
-
-    <div class="life" id="life">
-      <article class="dossier" style="--i:0">
-        <span class="tab"><span class="no">01</span> <span data-i18n="stage.assess">Assess</span><svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
-        <div class="dossier-body">
-          <h3 data-i18n="dossier.assess.title">Risk assessment and treatment</h3>
-          <div class="d-rule"></div>
-          <ul>
-            <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.assess.b1">Risk tiering for models and agents</span></li>
-            <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.assess.b2">Bias, robustness and privacy tests</span></li>
-          </ul>
-          <a class="more" href="#"><span data-i18n="dossier.assess.cta">See the method</span> <span class="arw">→</span></a>
-        </div>
-      </article>
-
-      <article class="dossier" style="--i:1">
-        <span class="tab"><span class="no">02</span> <span data-i18n="stage.govern">Govern</span><svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
-        <div class="dossier-body">
-          <h3 data-i18n="dossier.govern.title">Governance system</h3>
-          <div class="d-rule"></div>
-          <ul>
-            <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.govern.b1">Policy set aligned to ISO/IEC 42001</span></li>
-            <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.govern.b2">Approvals with evidence attached</span></li>
-          </ul>
-          <a class="more" href="#"><span data-i18n="dossier.govern.cta">See the framework</span> <span class="arw">→</span></a>
-        </div>
-      </article>
-
-      <article class="dossier" style="--i:2">
-        <span class="tab"><span class="no">03</span> <span data-i18n="stage.test">Test</span><svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
-        <div class="dossier-body">
-          <h3 data-i18n="dossier.test.title">Adversarial testing</h3>
-          <div class="d-rule"></div>
-          <ul>
-            <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.test.b1">Jailbreak sets mapped to OWASP LLM Top 10</span></li>
-            <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.test.b2">Tool-chain and agent abuse cases</span></li>
-          </ul>
-          <a class="more" href="#"><span data-i18n="dossier.test.cta">See the test set</span> <span class="arw">→</span></a>
-        </div>
-      </article>
-
-      <article class="dossier" style="--i:3">
-        <span class="tab"><span class="no">04</span> <span data-i18n="stage.monitor">Monitor</span><svg class="tab-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8.4 6.6 11.6 12.8 4.8"/></svg></span>
-        <div class="dossier-body">
-          <h3 data-i18n="dossier.monitor.title">Continuous monitoring</h3>
-          <div class="d-rule"></div>
-          <ul>
-            <li style="--j:0"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.monitor.b1">Drift, refusal and grounding failures</span></li>
-            <li style="--j:1"><svg class="tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M4.8 8.2 7 10.4l4.2-4.6"/></svg><span data-i18n="dossier.monitor.b2">Policy hits and overrides</span></li>
-          </ul>
-          <a class="more" href="#"><span data-i18n="dossier.monitor.cta">See the signals</span> <span class="arw">→</span></a>
-        </div>
-      </article>
     </div>
   </section>
 </div>

@@ -1538,8 +1538,8 @@ window.TaharaI18N = (function(){
 
     /* ── assurance dashboard tab strip ── */
     'dash.tab.discover':    { en:'Discover', ar:'الاكتشاف' },
-    'dash.tab.govern':      { en:'Govern', ar:'الحوكمة' },
     'dash.tab.adversarial': { en:'Adversarial', ar:'الاختبار العدائي' },
+    'dash.tab.govern':      { en:'Govern', ar:'الحوكمة' },
     'dash.tab.guardrails':  { en:'Guardrails', ar:'حواجز الحماية' },
 
     /* ── framework seals: the category label only. The value beneath it
@@ -1845,26 +1845,60 @@ window.TaharaI18N = (function(){
     jsvg.appendChild(jdot);
   }
 
+  const lifeTrack = $('#lifeTrack');
+  const lifeWide  = matchMedia('(min-width:1051px)');
+
   function paintJourney(){
-    if (!jsvg || !jrun || !cards.length) return;
-    /* The four cards sit in one row, so their own heights cannot drive a
-       vertical progress. Map the rail to the row's travel through the
-       viewport instead — it fills while the row is on screen. */
-    const vh = innerHeight;
-    const row = $('#life').getBoundingClientRect();
-    const p = clamp((vh * 0.85 - row.top) / (row.height + vh * 0.70), 0, 1);
+    if (!jsvg || !jrun || !cards.length || !lifeTrack) return;
+
+    /* The four cards sit side by side, so they all cross mid-screen together
+       and none has a scroll offset of its own. Progress therefore comes from
+       how far the pinned track has been scrolled, which guarantees each card
+       is highlighted while the row is actually held on screen.
+
+       The previous mapping ran off the row's travel through the viewport, so
+       on a 900px-tall window card 4 only lit once the row had already scrolled
+       off the top — the highlight finished after the section had left. */
+    const wide = lifeWide.matches;
+    let p = 0, on = false;
+
+    if (wide){
+      const r   = lifeTrack.getBoundingClientRect();
+      const len = r.height - innerHeight;              /* the pinned travel */
+      if (len > 40){
+        p  = clamp(-r.top / len, 0, 1);
+        /* top has reached the viewport top: the row is pinned, or already
+           scrolled past — in which case p clamps to 1 and it reads complete */
+        on = r.top <= 0;
+      } else {
+        /* CSS released the pin (reduced motion, or a viewport too short to
+           hold the row). There is no travel to scrub, so rest on complete
+           rather than leaving an empty rail under the cards. */
+        on = r.top < innerHeight && r.bottom > 0;
+        p  = on ? 1 : 0;
+      }
+    } else {
+      /* rail is display:none below 1051px and .dossier.dim is neutralised,
+         so nothing here is visible — keep the cards in their resting state */
+      cards.forEach(c => c.classList.remove('done','live','dim'));
+      return;
+    }
+
     journey.style.setProperty('--jp', p.toFixed(3));
-    journey.style.setProperty('--jd', p > 0.02 && p < 0.995 ? 1 : 0);
-    if (jdot) jdot.setAttribute('cx', (jx0 + (jx1 - jx0) * p).toFixed(1));
+    journey.style.setProperty('--jd', on && p > 0.02 && p < 0.995 ? 1 : 0);
+    /* translate rather than rewrite cx: SVG geometry attributes are not
+       transitionable, so setting cx each frame would step with the scroll */
+    if (jdot) jdot.style.transform = 'translateX(' + ((jx1 - jx0) * p).toFixed(1) + 'px)';
+
     const active = Math.min(cards.length - 1, Math.floor(p * cards.length));
-    jstops.forEach((st, i) => st.classList.toggle('lit', p > 0 && i <= active));
+    jstops.forEach((st, i) => st.classList.toggle('lit', on && i <= active));
     cards.forEach((c, i) => {
       /* three exclusive states — a card that has already passed must
          look visibly different from the one currently active, or the
          two read as equally "on" with nothing to tell them apart */
-      c.classList.toggle('done', p > 0 && i < active);
-      c.classList.toggle('live', p > 0 && i === active);
-      c.classList.toggle('dim', p > 0 && i > active);
+      c.classList.toggle('done', on && i < active);
+      c.classList.toggle('live', on && i === active);
+      c.classList.toggle('dim',  on && i > active);
     });
   }
 
@@ -2083,6 +2117,9 @@ window.TaharaI18N = (function(){
     if (stage){
       const r = stage.getBoundingClientRect();
       const t = clamp((vh * .95 - r.top) / (vh * .55), 0, 1);
+      /* on the stage as well as the card: the tab bar sits outside #console
+         (it straddles the card's top edge) and has to reveal on the same curve */
+      stage.style.setProperty('--t', t.toFixed(3));
       consoleEl.style.setProperty('--t', t.toFixed(3));
       if (t > .3){
         consoleEl.classList.add('lit');
@@ -2243,148 +2280,273 @@ window.TaharaI18N = (function(){
     }
   })();
 
-  /* ── assurance dashboard — 4 modules, tab-switched, animated on view / click ── */
+  /* ── assurance dashboard — 4 modules, tab-switched, animated on view / click ──
+     Discover · Adversarial · Govern · Guardrails. The four tabs are different
+     screens, not one template with different numbers, so each has its own
+     renderer and #dashPanel is rebuilt wholesale on switch.                  */
   (function(){
-    const tabs = document.getElementById('dashTabs');
-    const badge = document.getElementById('dashBadge');
-    const title = document.getElementById('dashTitle');
-    const sub = document.getElementById('dashSub');
-    const side = document.getElementById('dashSide');
-    const statsEl = document.getElementById('dashStats');
-    const findEl = document.getElementById('dashFinding');
-    const coverEl = document.getElementById('dashCover');
+    const tabs  = document.getElementById('dashTabs');
+    const panel = document.getElementById('dashPanel');
     const askEl = document.getElementById('dashAsk');
-    const card = document.getElementById('console');
-    if (!tabs || !statsEl || !coverEl) return;
+    const card  = document.getElementById('console');
+    if (!tabs || !panel) return;
 
+    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ── icon set · 24×24, stroked, inherits currentColor ── */
+    const P = {
+      target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.2"/><circle cx="12" cy="12" r=".6" fill="currentColor"/>',
+      plug:'<path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0z"/><path d="M12 17v4"/>',
+      grid:'<rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.6"/>',
+      bot:'<rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 14h.01M15 14h.01"/>',
+      box:'<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>',
+      pulse:'<path d="M3 12h4l3 8 4-16 3 8h4"/>',
+      layers:'<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
+      shield:'<path d="M12 3 5 6v6c0 4.5 3 7.6 7 9 4-1.4 7-4.5 7-9V6z"/><path d="m9 12 2 2 4-4"/>',
+      alert:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.2h.01"/>',
+      db:'<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>',
+      book:'<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H19v18H5.5A1.5 1.5 0 0 1 4 19.5z"/><path d="M4 16.5A1.5 1.5 0 0 1 5.5 15H19"/>',
+      flow:'<circle cx="6" cy="6" r="2.6"/><circle cx="18" cy="18" r="2.6"/><circle cx="6" cy="18" r="2.6"/><path d="M6 8.6v6.8M8.6 6H14a4 4 0 0 1 4 4v5.4"/>',
+      doc:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+      flask:'<path d="M10 3h4M10.5 3v6L5 19a1.6 1.6 0 0 0 1.4 2.4h11.2A1.6 1.6 0 0 0 19 19l-5.5-10V3"/><path d="M7.6 15h8.8"/>',
+      clipboard:'<rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2.4" width="6" height="3.6" rx="1.2"/><path d="M9.5 11h5M9.5 15h3"/>',
+      checkc:'<circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/>',
+      check:'<path d="m5 12.5 4.6 4.6L19 7"/>',
+      search:'<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/>',
+      panel:'<rect x="3" y="4" width="18" height="16" rx="2.4"/><path d="M10 4v16"/>',
+      plus:'<path d="M12 5v14M5 12h14"/>',
+      arrowu:'<path d="M12 19V5M6 11l6-6 6 6"/>',
+      chev:'<path d="m9 5 7 7-7 7"/>',
+      chevl:'<path d="m15 5-7 7 7 7"/>',
+      cal:'<rect x="3.5" y="5" width="17" height="16" rx="2.2"/><path d="M8 2.8v4.4M16 2.8v4.4M3.5 10h17"/>',
+      history:'<path d="M3.6 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3.2 3.4v3.2h3.2M12 7.6V12l3 1.8"/>',
+      warn:'<path d="M12 3.6 1.9 20.4h20.2z"/><path d="M12 9.6v4.6M12 17.6h.01"/>',
+      bang:'<path d="M12 6.5v7M12 17.4h.01"/>',
+      mail:'<rect x="2.8" y="5" width="18.4" height="14" rx="2.2"/><path d="m3.4 6.6 8.6 6 8.6-6"/>'
+    };
+    const ic = (n,cls) => '<svg class="'+(cls||'d-ic')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
+      'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(P[n]||'')+'</svg>';
+
+    /* ══════════════ module data · English ══════════════ */
     const MODULES = [
-      { badge:'Module 01 · Discover', title:'Discovery',
-        sub:"Who's exposed, and what to do about it.",
-        nav:['Discovery','Connect','Dashboard','Systems','Register','Activity feed','Data lineage'], active:2,
+      /* ── 01 · Discover ───────────────────────────────────────────── */
+      { id:'discover', layout:'std',
+        side:{ t:'Discover', ic:'target', items:[
+          { t:'Connect', ic:'plug' },
+          { t:'Dashboard', ic:'grid', on:1 },
+          { t:'Agents', ic:'bot', chev:1 },
+          { t:'Inventory', ic:'box', chev:1 },
+          { t:'Activity Feed', ic:'pulse' } ] },
+        title:'Discovery',
+        sub:"The biggest AI risks we've discovered: who's exposed and what to do about it.",
         stats:[
-          {k:'Systems found', v:34, d:'4 this week', tone:'', spark:[20,19,17,15,13,10,7,4]},
-          {k:'Not in the register', v:12, d:'3 this week', tone:'bad', spark:[15,17,19,14,16,10,13,4]},
-          {k:'No named owner', v:6, d:'1 this week', tone:'warn', spark:[14,12,15,11,13,10,12,9]},
-          {k:'Contradictions open', v:3, d:'1 new this week', tone:'bad', spark:[16,15,17,16,18,14,17,5]},
-          {k:'AI calls · 24h', v:12.8, suf:'k', d:'18% vs yesterday', tone:'', spark:[21,19,17,15,13,10,8,5]} ],
-        finding:{ kind:'Critical finding', t:'12 systems are running that nobody declared.',
-          d:'Three of them process job applications, which puts them in Annex III of the EU AI Act. Two have no owner at all — so no control over them can be signed off by anyone.', cta:'Open the register' },
-        coverType:'table',
-        coverT:'Top systems by people affected',
+          { k:'Assets Discovered', v:17.1, suf:'K', d:'2 this week', up:1, spark:[22,21,19,17,15,12,8,5] },
+          { k:'Discovered Apps', v:2, d:'2 this week', up:1 },
+          { k:'People exposed', v:2, d:'2 this week', up:1 },
+          { k:'Critical Exposures', v:3, d:'4 new this week', up:1, tone:'bad', spark:[19,19,18,18,17,17,7,5] },
+          { k:'AI Calls · 24h', v:9, d:'350% vs yesterday', up:1, spark:[19,19,18,4,17,3,18,16] } ],
+        finding:{ kind:'Critical finding',
+          t:"2 people are using 2 AI apps you haven't approved.",
+          d:'Both read mail and files, and neither is in the register. One forwards attachments to a model hosted outside your tenancy, so the data leaves before any policy can see it.',
+          cta:'Open the register' },
+        coverT:'Top apps by people reached',
         coverRows:[
-          ['talentflow-prod','scores CVs','sig',2140],
-          ['cv-parser-batch','undeclared','sig',2140],
-          ['sanction-screening','reads records','',880],
-          ['support-copilot','reads tickets','',610],
-          ['interview-scoring-v2','undeclared','sig',0] ],
-        coverFoot:{ text:'22 of 34 in the register', cta:'Open the register' },
-        ask:{ q:'Summarise AI assets', chip:'High risk', tone:'' } },
-      { badge:'Module 02 · Govern', title:'Governance',
-        sub:"Conformance against the frameworks you're held to.",
-        nav:['Govern','Conformance','Frameworks','Findings','Evidence','Sign-off queue','Audit trail'], active:1,
-        stats:[
-          {k:'Requirements assessed', v:61, suf:'/187', d:'9 this week', tone:'', spark:[20,18,16,14,12,10,8,6]},
-          {k:'Major nonconformities', v:3, d:'1 this week', tone:'bad', spark:[18,17,16,14,13,11,9,6]},
-          {k:'Minor nonconformities', v:7, d:'2 closed', tone:'warn', spark:[12,14,11,13,10,12,9,11]},
-          {k:'Conforming', v:34, suf:'%', d:'21 of the 61 assessed', tone:'good', spark:[19,17,15,13,11,9,7,5]},
-          {k:'Awaiting sign-off', v:23, d:'Evidence gathered, no assessor yet', tone:'warn', spark:[19,18,16,14,12,10,8,5]} ],
-        finding:{ kind:'Critical finding', t:"This report can't be final until a person signs it.",
-          d:'38 of 61 requirements are attested by a named assessor. A machine can raise a finding; it can\u2019t clear one — so the other 23 stay open until someone accepts the evidence.', cta:'Open sign-off queue' },
-        coverType:'bars',
-        coverT:'Conformance by framework',
-        cover:[['EU AI Act','18/33',18/33,''],['ISO/IEC 42001','24/76',24/76,''],['ISO/IEC 23894','11/41',11/41,''],['NIST AI RMF','8/37',8/37,''],['Audit window','61 days · 30 Sep',null,'']],
-        coverFoot:{ text:'38 of 61 attested', cta:'Open sign-off queue' },
-        ask:{ q:'What is blocking sign-off?', chip:'Blocked', tone:'' } },
-      { badge:'Module 03 · Adversarial', title:'Adversarial testing',
-        sub:'Probed continuously, not once a year.',
-        nav:['Adversarial','Campaigns','Categories','Probe library','Findings','Schedule','Runbooks'], active:1,
-        stats:[
-          {k:'Failing', v:2, d:'1 this week', tone:'bad', spark:[18,17,15,13,12,10,8,5]},
-          {k:'Degraded', v:3, d:'Since the last model update', tone:'', spark:[13,14,12,13,11,13,12,11]},
-          {k:'Passing', v:5, d:'No successful attack today', tone:'good', spark:[8,9,10,12,13,14,13,11]},
-          {k:'Probes · 24h', v:8412, d:'Generated from your own traffic patterns', tone:'', spark:[20,18,16,14,12,10,8,5]},
-          {k:'Overall pass rate', v:91.4, suf:'%', d:'2.1 points this week', tone:'warn', spark:[7,8,9,10,12,14,16,17]} ],
-        finding:{ kind:'Critical finding', t:'Both failing categories share one cause.',
-          d:'437 of 504 probes hid instructions in white text inside an uploaded CV — and the model followed them, overriding a candidate\u2019s score. One fix recovers both categories.', cta:'Schedule a re-run' },
-        coverType:'bars',
-        coverT:'Categories by pass rate',
-        cover:[['Prompt injection','61%',.61,'sig'],['Sensitive disclosure','74%',.74,'sig'],['Supply chain','88%',.88,''],['Data poisoning','91%',.91,''],['Excessive agency','96%',.96,'good']],
-        coverFoot:{ text:'5 of 10 pass 90%+', cta:'Open probe library' },
-        ask:{ q:'Run a red team campaign', chip:'High risk', tone:'' } },
-      { badge:'Module 04 · Guardrails', title:'Guardrails',
-        sub:'Every prompt and response, inspected.',
-        nav:['Guardrails','Activity monitor','Detectors','Event stream','Policies','Retrieval inspection','Policy simulation'], active:1,
-        stats:[
-          {k:'Prompts inspected', v:12847, d:'18% vs yesterday', tone:'', spark:[20,18,16,14,12,10,8,5]},
-          {k:'Masked', v:1204, d:'Redacted before the model saw it', tone:'good', spark:[19,17,15,13,11,9,7,5]},
-          {k:'Blocked', v:38, d:'Too sensitive to mask', tone:'warn', spark:[12,14,11,14,12,15,11,13]},
-          {k:'Leaked', v:1, d:'First in 30 days · escalated 04:12', tone:'bad', spark:[20,20,20,20,20,19,20,4]},
-          {k:'Retrieval coverage', v:0, suf:'%', d:'Retrieved documents are not inspected', tone:'', spark:[13,13,13,13,13,13,13,13]} ],
-        finding:{ kind:'Critical finding', t:'The filter is in the wrong place.',
-          d:'Inspection covers the prompt, not the context retrieval assembles afterward — which is what the model actually sees. A candidate\u2019s national ID reached the model that way this morning.', cta:'View the event' },
-        coverType:'bars',
-        coverT:'Detectors by hits · 24h',
-        cover:[['Name','1,204',1,''],['Email','1,118',1118/1204,''],['Phone','744',744/1204,''],['Address','312',312/1204,''],['National ID','28',28/1204,'sig']],
-        coverFoot:{ text:'1 leak this week', cta:'View the event' },
-        ask:{ q:'Explain how the leak at 04:12 got past every detector.', chip:'The leak', tone:'' } }
+          ['GPT for Excel W…','reads mail / files','sig','1 user'],
+          ['Claude for Sheets','reads mail / files','sig','1 user'],
+          ['Notion AI','reads docs','','1 user'],
+          ['Otter.ai','reads calendar','','1 user'],
+          ['Grammarly','reads drafts','','1 user'] ],
+        asks:[ 'Summarize AI assets',
+               'Which apps read mail and files?',
+               'Who owns the undeclared systems?' ],
+        chip:'High risk' },
+
+      /* ── 02 · Adversarial ────────────────────────────────────────── */
+      { id:'adversarial', layout:'adv',
+        side:{ t:'Adversarial', ic:'target', items:[
+          { t:'Campaigns', ic:'flow' },
+          { t:'Categories', ic:'grid', on:1 },
+          { t:'Probe library', ic:'book' },
+          { t:'Findings', ic:'alert' },
+          { t:'Schedule', ic:'cal' },
+          { t:'Runbooks', ic:'doc', muted:1 } ] },
+        title:'Adversarial testing',
+        figs:[
+          { v:2,    k:'Failing',      tone:'bad' },
+          { v:3,    k:'Degraded',     tone:'warn' },
+          { v:5,    k:'Passing',      tone:'good' },
+          { v:8412, k:'Probes · 24h' } ],
+        rateK:'Pass rate',
+        cats:[
+          { c:'LLM01', t:'Prompt Injection',              r:61,  s:'Failing',  k:'bad',  p:'1,204 probes',
+            d:'Untrusted input steering the model away from its instructions, directly or through content it retrieves' },
+          { c:'LLM02', t:'Sensitive Information Disclosure', r:74, s:'Failing', k:'bad',  p:'980 probes',
+            d:'Model reveals PII, credentials, or proprietary data in its output' },
+          { c:'LLM03', t:'Supply Chain',                  r:88,  s:'Degraded', k:'warn', p:'142 probes',
+            d:'Compromised base models, datasets, adapters, or plugins' },
+          { c:'LLM04', t:'Data & Model Poisoning',        r:91,  s:'Degraded', k:'warn', p:'320 probes',
+            d:'Manipulated training or fine-tuning data introducing backdoors or bias' },
+          { c:'LLM05', t:'Improper Output Handling',      r:97,  s:'Passing',  k:'ok',   p:'610 probes',
+            d:'Downstream systems trusting model output without validation' },
+          { c:'LLM06', t:'Excessive Agency',              r:83,  s:'Degraded', k:'warn', p:'88 probes',
+            d:'The model granted more permission, autonomy, or functionality than the task needs' },
+          { c:'LLM07', t:'System Prompt Leakage',         r:100, s:'Passing',  k:'ok',   p:'440 probes',
+            d:'Instructions, guardrails, or secrets in the system prompt disclosed to a user' } ],
+        asks:[ 'Run a red team campaign',
+               'Why are both failing categories related?',
+               'Schedule a re-run of prompt injection' ],
+        chip:'High risk' },
+
+      /* ── 03 · Govern ─────────────────────────────────────────────── */
+      { id:'govern', layout:'gov',
+        side:{ t:'Govern', ic:'doc', items:[
+          { t:'Conformance', ic:'checkc', on:1 },
+          { t:'Frameworks', ic:'layers' },
+          { t:'Findings', ic:'alert' },
+          { t:'Evidence', ic:'clipboard' },
+          { t:'Sign-off queue', ic:'check' },
+          { t:'Audit trail', ic:'history', muted:1 } ] },
+        title:'Governance',
+        figs:[
+          { v:61, sufS:'/187', k:'Requirements assessed' },
+          { v:3,  k:'Major nonconformities', tone:'bad' },
+          { v:7,  k:'Minor nonconformities', tone:'warn' },
+          { v:34, suf:'%', k:'Conforming', tone:'good' } ],
+        /* seg = [conforming, partial, nonconforming] of `total`; the remainder
+           is "not assessed". Totals reconcile with the figures above: 21 of 61
+           assessed conform (34%), 10 nonconform (3 major + 7 minor), 187 total. */
+        confT:'Conformance by framework', confBadge:'Of assessed',
+        conf:[
+          { n:'EU AI Act',     total:33, seg:[6,9,3],  v:'18 / 33 assessed' },
+          { n:'ISO/IEC 42001', total:76, seg:[8,12,4], v:'24 / 76 assessed' },
+          { n:'ISO/IEC 23894', total:41, seg:[4,5,2],  v:'11 / 41 assessed' },
+          { n:'NIST AI RMF',   total:37, seg:[3,4,1],  v:'8 / 37 assessed' } ],
+        legend:['Conforming','Partial','Nonconforming','Not assessed'],
+        mxT:'Risk matrix', mxBadge:'10 findings plotted',
+        mxRows:['Catastrophic','Major','Moderate','Minor','Negligible'],
+        mxCols:['Rare','Unlikely','Possible','Likely','Almost certain'],
+        mx:[ [0,0,1,1,0], [0,0,1,0,0], [0,2,3,0,0], [0,1,1,0,0], [0,0,0,0,0] ],
+        asks:[ 'What is blocking sign-off?',
+               'Which requirements are still open?',
+               'Show every major nonconformity' ],
+        chip:'Blocked' },
+
+      /* ── 04 · Guardrails ─────────────────────────────────────────── */
+      { id:'guardrails', layout:'grd',
+        side:{ t:'Guardrails', ic:'shield', items:[
+          { t:'Activity monitor', ic:'pulse', on:1 },
+          { t:'Detectors', ic:'search' },
+          { t:'Event stream', ic:'layers' },
+          { t:'Policies', ic:'doc' },
+          { t:'Retrieval inspection', ic:'db' },
+          { t:'Policy simulation', ic:'flask', muted:1 } ] },
+        title:'Guardrails',
+        alert:{ lead:'1 leak in the last 24 hours.',
+          head:'Personal data reached the model unmasked.',
+          d1:"A candidate's national ID and date of birth passed through in a retrieved document, not the user's prompt, so the input filter never saw it. ",
+          d2:'The retrieval path is not inspected.', d3:' That is the gap.',
+          cta:'View event' },
+        figs:[
+          { v:12847, k:'Prompts inspected' },
+          { v:1204,  k:'Masked',  tone:'good' },
+          { v:38,    k:'Blocked', tone:'warn' },
+          { v:1,     k:'Leaked',  tone:'bad' } ],
+        filters:[ { t:'All', n:'1,243', on:1 }, { t:'Leaked', n:'1' },
+                  { t:'Blocked', n:'38' }, { t:'Masked', n:'1,204' } ],
+        events:[
+          { t:'04:12:07', k:'bad',  s:'Leaked',  tags:['NATIONAL_ID','DOB','NAME'],
+            seg:["Summarise this candidate's background for the hiring panel: ", { e:'…retrieved: CV_8841.pdf…' }] },
+          { t:'03:58:41', k:'warn', s:'Blocked', tags:['PAYMENT_CARD','NAME'],
+            seg:['Check if ', { e:'[PAYMENT_CARD]' }, ' matches the account on file for ', { e:'[NAME]' }] },
+          { t:'03:44:19', k:'ok',   s:'Masked',  tags:['NAME','EMAIL','PHONE'],
+            seg:['Score this CV against the role. Candidate: ', { e:'[NAME]' }, ', ', { e:'[EMAIL]' }, ', ', { e:'[PHONE]' }] },
+          { t:'03:31:02', k:'ok',   s:'Masked',  tags:['HEALTH','SPECIAL_CAT'],
+            seg:['Candidate mentioned ', { e:'[HEALTH_CONDITION]' }, ' in their cover letter. Should this affect scoring?'] },
+          { t:'02:19:55', k:'ok',   s:'Masked',  tags:['NAME ×40','EMAIL ×40'],
+            seg:['Rank these 40 applicants: ', { e:'[NAME_1..40]' }, ', ', { e:'[EMAIL_1..40]' }] } ],
+        asks:[ 'Explain how the leak at 04:12 got past every detector.',
+               'Which detectors fired most in the last 24 hours?',
+               'Turn on inspection for the retrieval path' ],
+        chip:'The leak' }
     ];
 
-    /* Arabic is a TEXT-ONLY overlay: every number, sparkline and bar fraction
-       still comes from MODULES above, so the two languages can never drift
-       apart on the data. Framework names, LLM0x codes and NER stay Latin. */
+    /* ══════════════ Arabic · TEXT-ONLY overlay ══════════════
+       Every number, sparkline point, bar fraction and matrix count still comes
+       from MODULES above, so the two languages can never drift apart on the
+       data. Framework names, LLM0x codes and NER labels stay Latin, as they do
+       in the product itself.                                                 */
     const MODULES_AR = [
-      { badge:'الوحدة 01 · الاكتشاف', title:'الاكتشاف',
-        sub:'من المعرَّض، وماذا نفعل حياله.',
-        nav:['الاكتشاف','الربط','لوحة المعلومات','الأنظمة','السجل','سجل النشاط','نسب البيانات'],
-        statK:['الأنظمة المكتشَفة','ليست في السجل','بلا مالك مسجَّل','تناقضات مفتوحة','استدعاءات الذكاء الاصطناعي · 24 س'],
-        statD:['4 هذا الأسبوع','3 هذا الأسبوع','1 هذا الأسبوع','1 جديد هذا الأسبوع','18% مقارنة بالأمس'],
-        kind:'نتيجة حرجة', t:'12 نظامًا يعمل دون أن يعلن عنه أحد.',
-        d:'ثلاثة منها تعالج طلبات التوظيف، ما يضعها ضمن الملحق الثالث من EU AI Act. اثنان بلا مالك على الإطلاق — فلا يمكن لأحد اعتماد ضبطهما.',
-        coverT:'أكثر الأنظمة تأثيرًا على الأفراد',
-        coverRowsAr:[
-          ['talentflow-prod','يُقيّم السير الذاتية',2140],
-          ['cv-parser-batch','غير مُعلَن',2140],
-          ['sanction-screening','يقرأ السجلات',880],
-          ['support-copilot','يقرأ التذاكر',610],
-          ['interview-scoring-v2','غير مُعلَن',0] ],
-        footText:'22 من 34 في السجل', footCta:'فتح السجل',
-        askQ:'تلخيص أصول الذكاء الاصطناعي', askChip:'مخاطر عالية', cta:'فتح السجل' },
-      { badge:'الوحدة 02 · الحوكمة', title:'الحوكمة',
-        sub:'المطابقة مقابل الأطر التي تُحاسَبون عليها.',
-        nav:['الحوكمة','المطابقة','الأطر','النتائج','الأدلة','قائمة الاعتماد','سجل التدقيق'],
-        statK:['المتطلبات المُقيَّمة','عدم مطابقة جوهري','عدم مطابقة طفيف','المطابقة','بانتظار الاعتماد'],
-        statD:['9 هذا الأسبوع','1 هذا الأسبوع','2 مغلقة','21 من أصل 61 مُقيَّم','أُعِدَّت الأدلة، لا مُقيِّم بعد'],
-        kind:'نتيجة حرجة', t:'لا يمكن اعتماد هذا التقرير حتى يوقّعه شخص.',
-        d:'38 من أصل 61 متطلبًا مُعتمَد من قِبل مُقيِّم مُسمّى. يمكن للآلة رفع نتيجة، لكن لا يمكنها إغلاقها — لذا تبقى الـ23 الأخرى مفتوحة حتى يقبل أحد الأدلة.',
-        coverT:'المطابقة حسب الإطار',
-        coverL:['EU AI Act','ISO/IEC 42001','ISO/IEC 23894','NIST AI RMF','نافذة التدقيق'],
-        coverVAr:['18/33','24/76','11/41','8/37','61 يومًا · 30 سبتمبر'],
-        footText:'38 من 61 مُعتمَد', footCta:'فتح قائمة الاعتماد',
-        askQ:'ما الذي يعطّل الاعتماد؟', askChip:'محظور', cta:'فتح قائمة الاعتماد' },
-      { badge:'الوحدة 03 · الاختبار العدائي', title:'الاختبار العدائي',
-        sub:'يُفحص باستمرار، لا مرة واحدة في السنة.',
-        nav:['الاختبار العدائي','الحملات','الفئات','مكتبة الاختبارات','النتائج','الجدولة','كتيبات التشغيل'],
-        statK:['راسب','متدهور','ناجح','الاختبارات · 24 س','معدل النجاح الإجمالي'],
-        statD:['1 هذا الأسبوع','منذ آخر تحديث للنموذج','لا هجوم ناجح اليوم','مولَّدة من حركة مرورك الخاصة','2.1 نقطة هذا الأسبوع'],
-        kind:'نتيجة حرجة', t:'الفئتان الراسبتان تشتركان في سبب واحد.',
-        d:'أخفى 437 من أصل 504 اختبارًا تعليمات بنص أبيض داخل سيرة ذاتية مرفوعة — واتّبعها النموذج، متجاوزًا تقييم أحد المرشحين. إصلاح واحد يُعالج الفئتين معًا.',
-        coverT:'معدل النجاح حسب الفئة',
-        coverL:['حقن الطلبات','إفشاء المعلومات الحسّاسة','سلسلة التوريد','تسميم البيانات','الصلاحية المفرطة'],
-        coverVAr:['61%','74%','88%','91%','96%'],
-        footText:'5 من 10 تتجاوز 90%', footCta:'فتح مكتبة الاختبارات',
-        askQ:'تشغيل حملة اختبار اختراق', askChip:'مخاطر عالية', cta:'' },
-      { badge:'الوحدة 04 · حواجز الحماية', title:'حواجز الحماية',
-        sub:'كل طلب ورد يُفحص.',
-        nav:['حواجز الحماية','مراقبة النشاط','الكواشف','سجل الأحداث','السياسات','فحص الاسترجاع','محاكاة السياسات'],
-        statK:['الطلبات المفحوصة','المُخفاة','المحظورة','المُسرَّبة','تغطية الاسترجاع'],
-        statD:['18% مقارنة بالأمس','مُنقَّحة قبل أن يراها النموذج','حسّاسة أكثر من أن تُخفى','الأولى منذ 30 يومًا · صُعِّدت 04:12','المستندات المسترجَعة غير مفحوصة'],
-        kind:'نتيجة حرجة', t:'المرشِّح في المكان الخطأ.',
-        d:'الفحص يغطي الطلب، لا السياق الذي تجمعه طبقة الاسترجاع لاحقًا — وهو ما يراه النموذج فعليًا. وصل رقم هوية وطنية إلى النموذج بهذه الطريقة صباح اليوم.',
-        coverT:'إصابات الكواشف · 24 ساعة',
-        coverL:['الاسم','البريد الإلكتروني','الهاتف','العنوان','رقم الهوية الوطنية'],
-        coverVAr:['1,204','1,118','744','312','28'],
-        footText:'تسريب واحد هذا الأسبوع', footCta:'عرض الحدث',
-        askQ:'اشرح كيف تجاوز التسريب الساعة 04:12 كل كاشف.', askChip:'التسريب', cta:'عرض الحدث' }
+      /* 01 · Discover */
+      { sideT:'الاكتشاف',
+        nav:['الربط','لوحة المعلومات','الوكلاء','المخزون','سجل النشاط'],
+        title:'الاكتشاف',
+        sub:'أكبر مخاطر الذكاء الاصطناعي التي اكتشفناها: من المعرَّض وماذا نفعل حياله.',
+        statK:['الأصول المكتشَفة','التطبيقات المكتشَفة','الأشخاص المعرَّضون','التعرّضات الحرجة','استدعاءات الذكاء الاصطناعي · 24 س'],
+        statD:['2 هذا الأسبوع','2 هذا الأسبوع','2 هذا الأسبوع','4 جديدة هذا الأسبوع','350% مقارنة بالأمس'],
+        kind:'نتيجة حرجة',
+        t:'شخصان يستخدمان تطبيقَي ذكاء اصطناعي لم تعتمدهما.',
+        d:'كلاهما يقرأ البريد والملفات، ولا أحد منهما في السجل. أحدهما يُمرّر المرفقات إلى نموذج مستضاف خارج نطاقك، فتغادر البيانات قبل أن تراها أي سياسة.',
+        cta:'فتح السجل',
+        coverT:'أكثر التطبيقات وصولًا إلى الأفراد',
+        coverTags:['يقرأ البريد / الملفات','يقرأ البريد / الملفات','يقرأ المستندات','يقرأ التقويم','يقرأ المسودات'],
+        coverNs:['مستخدم واحد','مستخدم واحد','مستخدم واحد','مستخدم واحد','مستخدم واحد'],
+        asks:['تلخيص أصول الذكاء الاصطناعي','أي التطبيقات تقرأ البريد والملفات؟','من يملك الأنظمة غير المُعلَنة؟'],
+        chip:'مخاطر عالية' },
+
+      /* 02 · Adversarial */
+      { sideT:'الاختبار العدائي',
+        nav:['الحملات','الفئات','مكتبة الاختبارات','النتائج','الجدولة','كتيبات التشغيل'],
+        title:'الاختبار العدائي',
+        figK:['راسب','متدهور','ناجح','الاختبارات · 24 س'],
+        rateK:'معدل النجاح',
+        catT:['حقن الطلبات','إفشاء المعلومات الحسّاسة','سلسلة التوريد','تسميم البيانات والنماذج','سوء معالجة المخرجات','الصلاحية المفرطة','تسريب موجّه النظام'],
+        catD:['مدخلات غير موثوقة تُحرف النموذج عن تعليماته، مباشرةً أو عبر محتوى يسترجعه',
+              'يكشف النموذج بيانات شخصية أو اعتمادات أو بيانات مملوكة في مخرجاته',
+              'نماذج أساس أو بيانات أو إضافات مُخترَقة',
+              'بيانات تدريب أو ضبط مُتلاعَب بها تُدخل أبوابًا خلفية أو تحيّزًا',
+              'أنظمة لاحقة تثق بمخرجات النموذج دون تحقق',
+              'مُنح النموذج صلاحية أو استقلالية أو وظائف أكثر مما تتطلبه المهمة',
+              'تعليمات أو حواجز أو أسرار في موجّه النظام كُشفت لمستخدم'],
+        catS:['راسب','راسب','متدهور','متدهور','ناجح','متدهور','ناجح'],
+        catP:['1,204 اختبار','980 اختبار','142 اختبار','320 اختبار','610 اختبار','88 اختبار','440 اختبار'],
+        asks:['تشغيل حملة اختبار اختراق','لماذا ترتبط الفئتان الراسبتان؟','جدولة إعادة تشغيل حقن الطلبات'],
+        chip:'مخاطر عالية' },
+
+      /* 03 · Govern */
+      { sideT:'الحوكمة',
+        nav:['المطابقة','الأطر','النتائج','الأدلة','قائمة الاعتماد','سجل التدقيق'],
+        title:'الحوكمة',
+        figK:['المتطلبات المُقيَّمة','عدم مطابقة جوهري','عدم مطابقة طفيف','المطابقة'],
+        confT:'المطابقة حسب الإطار', confBadge:'من المُقيَّم',
+        confV:['18 / 33 مُقيَّم','24 / 76 مُقيَّم','11 / 41 مُقيَّم','8 / 37 مُقيَّم'],
+        legend:['مطابق','جزئي','غير مطابق','لم يُقيَّم'],
+        mxT:'مصفوفة المخاطر', mxBadge:'10 نتائج مرسومة',
+        mxRows:['كارثي','جوهري','متوسط','طفيف','مُهمَل'],
+        mxCols:['نادر','مُستبعَد','ممكن','مُرجَّح','شبه مؤكد'],
+        asks:['ما الذي يعطّل الاعتماد؟','ما المتطلبات التي ما تزال مفتوحة؟','اعرض كل حالات عدم المطابقة الجوهرية'],
+        chip:'محظور' },
+
+      /* 04 · Guardrails */
+      { sideT:'حواجز الحماية',
+        nav:['مراقبة النشاط','الكواشف','سجل الأحداث','السياسات','فحص الاسترجاع','محاكاة السياسات'],
+        title:'حواجز الحماية',
+        alertLead:'تسريب واحد خلال 24 ساعة.',
+        alertHead:'بيانات شخصية وصلت إلى النموذج دون إخفاء.',
+        alertD1:'مرّ رقم هوية وطنية وتاريخ ميلاد لأحد المرشحين داخل مستند مُسترجَع، لا في طلب المستخدم، فلم يرهما مرشِّح المدخلات. ',
+        alertD2:'مسار الاسترجاع غير مفحوص.', alertD3:' تلك هي الثغرة.',
+        alertCta:'عرض الحدث',
+        figK:['الطلبات المفحوصة','المُخفاة','المحظورة','المُسرَّبة'],
+        filters:['الكل','مُسرَّب','محظور','مُخفى'],
+        evS:['مُسرَّب','محظور','مُخفى','مُخفى','مُخفى'],
+        evSeg:[
+          ['لخّص خلفية هذا المرشح للجنة التوظيف: ', { e:'…retrieved: CV_8841.pdf…' }],
+          ['تحقّق إن كان ', { e:'[PAYMENT_CARD]' }, ' يطابق الحساب المسجَّل لـ ', { e:'[NAME]' }],
+          ['قيّم هذه السيرة الذاتية مقابل الوظيفة. المرشح: ', { e:'[NAME]' }, '، ', { e:'[EMAIL]' }, '، ', { e:'[PHONE]' }],
+          ['ذكر المرشح ', { e:'[HEALTH_CONDITION]' }, ' في خطاب التقديم. هل يؤثر ذلك في التقييم؟'],
+          ['رتّب هؤلاء الأربعين متقدمًا: ', { e:'[NAME_1..40]' }, '، ', { e:'[EMAIL_1..40]' }] ],
+        asks:['اشرح كيف تجاوز التسريب الساعة 04:12 كل كاشف.','أي الكواشف عملت أكثر خلال 24 ساعة؟','فعّل الفحص على مسار الاسترجاع'],
+        chip:'التسريب' }
     ];
 
     /* i18n.init() has already run by the time this IIFE executes, so read the
@@ -2398,23 +2560,41 @@ window.TaharaI18N = (function(){
       const m = MODULES[i];
       if (lang !== 'ar') return m;
       const a = MODULES_AR[i];
-      const out = { badge:a.badge, title:a.title, sub:a.sub, nav:a.nav, active:m.active,
-        stats: m.stats.map((s,j)=>Object.assign({}, s, { k:a.statK[j], d:a.statD[j] })),
-        finding:{ kind:a.kind, t:a.t, d:a.d, cta:a.cta },
-        coverType:m.coverType, coverT:a.coverT,
-        coverFoot:{ text:a.footText, cta:a.footCta },
-        ask:{ q:a.askQ, chip:a.askChip, tone:m.ask.tone } };
-      if (m.coverType === 'table'){
-        out.coverRows = m.coverRows.map((r,j)=>[a.coverRowsAr[j][0], a.coverRowsAr[j][1], r[2], a.coverRowsAr[j][2]]);
-      } else {
-        out.cover = m.cover.map((r,j)=>[a.coverL[j], a.coverVAr[j], r[2], r[3]]);
+      const o = Object.assign({}, m);
+
+      o.side = Object.assign({}, m.side, { t:a.sideT,
+        items:m.side.items.map((it,j)=>Object.assign({}, it, { t:a.nav[j] })) });
+      o.title = a.title; o.sub = a.sub;
+      o.asks = a.asks; o.chip = a.chip;
+
+      if (a.statK) o.stats = m.stats.map((s,j)=>Object.assign({}, s, { k:a.statK[j], d:a.statD[j] }));
+      if (m.finding) o.finding = { kind:a.kind, t:a.t, d:a.d, cta:a.cta };
+      if (m.coverRows){
+        o.coverT = a.coverT;
+        o.coverRows = m.coverRows.map((r,j)=>[r[0], a.coverTags[j], r[2], a.coverNs[j]]);
       }
-      return out;
+      if (a.figK) o.figs = m.figs.map((f,j)=>Object.assign({}, f, { k:a.figK[j] }));
+      if (m.cats){
+        o.rateK = a.rateK;
+        o.cats = m.cats.map((c,j)=>Object.assign({}, c, { t:a.catT[j], d:a.catD[j], s:a.catS[j], p:a.catP[j] }));
+      }
+      if (m.conf){
+        o.confT = a.confT; o.confBadge = a.confBadge; o.legend = a.legend;
+        o.conf = m.conf.map((c,j)=>Object.assign({}, c, { v:a.confV[j] }));
+        o.mxT = a.mxT; o.mxBadge = a.mxBadge; o.mxRows = a.mxRows; o.mxCols = a.mxCols;
+      }
+      if (m.alert){
+        o.alert = { lead:a.alertLead, head:a.alertHead, d1:a.alertD1, d2:a.alertD2,
+                    d3:a.alertD3, cta:a.alertCta };
+        o.filters = m.filters.map((f,j)=>Object.assign({}, f, { t:a.filters[j] }));
+        o.events = m.events.map((e,j)=>Object.assign({}, e, { s:a.evS[j], seg:a.evSeg[j] }));
+      }
+      return o;
     }
 
+    /* ── sparkline (Discover) ── */
     const XS = [0,14,28,42,56,70,84,100];
-    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const TONE_COL = { bad:'#c0392b', warn:'#b5651d', good:'#1f8a4c', sig:'#b5651d', '':'#114086' };
+    const TONE_COL = { bad:'#c0392b', warn:'#b5651d', good:'#12855a', '':'#5b5bd6' };
     /* Catmull-Rom → cubic-bezier smoothing, so the sparkline reads as a real
        chart curve rather than a jagged connect-the-dots line. */
     function smoothPath(xs, ys){
@@ -2424,154 +2604,300 @@ window.TaharaI18N = (function(){
         const x1 = xs[i], y1 = ys[i];
         const x2 = xs[i+1], y2 = ys[i+1];
         const x3 = xs[i+2] !== undefined ? xs[i+2] : x2, y3 = ys[i+2] !== undefined ? ys[i+2] : y2;
-        const c1x = x1 + (x2-x0)/6, c1y = y1 + (y2-y0)/6;
-        const c2x = x2 - (x3-x1)/6, c2y = y2 - (y3-y1)/6;
-        d += ' C'+c1x+' '+c1y+','+c2x+' '+c2y+','+x2+' '+y2;
+        d += ' C'+(x1+(x2-x0)/6)+' '+(y1+(y2-y0)/6)+','+(x2-(x3-x1)/6)+' '+(y2-(y3-y1)/6)+','+x2+' '+y2;
       }
       return d;
     }
-    let sparkUid = 0;
+    let uid = 0;
     function sparkSVG(pts, tone){
       const lineD = smoothPath(XS, pts);
-      const areaD = lineD+' L'+XS[XS.length-1]+' 26 L'+XS[0]+' 26 Z';
       const col = TONE_COL[tone] || TONE_COL[''];
-      const lx = XS[XS.length-1], ly = pts[pts.length-1];
-      const gid = 'sparkGrad'+(sparkUid++);
+      const gid = 'sparkGrad'+(uid++);
       return '<svg class="dash-spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true">'+
         '<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1">'+
-          '<stop offset="0%" stop-color="'+col+'" stop-opacity=".3"/>'+
+          '<stop offset="0%" stop-color="'+col+'" stop-opacity=".26"/>'+
           '<stop offset="100%" stop-color="'+col+'" stop-opacity="0"/>'+
         '</linearGradient></defs>'+
-        '<path class="dash-spark-area" d="'+areaD+'" fill="url(#'+gid+')" stroke="none"/>'+
-        '<path class="dash-spark-line" d="'+lineD+'" fill="none" stroke="'+col+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'+
-        '<circle class="dash-spark-dot" cx="'+lx+'" cy="'+ly+'" r="2.3" fill="'+col+'"/>'+
+        '<path class="dash-spark-area" d="'+lineD+' L100 26 L0 26 Z" fill="url(#'+gid+')" stroke="none"/>'+
+        '<path class="dash-spark-line" d="'+lineD+'" fill="none" stroke="'+col+'" stroke-width="1.9" '+
+          'stroke-linecap="round" stroke-linejoin="round"/>'+
+        '<circle class="dash-spark-dot" cx="100" cy="'+pts[pts.length-1]+'" r="2.4" fill="'+col+'"/>'+
         '</svg>';
     }
-    function toneClass(t){ return t==='bad'?'tone-bad':t==='warn'?'tone-warn':t==='good'?'tone-good':t==='sig'?'tone-warn':''; }
-    function barToneClass(t){ return t==='sig'?' sig':t==='good'?' good':''; }
-    const miniBarsHTML = '<span class="dash-mini-bars"><i style="height:6px"></i><i style="height:10px"></i><i style="height:15px"></i><i style="height:20px"></i></span>';
+    const toneClass = t => t==='bad'?'tone-bad':t==='good'?'tone-good':t==='warn'?'tone-warn':'';
+
+    /* ── shared fragments ── */
+    function navHTML(side){
+      let h = '<div class="dash-side-head">'+
+        '<button class="dash-back" type="button" aria-label="Back">'+ic('chevl')+'</button>'+
+        ic(side.ic)+'<span>'+esc(side.t)+'</span></div>';
+      side.items.forEach(it=>{
+        const cls = ['dash-nav-item'];
+        if (it.on) cls.push('on');
+        if (it.muted) cls.push('muted');
+        if (it.open) cls.push('open');
+        h += '<a class="'+cls.join(' ')+'" href="#" onclick="return false">'+
+             ic(it.ic)+'<span>'+esc(it.t)+'</span>'+
+             (it.chev ? ic('chev','dash-chev') : '')+'</a>';
+        if (it.sub && it.open) it.sub.forEach(s=>{
+          h += '<a class="dash-sub-item" href="#" onclick="return false">'+esc(s)+'</a>'; });
+      });
+      return h;
+    }
+
+    function statHTML(s){
+      return '<div class="dash-card"><div class="dash-card-k">'+esc(s.k)+'</div>'+
+        '<div class="dash-card-mid">'+
+          '<div class="dash-card-v '+toneClass(s.tone)+'" data-v="'+s.v+'" data-suf="'+(s.suf||'')+'">0'+(s.suf||'')+'</div>'+
+          (s.spark ? sparkSVG(s.spark, s.tone) : '')+
+        '</div>'+
+        '<div class="dash-card-d">'+(s.up?'<span class="arw-u">↑</span>':'')+esc(s.d)+'</div></div>';
+    }
+
+    /* house-style figure card: serif numeral over a mono small-caps label.
+       The numeral lives in its own span so the count-up can rewrite it
+       without destroying the smaller suffix beside it. */
+    function figHTML(f){
+      return '<div class="dash-fig dash-row">'+
+        '<div class="dash-fig-v '+toneClass(f.tone)+'">'+
+          '<span class="n" data-v="'+f.v+'" data-suf="'+(f.suf||'')+'">0'+(f.suf||'')+'</span>'+
+          (f.sufS ? '<span class="sfx">'+esc(f.sufS)+'</span>' : '')+
+        '</div>'+
+        '<div class="dash-fig-k">'+esc(f.k)+'</div>'+
+      '</div>';
+    }
+
+    function composerHTML(m){
+      return '<div class="dash-ask-in">'+
+        '<p class="dash-ask-q"><span class="dash-ask-q-text"></span><i class="dash-caret"></i></p>'+
+        '<div class="dash-ask-foot">'+
+          '<button class="dash-ask-plus" type="button" aria-label="Add">'+ic('plus')+'</button>'+
+          '<button class="dash-ask-attach" type="button" aria-label="Panels">'+ic('panel')+'</button>'+
+          '<span class="dash-avatars"><i>M</i><i class="ac">A</i><i>S</i><b>+3</b></span>'+
+          (m.chip ? '<span class="dash-ask-tag">'+esc(m.chip)+'</span>' : '')+
+          '<button class="dash-ask-send" type="button" aria-label="Send">'+ic('arrowu')+'</button>'+
+        '</div></div>';
+    }
+
+    const headHTML = m => '<div class="dash-page-head"><h3>'+esc(m.title)+'</h3>'+
+      (m.sub ? '<p class="dash-sub">'+esc(m.sub)+'</p>' : '')+'</div>';
+    const shell = (m, body) => '<aside class="dash-side">'+navHTML(m.side)+'</aside>'+
+      '<div class="dash-main">'+headHTML(m)+body+'</div>';
+
+    /* ══════════════ per-tab renderers ══════════════ */
+    function renderStd(m){       /* 01 · Discover */
+      return shell(m,
+        '<div class="dash-stats">'+m.stats.map(statHTML).join('')+'</div>'+
+        '<div class="dash-grid">'+
+          '<div class="dash-finding">'+
+            '<span class="dash-kicker">'+ic('warn')+esc(m.finding.kind).toUpperCase()+'</span>'+
+            '<h4>'+esc(m.finding.t)+'</h4><p>'+esc(m.finding.d)+'</p>'+
+            '<a class="dash-finding-cta" href="#" onclick="return false">'+esc(m.finding.cta)+
+              ' <span class="arw">→</span></a>'+
+          '</div>'+
+          '<div class="dash-cover"><span class="dash-cover-t">'+esc(m.coverT)+'</span>'+
+            m.coverRows.map(r=>'<div class="dash-trow">'+
+              '<span class="dash-trow-name">'+esc(r[0])+'</span>'+
+              '<span class="dash-trow-tag'+(r[2]==='sig'?' sig':'')+'">'+ic('mail')+esc(r[1])+'</span>'+
+              '<span class="dash-trow-n">'+esc(r[3])+'</span></div>').join('')+
+          '</div>'+
+        '</div>');
+    }
+
+    function renderAdv(m){       /* 02 · Adversarial */
+      return shell(m,
+        '<div class="dash-figs">'+m.figs.map(figHTML).join('')+'</div>'+
+        '<div class="dash-cats">'+m.cats.map(c=>
+          '<div class="dash-cat dash-row">'+
+            '<span class="dash-code">'+esc(c.c)+'</span>'+
+            '<div class="dash-cat-b"><div class="dash-cat-t">'+esc(c.t)+'</div>'+
+              '<div class="dash-cat-d">'+esc(c.d)+'</div></div>'+
+            '<div class="dash-rate">'+
+              '<div class="dash-rate-k"><span>'+esc(m.rateK)+'</span><b class="'+c.k+'">'+c.r+'%</b></div>'+
+              '<div class="dash-track"><i class="'+c.k+'" data-frac="'+(c.r/100)+'"></i></div>'+
+            '</div>'+
+            '<span class="dash-status '+c.k+'">'+esc(c.s)+'</span>'+
+            '<span class="dash-probes">'+esc(c.p)+'</span>'+
+            ic('chev','dash-go')+
+          '</div>').join('')+'</div>');
+    }
+
+    function renderGov(m){       /* 03 · Govern */
+      /* severity (5 → 1) plus likelihood (1 → 5): a clean diagonal, so the
+         corner nearest "catastrophic × almost certain" reads hottest. */
+      const tone = (r,c) => { const s = (5-r)+(c+1); return s<=5 ? 'lo' : s===6 ? 'md' : 'hi'; };
+      let mx = '<div class="dash-matrix">';
+      m.mx.forEach((row,r)=>{
+        mx += '<span class="dash-mx-rl">'+esc(m.mxRows[r])+'</span>';
+        row.forEach((n,c)=>{
+          mx += '<span class="dash-cell '+tone(r,c)+(n?'':' zero')+'">'+(n||'·')+'</span>';
+        });
+      });
+      mx += '<span></span>'+m.mxCols.map(c=>'<span class="dash-mx-cl">'+esc(c)+'</span>').join('');
+      mx += '</div>';
+
+      return shell(m,
+        '<div class="dash-figs">'+m.figs.map(figHTML).join('')+'</div>'+
+        '<div class="dash-gov2">'+
+          '<div class="dash-pane">'+
+            '<div class="dash-pane-head"><h4>'+esc(m.confT)+'</h4>'+
+              '<span class="dash-badge">'+esc(m.confBadge)+'</span></div>'+
+            '<div class="dash-conf">'+m.conf.map(f=>{
+              const segs = f.seg.map((n,i)=>'<i class="s'+i+'" data-frac="'+(n/f.total)+'"></i>').join('');
+              return '<div class="dash-conf-r dash-row">'+
+                '<div class="dash-conf-top"><span class="dash-conf-n">'+esc(f.n)+'</span>'+
+                  '<span class="dash-conf-v">'+esc(f.v)+'</span></div>'+
+                '<div class="dash-stack">'+segs+'</div></div>';
+            }).join('')+'</div>'+
+            '<div class="dash-legend">'+m.legend.map((l,i)=>
+              '<span><i class="s'+i+'"></i>'+esc(l)+'</span>').join('')+'</div>'+
+          '</div>'+
+          '<div class="dash-pane">'+
+            '<div class="dash-pane-head"><h4>'+esc(m.mxT)+'</h4>'+
+              '<span class="dash-badge">'+esc(m.mxBadge)+'</span></div>'+
+            mx+
+          '</div>'+
+        '</div>');
+    }
+
+    function renderGrd(m){       /* 04 · Guardrails */
+      const a = m.alert;
+      const seg = (parts,k) => parts.map(p=>typeof p === 'string'
+        ? esc(p) : '<span class="dash-ent '+k+'">'+esc(p.e)+'</span>').join('');
+      return shell(m,
+        '<div class="dash-alert dash-row">'+
+          '<span class="dash-alert-ic">'+ic('bang')+'</span>'+
+          '<div><div class="dash-alert-t"><b>'+esc(a.lead)+'</b> <strong>'+esc(a.head)+'</strong></div>'+
+            '<div class="dash-alert-d">'+esc(a.d1)+'<strong>'+esc(a.d2)+'</strong>'+esc(a.d3)+'</div></div>'+
+          '<a class="dash-alert-cta" href="#" onclick="return false">'+esc(a.cta)+' <span class="arw">→</span></a>'+
+        '</div>'+
+        '<div class="dash-figs">'+m.figs.map(figHTML).join('')+'</div>'+
+        '<div class="dash-filters">'+m.filters.map(f=>
+          '<button class="dash-filter'+(f.on?' on':'')+'" type="button">'+esc(f.t)+'<b>'+esc(f.n)+'</b></button>').join('')+'</div>'+
+        '<div class="dash-log">'+m.events.map(e=>
+          '<div class="dash-ev dash-row '+e.k+'">'+
+            '<span class="dash-ev-t">'+esc(e.t)+'</span>'+
+            '<span class="dash-ev-q">'+seg(e.seg, e.k)+'</span>'+
+            '<span class="dash-tags">'+e.tags.map(t=>
+              '<span class="dash-tag '+e.k+'">'+esc(t)+'</span>').join('')+'</span>'+
+            '<span class="dash-status '+e.k+'">'+esc(e.s)+'</span>'+
+            ic('chev','dash-go')+
+          '</div>').join('')+'</div>');
+    }
+
+    const RENDER = { std:renderStd, adv:renderAdv, gov:renderGov, grd:renderGrd };
 
     /* build a module in its pre-animation state (0 counts, empty bars) */
     function render(m){
-      title.textContent = m.title;
-      sub.textContent = m.sub;
-      const lastIdx = m.nav.length - 1;
-      side.innerHTML = m.nav.map((n,idx)=>{
-        if (idx===0) return '<div class="dash-nav-mod"><button class="dash-back" type="button" aria-label="Back"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M10 3 5 8l5 5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="dash-ring"></span>'+esc(n)+'</div>';
-        const cls = ['dash-nav-item'];
-        if (idx===m.active) cls.push('on');
-        if (idx===lastIdx) cls.push('muted');
-        const chev = idx===2 ? '<svg class="dash-chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
-        return '<a class="'+cls.join(' ')+'" href="#" onclick="return false"><span>'+esc(n)+'</span>'+chev+'</a>';
-      }).join('');
-      statsEl.innerHTML = m.stats.map(s=>
-        '<div class="dash-card"><div class="dash-card-k">'+esc(s.k)+'</div>'+
-        '<div class="dash-card-v '+toneClass(s.tone)+'" data-v="'+s.v+'" data-suf="'+(s.suf||'')+'">0'+(s.suf||'')+'</div>'+
-        '<div class="dash-card-foot"><span class="dash-card-d'+(s.tone?' sig':'')+'">'+esc(s.d)+'</span>'+
-        sparkSVG(s.spark,s.tone)+'</div></div>').join('');
-      findEl.innerHTML = '<span class="dash-kicker"><i></i>'+esc(m.finding.kind).toUpperCase()+'</span>'+
-        '<div class="dash-finding-b"><h4>'+esc(m.finding.t)+'</h4><p>'+esc(m.finding.d)+'</p>'+
-        '<a class="dash-finding-cta" href="#" onclick="return false">'+esc(m.finding.cta)+' <span class="arw">→</span></a></div>';
-      const footHTML = m.coverFoot ? '<div class="dash-cover-foot"><div class="dash-cover-foot-text"><span>'+esc(m.coverFoot.text)+'</span>'+
-        '<a href="#" onclick="return false">'+esc(m.coverFoot.cta)+' <span class="arw">→</span></a></div>'+miniBarsHTML+'</div>' : '';
-      if (m.coverType === 'table'){
-        coverEl.innerHTML = '<span class="dash-cover-t">'+esc(m.coverT)+'</span>'+
-          '<div class="dash-table">'+m.coverRows.map(r=>
-            '<div class="dash-trow"><span class="dash-trow-name">'+esc(r[0])+'</span>'+
-            '<span class="dash-trow-tag'+(r[2]==='sig'?' sig':'')+'">'+esc(r[1])+'</span>'+
-            '<span class="dash-trow-n">'+esc(r[3].toLocaleString('en-US'))+'</span></div>').join('')+
-          '</div>'+footHTML;
-      } else {
-        coverEl.innerHTML = '<span class="dash-cover-t">'+esc(m.coverT)+'</span>'+
-          m.cover.map(r=>'<div class="dash-bar-row'+(r[2]===null?' no-bar':'')+'"><span class="dash-bar-l">'+esc(r[0])+'</span>'+
-            (r[2]===null?'<span></span>':'<span class="dash-bar-track"><i class="dash-bar-fill'+barToneClass(r[3])+'" data-frac="'+r[2]+'"></i></span>')+
-            '<span class="dash-bar-v">'+esc(r[1])+'</span>'+
-            '</div>').join('')+footHTML;
-      }
-      if (askEl) askEl.innerHTML =
-        '<p class="dash-ask-q"><span class="dash-ask-q-text" data-full="'+esc(m.ask.q)+'"></span><i class="dash-caret"></i></p>'+
-        '<div class="dash-ask-foot">'+
-          '<button class="dash-ask-plus" type="button" aria-label="Add"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke-linecap="round"/></svg></button>'+
-          '<button class="dash-ask-attach" type="button" aria-label="Attach"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2.5" y="2.5" width="5" height="5" rx="1"/><rect x="8.5" y="8.5" width="5" height="5" rx="1"/></svg></button>'+
-          '<span class="dash-avatars"><i>RH</i><i>MK</i><i>SA</i><b>+3</b></span>'+
-          '<span class="dash-ask-tag'+(m.ask.tone==='sig'?' sig':'')+'">'+esc(m.ask.chip)+'</span>'+
-          '<button class="dash-ask-send" type="button" aria-label="Send"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'+
-        '</div>';
+      panel.innerHTML = RENDER[m.layout](m);
+      askEl.innerHTML = composerHTML(m);
     }
 
     /* animate the current module in */
     function animate(){
-      statsEl.querySelectorAll('.dash-card-v').forEach(el=>{
+      /* [data-v] covers both the Discover cards and the .n span inside a
+         house-style figure, so one pass drives every counter on the panel. */
+      panel.querySelectorAll('[data-v]').forEach(el=>{
         const target = +el.dataset.v, suf = el.dataset.suf||'', dec = !Number.isInteger(target);
+        if (reduced){
+          el.textContent = (dec ? target.toFixed(1) : target.toLocaleString('en-US'))+suf; return;
+        }
         const t0 = performance.now(), dur = 1000;
         (function step(now){
-          const p = Math.min(1,(now-t0)/dur), e = 1-Math.pow(1-p,3);
-          const cur = target*e;
+          const p = Math.min(1,(now-t0)/dur), e = 1-Math.pow(1-p,3), cur = target*e;
           el.textContent = (dec ? cur.toFixed(1) : Math.round(cur).toLocaleString('en-US'))+suf;
           if (p<1) requestAnimationFrame(step);
         })(t0);
       });
-      statsEl.querySelectorAll('.dash-spark-line').forEach(p=>{
+
+      const rows  = panel.querySelectorAll('.dash-row');
+      const cells = panel.querySelectorAll('.dash-cell');
+      if (reduced){
+        rows.forEach(r=>r.classList.add('in'));
+        cells.forEach(c=>c.classList.add('in'));
+        panel.querySelectorAll('[data-frac]').forEach(el=>{
+          el.style.width = Math.max(0,Math.min(1,+el.dataset.frac))*100+'%'; });
+        typeLoop();
+        return;
+      }
+
+      rows.forEach((r,i)=>{ r.classList.remove('in'); setTimeout(()=>r.classList.add('in'), 60+i*55); });
+      cells.forEach((c,i)=>{
+        /* sweep diagonally across the matrix rather than row by row */
+        const col = i % 5, row = (i - col) / 5;
+        c.classList.remove('in');
+        setTimeout(()=>c.classList.add('in'), 260+(row+col)*52);
+      });
+
+      panel.querySelectorAll('.dash-spark-line').forEach(p=>{
         const len = p.getTotalLength();
         p.style.transition='none'; p.style.strokeDasharray=len; p.style.strokeDashoffset=len;
         p.getBoundingClientRect();
         p.style.transition='stroke-dashoffset 1.1s cubic-bezier(.16,1,.3,1)'; p.style.strokeDashoffset='0';
       });
-      statsEl.querySelectorAll('.dash-spark-area').forEach(a=>{
+      panel.querySelectorAll('.dash-spark-area').forEach(a=>{
         a.style.transition='none'; a.style.opacity='0'; a.getBoundingClientRect();
         a.style.transition='opacity 1.1s ease .2s'; a.style.opacity='1';
       });
-      statsEl.querySelectorAll('.dash-spark-dot').forEach(c=>{
-        c.style.opacity='0';
-        setTimeout(()=>{ c.style.opacity='1'; }, 1050);
+      panel.querySelectorAll('.dash-spark-dot').forEach(c=>{
+        c.style.opacity='0'; setTimeout(()=>{ c.style.opacity='1'; }, 1050);
       });
-      coverEl.querySelectorAll('.dash-bar-fill').forEach(el=>{
+      panel.querySelectorAll('[data-frac]').forEach((el,i)=>{
         const w = Math.max(0,Math.min(1,+el.dataset.frac))*100;
         el.style.transition='none'; el.style.width='0%'; el.getBoundingClientRect();
-        el.style.transition='width .9s cubic-bezier(.16,1,.3,1)'; el.style.width=w+'%';
+        el.style.transition='width .95s cubic-bezier(.16,1,.3,1) '+(140+i*45)+'ms';
+        el.style.width=w+'%';
       });
-      coverEl.querySelectorAll('.dash-mini-bars i').forEach((el,i)=>{
-        const h = el.style.height;
-        el.style.transition='none'; el.style.height='0px'; el.getBoundingClientRect();
-        el.style.transition='height .6s cubic-bezier(.16,1,.3,1) '+(i*90)+'ms'; el.style.height=h;
-      });
-      typeAsk();
+      typeLoop();
     }
 
-    /* type the ask question out character by character */
-    let typeToken = 0;
-    function typeAsk(){
-      const el = askEl && askEl.querySelector('.dash-ask-q-text');
-      if (!el) return;
-      const text = el.dataset.full || '';
+    /* ── composer typewriter · types, holds, erases, moves to the next question,
+       and keeps cycling for as long as the tab is open ── */
+    let typeToken = 0, typeTimer = null;
+    function typeLoop(){
       const myToken = ++typeToken;
-      el.textContent = '';
-      let i = 0;
+      clearTimeout(typeTimer);
+      const el = card.querySelector('.dash-ask-q-text');
+      if (!el) return;
+      const qs = (view(modIdx).asks || []).slice();
+      if (!qs.length) return;
+      if (reduced){ el.textContent = qs[0]; return; }
+
+      let qi = 0, i = 0, erasing = false;
       (function step(){
         if (myToken !== typeToken) return;
-        el.textContent = text.slice(0,i);
-        i++;
-        if (i <= text.length) setTimeout(step, 32);
+        const text = qs[qi];
+        if (!erasing){
+          el.textContent = text.slice(0, i);
+          if (i < text.length){ i++; typeTimer = setTimeout(step, 34 + Math.random()*26); }
+          else { erasing = true; typeTimer = setTimeout(step, 2100); }
+        } else {
+          el.textContent = text.slice(0, i);
+          if (i > 0){ i--; typeTimer = setTimeout(step, 16); }
+          else { erasing = false; qi = (qi+1) % qs.length; typeTimer = setTimeout(step, 420); }
+        }
       })();
     }
 
+    function show(i){ modIdx = i; render(view(i)); animate(); }
     render(view(0));
+
     tabs.querySelectorAll('.dash-tab').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         tabs.querySelectorAll('.dash-tab').forEach(b=>b.classList.toggle('on', b===btn));
-        modIdx = +btn.dataset.mod;
-        render(view(modIdx));
-        animate();
+        show(+btn.dataset.mod);
       });
     });
 
     /* Unlike the mega-menu/FAQ/footer/drawer, the AR copy lives in this IIFE
        rather than in the i18n module, so the hook takes the language code and
        repaints whichever tab is currently open. */
-    window.TaharaDash = { setLocale(l){ lang = l === 'ar' ? 'ar' : 'en'; render(view(modIdx)); animate(); } };
+    window.TaharaDash = { setLocale(l){ lang = l === 'ar' ? 'ar' : 'en'; show(modIdx); } };
+
     /* first scroll into view animates the default module */
     if ('IntersectionObserver' in window && card){
-      new IntersectionObserver((es,obs)=>{ if (es[0].isIntersecting){ animate(); obs.disconnect(); } }, { threshold:.2 }).observe(card);
+      new IntersectionObserver((es,obs)=>{ if (es[0].isIntersecting){ animate(); obs.disconnect(); } },
+        { threshold:.2 }).observe(card);
     } else { animate(); }
   })();
 
@@ -2663,6 +2989,8 @@ window.TaharaI18N = (function(){
 
   /* ── 8 · boot ── */
   if (REDUCE){
+    const cstage = $('.console-stage');
+    cstage && cstage.style.setProperty('--t', 1);
     consoleEl.style.setProperty('--t', 1);
     consoleEl.classList.add('lit');
     UI.countersInstant();
