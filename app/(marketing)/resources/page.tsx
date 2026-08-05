@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import AmbientBg from '../AmbientBg';
 import { POSTS } from './posts';
 
 type Lang = 'en' | 'ar';
@@ -16,7 +17,7 @@ const T = {
   cta_demo:        { en: 'Request a demo', ar: 'اطلب عرضًا توضيحيًا' },
   // page content
   page_title:      { en: 'Resources', ar: 'الموارد' },
-  page_desc:       { en: 'Add your content here — text, images, cards, anything you want.', ar: 'أضف محتواك هنا — نصوص، صور، بطاقات، أي شيء تريده.' },
+  page_desc:       { en: 'Add your content here: text, images, cards, anything you want.', ar: 'أضف محتواك هنا: نصوص، صور، بطاقات، أي شيء تريده.' },
   res_eyebrow:     { en: 'Field notes', ar: 'ملاحظات ميدانية' },
   res_h1_l1:       { en: 'Agents that have to answer for', ar: 'وكلاء عليهم أن' },
   res_h1_l2:       { en: 'themselves.', ar: 'يُجيبوا عن أنفسهم.' },
@@ -28,10 +29,15 @@ const T = {
   res_filter_news: { en: 'News', ar: 'الأخبار' },
   news_eyebrow:    { en: 'Weekly, not daily', ar: 'أسبوعيًا، وليس يوميًا' },
   news_h2:         { en: 'Get the next entry in your inbox', ar: 'احصل على المقال التالي في بريدك' },
-  news_desc:       { en: "One email a week — the entries that mattered, and nothing written just to fill a schedule.", ar: 'رسالة واحدة أسبوعيًا — المقالات المهمة فقط، دون حشو.' },
+  news_desc:       { en: "One email a week. The entries that mattered, and nothing written just to fill a schedule.", ar: 'رسالة واحدة أسبوعيًا: المقالات المهمة فقط، دون حشو.' },
   news_email_ph:   { en: 'you@company.com', ar: 'you@company.com' },
   news_submit:     { en: 'Subscribe', ar: 'اشترك' },
-  card_open:       { en: 'Open', ar: 'فتح' },
+  news_thanks:     { en: 'Thank you for subscribing', ar: 'شكرًا لاشتراكك' },
+  news_check:      { en: 'Check your inbox', ar: 'تحقّق من بريدك الوارد' },
+  news_error:      { en: 'Something went wrong. Please try again.', ar: 'حدث خطأ ما. يرجى المحاولة مرة أخرى.' },
+  news_invalid:    { en: 'Enter a valid email address.', ar: 'أدخل عنوان بريد إلكتروني صالحًا.' },
+  card_open:       { en: 'Read more', ar: 'اقرأ المزيد' },
+  res_empty:       { en: 'No posts match that yet.', ar: 'لا توجد مقالات مطابقة بعد.' },
   // footer
   footer_tagline:  { en: 'Safety, governance and transparency for the AI you actually run.', ar: 'السلامة والحوكمة والشفافية للذكاء الاصطناعي الذي تشغّلونه فعليًا.' },
   footer_copyright:{ en: '© 2026 Tahara AI. All rights reserved.', ar: '© 2026 Tahara AI. جميع الحقوق محفوظة.' },
@@ -48,25 +54,37 @@ export default function ResourcesPage() {
   const [lang, setLang] = useState<Lang>('en');
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
-  const [subscribed, setSubscribed] = useState(false);
   const [email, setEmail] = useState('');
-  const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [newsletterStatus, setNewsletterStatus] =
+    useState<'idle' | 'loading' | 'success' | 'error' | 'invalid'>('idle');
 
-  function handleSubscribe(e: FormEvent) {
+  /* The search box and the filter pills used to update state that nothing
+     read, so the grid always showed every post. Both are applied here. */
+  const q = search.trim().toLowerCase();
+  const visible = POSTS.filter((post) => {
+    if (filter !== 'all' && post.category !== filter) return false;
+    if (!q) return true;
+    return (post.title + ' ' + post.excerpt + ' ' + post.tag).toLowerCase().includes(q);
+  });
+
+  const handleNewsletterSubscribe = async (e: FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
-    setSubscribed(true);
-  }
+    const value = email.trim();
+    /* The submit used to be wired to the button's onClick, which fires even
+       when the browser rejects the field, so an invalid address still POSTed.
+       Validating here covers both the click and the Enter key. */
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) { setNewsletterStatus('invalid'); return; }
 
-  const handleNewsletterSubscribe = async () => {
-    if (!email) return;
     setNewsletterStatus('loading');
     try {
-      await fetch('https://hook.eu1.make.com/gmndde1lm89azj8glxw485eu5s2233ub', {
+      const res = await fetch('https://hook.eu1.make.com/gmndde1lm89azj8glxw485eu5s2233ub', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'newsletter' }),
+        body: JSON.stringify({ email: value, source: 'newsletter' }),
       });
+      /* fetch only rejects on a network failure: a 4xx/5xx resolves normally,
+         so without this a rejected signup was reported as a success. */
+      if (!res.ok) throw new Error('Webhook responded ' + res.status);
       setNewsletterStatus('success');
       setEmail('');
     } catch (err) {
@@ -115,6 +133,7 @@ export default function ResourcesPage() {
 
   return (
     <>
+      <AmbientBg />
       <style suppressHydrationWarning>{`
         footer { padding: 32px 0 18px !important; margin-top: 56px !important; }
         .foot-grid { gap: 24px !important; padding-bottom: 22px !important; }
@@ -150,16 +169,23 @@ export default function ResourcesPage() {
 
         .res-grid { min-height: 24px; padding: 0 0 8px;
           display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .res-card { background: #fff; border: 1px solid var(--line); border-radius: var(--r-m);
+        /* position:relative bounds the stretched .res-card-link below. Without
+           it the link would only be contained while the card is hovered, since
+           the hover translateY is what would otherwise create the containing
+           block, so the hit area would jump around. */
+        .res-card { position: relative; background: #fff; border: 1px solid var(--line);
+          border-radius: var(--r-m);
           overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--sh-s);
           transition: transform .3s var(--e-out), box-shadow .3s ease; }
         .res-card:hover { transform: translateY(-3px); box-shadow: var(--sh-m); }
-        .res-card-banner { position: relative; height: 116px; padding: 14px 16px;
-          display: flex; align-items: flex-end;
+        .res-card-banner { position: relative; height: 180px;
           background: linear-gradient(135deg, #a9c7e8 0%, #4d86c9 30%, var(--g700) 62%, var(--g900) 100%);
           background-size: 180% 180%; background-position: 0% 50%;
           animation: bannerDrift 7s ease-in-out infinite;
           overflow: hidden; }
+        @media (prefers-reduced-motion: reduce) {
+          .res-card-banner, .res-card-banner::after { animation: none; }
+        }
         .res-card-banner::after { content: ""; position: absolute; inset: 0;
           background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.28) 46%, transparent 62%);
           background-size: 220% 100%; background-position: 130% 0;
@@ -172,18 +198,40 @@ export default function ResourcesPage() {
           0%,60%,100% { background-position: 130% 0; }
           30% { background-position: -30% 0; }
         }
-        .res-card-banner span { position: relative; z-index: 1; color: #fff; font-weight: 500;
-          font-size: 14px; line-height: 1.3; }
-        .res-card-body { padding: 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-        .res-card-tag { align-self: flex-start; font-family: var(--font-mono); font-size: 9.5px;
-          font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--g600);
-          background: rgba(17,64,134,.1); padding: 4px 9px; border-radius: 6px; }
-        .res-card h4 { font-size: 15.5px; line-height: 1.35; color: var(--ink); }
-        .res-card p { font-size: 13.5px; color: var(--ink-2); line-height: 1.55; margin: 0; }
-        .res-card-meta { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line);
-          display: flex; align-items: center; justify-content: space-between;
-          font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3); }
-        .res-card-meta a { color: var(--g600); font-weight: 500; }
+        .res-empty { grid-column: 1 / -1; margin: 0; padding: 40px 0;
+          font-size: 15px; color: var(--ink-3); }
+        .res-card-body { padding: 18px 18px 20px; display: flex; flex-direction: column;
+          gap: 10px; flex: 1; }
+        /* tag pill and date share the first row, as in the reference */
+        .res-card-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .res-card-tag { font-size: 12px; font-weight: 500; color: var(--g600);
+          background: rgba(17,64,134,.09); padding: 4px 11px; border-radius: 999px;
+          white-space: nowrap; }
+        .res-card-date { font-family: var(--font-mono); font-size: 10.5px; font-weight: 500;
+          letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; }
+        .res-card h4 { font-size: 17px; line-height: 1.38; color: var(--ink); }
+        .res-card p { font-size: 14px; color: var(--ink-2); line-height: 1.6; margin: 0; }
+
+        /* Stretch the one link over the whole card so any point opens the post,
+           bounded by position:relative on .res-card above. The card needs no
+           click handler and keyboard users still get a single, properly
+           labelled tab stop. */
+        .res-card-link::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+        /* margin-top:auto pins it to the bottom of the card whatever the excerpt
+           length, so the links line up across a row. No divider above it. */
+        .res-card-link { margin-top: auto; padding-top: 6px; align-self: flex-start;
+          display: inline-flex; align-items: center; gap: 6px;
+          font-size: 14px; font-weight: 500; color: var(--g600); }
+        .res-card-link svg { width: 14px; height: 14px; flex: none;
+          transition: transform .3s var(--e-out); }
+        .res-card:hover .res-card-link { color: var(--g900); }
+        .res-card:hover .res-card-link svg { transform: translate(2px, -2px); }
+        [dir="rtl"] .res-card-link svg { transform: scaleX(-1); }
+        [dir="rtl"] .res-card:hover .res-card-link svg { transform: scaleX(-1) translate(2px, -2px); }
+        /* the stretched layer sits over the text, so restore selectability */
+        .res-card-body h4, .res-card-body p, .res-card-tag { position: relative; z-index: 2; }
+        .res-card:focus-within { outline: 2px solid var(--g600); outline-offset: 3px; }
+        .res-card-link:focus-visible { outline: none; }
 
         .res-news { position: relative; overflow: hidden; border-radius: 26px; padding: 44px 40px;
           color: #fff; background: radial-gradient(ellipse 80% 90% at 50% 0%, #0b3472, var(--g900) 68%);
@@ -198,6 +246,16 @@ export default function ResourcesPage() {
           outline: none; min-width: 220px; transition: border-color .2s, background .2s; }
         .res-news-form input::placeholder { color: rgba(255,255,255,.55); }
         .res-news-form input:focus { border-color: var(--g400); background: rgba(255,255,255,.14); }
+        .res-news-form input[aria-invalid="true"] { border-color: #e88a7d; }
+        .res-news-err { width: 100%; margin: 0; color: #f0b4aa; font-size: 13.5px; }
+
+        /* Success replaces the whole box. The min-height holds roughly the
+           height the copy + form occupied, so the section doesn't collapse
+           and shunt the footer up the moment someone subscribes. */
+        .res-news-done { flex: 1; min-height: 150px; display: flex; flex-direction: column;
+          align-items: center; justify-content: center; text-align: center; gap: 8px; }
+        .res-news-done h2 { color: #fff; margin: 0; font-size: clamp(22px, 2.6vw, 30px); }
+        .res-news-done p { color: #b3cbe5; font-size: 14.5px; margin: 0; }
 
         @media (max-width: 900px) {
           .res-grid { grid-template-columns: repeat(2, 1fr); }
@@ -243,7 +301,7 @@ export default function ResourcesPage() {
       </header>
 
       {/* ══════════ page content ══════════ */}
-      <main style={{ minHeight: '60vh', padding: '150px 0 0' }}>
+      <main style={{ minHeight: '60vh', padding: '120px 0 0' }}>
         {/* ── hero ── */}
         <section className="wrap res-hero">
           <span className="eyebrow"><i></i>{tr('res_eyebrow', lang)}</span>
@@ -286,19 +344,30 @@ export default function ResourcesPage() {
           </div>
         </section>
 
-        {/* ── blog entries — sourced from posts.ts; add a post there to add a card ── */}
+        {/* ── blog entries, sourced from posts.ts; add a post there to add a card ──
+             The whole card opens the post: .res-card-link is stretched across it
+             by ::after rather than wrapping everything in an <a>, so the heading
+             stays a heading and the card keeps a single link to one destination. */}
         <section className="wrap res-grid" id="resourceGrid">
-          {POSTS.map((post) => (
+          {visible.length === 0 && <p className="res-empty">{tr('res_empty', lang)}</p>}
+          {visible.map((post) => (
             <article className="res-card" key={post.slug}>
-              <div className="res-card-banner"><span>{post.title}</span></div>
+              {/* artwork only: the headline sits below, so it isn't repeated here */}
+              <div className="res-card-banner" aria-hidden="true" />
               <div className="res-card-body">
-                <span className="res-card-tag">{post.featured ? `Featured · ${post.tag}` : post.tag}</span>
+                <div className="res-card-top">
+                  <span className="res-card-tag">{post.featured ? `Featured · ${post.tag}` : post.tag}</span>
+                  <span className="res-card-date">{post.date}</span>
+                </div>
                 <h4>{post.title}</h4>
                 <p>{post.excerpt}</p>
-                <div className="res-card-meta">
-                  <span>{post.readingTime} · {post.date}</span>
-                  <Link href={`/resources/${post.slug}`}>{tr('card_open', lang)} →</Link>
-                </div>
+                <Link className="res-card-link" href={`/resources/${post.slug}`}>
+                  {tr('card_open', lang)}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9"
+                    strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M7 17 17 7M8.5 7H17v8.5" />
+                  </svg>
+                </Link>
               </div>
             </article>
           ))}
@@ -307,28 +376,41 @@ export default function ResourcesPage() {
         {/* ── newsletter ── */}
         <section className="wrap">
           <div className="res-news">
-            <div className="res-news-copy">
-              <span className="label res-news-eyebrow">{tr('news_eyebrow', lang)}</span>
-              <h2>{tr('news_h2', lang)}</h2>
-              <p>{tr('news_desc', lang)}</p>
-            </div>
-            <form className="res-news-form" onSubmit={(e) => e.preventDefault()}>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={newsletterStatus === 'loading'}
-                placeholder={tr('news_email_ph', lang)}
-                aria-label={tr('news_email_ph', lang)}
-              />
-              <button type="submit" className="btn btn-solid" onClick={handleNewsletterSubscribe} disabled={newsletterStatus === 'loading'}>
-                <span>{subscribed ? '✓' : tr('news_submit', lang)}</span>
-                {!subscribed && <span className="arw">→</span>}
-              </button>
-              {newsletterStatus === 'success' && <p style={{ color: '#fff', fontSize: '13.5px', margin: 0, marginTop: '8px' }}>Thanks — check your inbox!</p>}
-              {newsletterStatus === 'error' && <p style={{ color: '#fff', fontSize: '13.5px', margin: 0, marginTop: '8px' }}>Something went wrong. Please try again.</p>}
-            </form>
+            {newsletterStatus === 'success' ? (
+              /* the whole box becomes the confirmation, with no eyebrow, heading or form */
+              <div className="res-news-done" role="status" aria-live="polite">
+                <h2>{tr('news_thanks', lang)}</h2>
+                <p>{tr('news_check', lang)}</p>
+              </div>
+            ) : (
+              <>
+                <div className="res-news-copy">
+                  <span className="label res-news-eyebrow">{tr('news_eyebrow', lang)}</span>
+                  <h2>{tr('news_h2', lang)}</h2>
+                  <p>{tr('news_desc', lang)}</p>
+                </div>
+                <form className="res-news-form" onSubmit={handleNewsletterSubscribe} noValidate>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); if (newsletterStatus !== 'idle') setNewsletterStatus('idle'); }}
+                    disabled={newsletterStatus === 'loading'}
+                    placeholder={tr('news_email_ph', lang)}
+                    aria-label={tr('news_email_ph', lang)}
+                    aria-invalid={newsletterStatus === 'invalid'}
+                  />
+                  <button type="submit" className="btn btn-solid" disabled={newsletterStatus === 'loading'}>
+                    <span>{tr('news_submit', lang)}</span>
+                    <span className="arw">→</span>
+                  </button>
+                  {(newsletterStatus === 'error' || newsletterStatus === 'invalid') && (
+                    <p className="res-news-err" role="alert">
+                      {tr(newsletterStatus === 'invalid' ? 'news_invalid' : 'news_error', lang)}
+                    </p>
+                  )}
+                </form>
+              </>
+            )}
           </div>
         </section>
       </main>
