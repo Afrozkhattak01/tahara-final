@@ -314,16 +314,17 @@
 
 <!-- ══════════ 3 · pinned architecture ══════════ -->
 <section class="stack-sec" id="stack">
-  <div class="wrap">
-    <div class="stack-intro">
-      <span class="eyebrow r-fade"><i></i><span data-i18n="eyebrow.architecture">Architecture</span></span>
-      <h2 style="margin-top:16px" data-split data-i18n="stack.title">Assurance runs the full depth of the stack.</h2>
-    </div>
-  </div>
-
   <div class="stack-track" id="stackTrack">
     <div class="stack-pin">
       <div class="wrap">
+        <!-- The heading lives inside the pinned panel, not above the track:
+             outside it, it had scrolled off by the time the stack started
+             assembling, so the two were never on screen together. -->
+        <div class="stack-intro">
+          <span class="eyebrow r-fade"><i></i><span data-i18n="eyebrow.architecture">Architecture</span></span>
+          <h2 style="margin-top:16px" data-split data-i18n="stack.title">Assurance runs the full depth of the stack.</h2>
+        </div>
+
         <div class="pin-head">
           <span class="label" data-i18n="stack.assembling">Assembling 05 layers</span>
           <span class="pin-rail" id="pinRail" aria-hidden="true"><i></i></span>
