@@ -15,6 +15,15 @@ const T = {
   nav_resources:   { en: 'Resources',    ar: 'الموارد' },
   nav_faq:         { en: 'FAQ',          ar: 'الأسئلة الشائعة' },
   cta_demo:        { en: 'Request a demo', ar: 'اطلب عرضًا توضيحيًا' },
+  // platform menu demo panel — the columns come from tahara-mega.js
+  mega_demo_k:     { en: 'Guided demo', ar: 'عرض توضيحي موجَّه' },
+  mega_demo_title: { en: 'See Tahara in action', ar: 'شاهد Tahara في العمل' },
+  mega_demo_desc:  { en: 'A 30-minute walkthrough, tailored to your stack', ar: 'جولة مدتها 30 دقيقة، مصمَّمة خصيصًا لمنظومتكم' },
+  mega_demo_walk:  { en: 'What we walk through', ar: 'ما الذي نستعرضه' },
+  stage_assess:    { en: 'Assess',  ar: 'التقييم' },
+  stage_govern:    { en: 'Govern',  ar: 'الحوكمة' },
+  stage_test:      { en: 'Test',    ar: 'الاختبار' },
+  stage_monitor:   { en: 'Monitor', ar: 'المراقبة' },
   // page content
   page_title:      { en: 'Resources', ar: 'الموارد' },
   page_desc:       { en: 'Add your content here: text, images, cards, anything you want.', ar: 'أضف محتواك هنا: نصوص، صور، بطاقات، أي شيء تريده.' },
@@ -32,7 +41,7 @@ const T = {
   news_desc:       { en: "One email a week. The entries that mattered, and nothing written just to fill a schedule.", ar: 'رسالة واحدة أسبوعيًا: المقالات المهمة فقط، دون حشو.' },
   news_email_ph:   { en: 'you@company.com', ar: 'you@company.com' },
   news_submit:     { en: 'Subscribe', ar: 'اشترك' },
-  news_thanks:     { en: 'Thank you for subscribing', ar: 'شكرًا لاشتراكك' },
+  news_thanks:     { en: 'Thank you for joining our valuable subscriber list', ar: 'شكرًا لانضمامك إلى قائمة مشتركينا القيّمة' },
   news_check:      { en: 'Check your inbox', ar: 'تحقّق من بريدك الوارد' },
   news_error:      { en: 'Something went wrong. Please try again.', ar: 'حدث خطأ ما. يرجى المحاولة مرة أخرى.' },
   news_invalid:    { en: 'Enter a valid email address.', ar: 'أدخل عنوان بريد إلكتروني صالحًا.' },
@@ -125,6 +134,25 @@ export default function ResourcesPage() {
     };
   }, []);
 
+  /* Platform mega-menu — the same script the landing page runs. It builds the
+     columns into the shell below and wires open/close itself; re-running mount
+     on a language change rebuilds them, exactly as the landing page does. */
+  useEffect(() => {
+    const boot = () => (window as any).TaharaMega?.mount(lang);
+    if ((window as any).TaharaMega) { boot(); return; }
+    let s = document.getElementById('tahara-mega') as HTMLScriptElement | null;
+    if (!s) {
+      s = document.createElement('script');
+      s.id = 'tahara-mega';
+      s.src = '/tahara-mega.js';
+      s.async = false;
+      document.body.appendChild(s);
+    }
+    const el = s;
+    el.addEventListener('load', boot);
+    return () => el.removeEventListener('load', boot);
+  }, [lang]);
+
   // Apply lang/dir to <html> so RTL CSS from landing.css works
   useEffect(() => {
     document.documentElement.setAttribute('lang', lang === 'ar' ? 'ar' : 'en');
@@ -142,7 +170,10 @@ export default function ResourcesPage() {
         footer li { margin-bottom: 6px !important; }
         .foot-bottom { padding-top: 14px !important; }
 
-        main .wrap { padding-left: 48px; padding-right: 48px; }
+        /* One width for the whole page. The card grid needs 1390px to hold
+           three wide cards, so the hero, toolbar and newsletter take it too —
+           otherwise the grid hangs ~105px outside everything above it. */
+        main .wrap { max-width: 1390px; padding-left: 48px; padding-right: 48px; }
         .res-hero { padding-bottom: 56px; text-align: left; }
         .res-grid { margin-bottom: 64px; }
         .res-h1 { margin-top: 16px; margin-bottom: 14px;
@@ -167,18 +198,23 @@ export default function ResourcesPage() {
         .res-filter-pill:hover { border-color: var(--g600); }
         .res-filter-pill.on { background: var(--g900); color: #fff; border-color: var(--g900); }
 
-        .res-grid { min-height: 24px; padding: 0 0 8px;
-          display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        /* position:relative bounds the stretched .res-card-link below. Without
-           it the link would only be contained while the card is hovered, since
-           the hover translateY is what would otherwise create the containing
-           block, so the hit area would jump around. */
+        /* width and side padding come from the main .wrap rule above, so the
+           cards start on the same left edge as the headline */
+        .res-grid { min-height: 24px; padding-bottom: 8px;
+          display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
         .res-card { position: relative; background: #fff; border: 1px solid var(--line);
           border-radius: var(--r-m);
           overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--sh-s);
           transition: transform .3s var(--e-out), box-shadow .3s ease; }
         .res-card:hover { transform: translateY(-3px); box-shadow: var(--sh-m); }
-        .res-card-banner { position: relative; height: 180px;
+        /* the link IS the card: it fills it edge to edge, so there is no part
+           of the card that is not the link */
+        .res-card-hit { display: flex; flex-direction: column; flex: 1;
+          color: inherit; text-decoration: none; }
+        /* ratio, not a fixed height, so it stays proportional through the
+           breakpoints. 21:9 keeps the banner a wide strip rather than a block
+           that drives the card's height */
+        .res-card-banner { position: relative; aspect-ratio: 21 / 9;
           background: linear-gradient(135deg, #a9c7e8 0%, #4d86c9 30%, var(--g700) 62%, var(--g900) 100%);
           background-size: 180% 180%; background-position: 0% 50%;
           animation: bannerDrift 7s ease-in-out infinite;
@@ -200,36 +236,33 @@ export default function ResourcesPage() {
         }
         .res-empty { grid-column: 1 / -1; margin: 0; padding: 40px 0;
           font-size: 15px; color: var(--ink-3); }
-        .res-card-body { padding: 18px 18px 20px; display: flex; flex-direction: column;
+        .res-card-body { padding: 22px 22px 24px; display: flex; flex-direction: column;
           gap: 10px; flex: 1; }
         /* tag pill and date share the first row, as in the reference */
         .res-card-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .res-card-tag { font-size: 12px; font-weight: 500; color: var(--g600);
-          background: rgba(17,64,134,.09); padding: 4px 11px; border-radius: 999px;
+        .res-card-tag { font-size: 12.5px; font-weight: 500; color: var(--g600);
+          background: rgba(17,64,134,.09); padding: 5px 12px; border-radius: 999px;
           white-space: nowrap; }
-        .res-card-date { font-family: var(--font-mono); font-size: 10.5px; font-weight: 500;
+        .res-card-date { font-family: var(--font-mono); font-size: 11px; font-weight: 500;
           letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; }
-        .res-card h4 { font-size: 17px; line-height: 1.38; color: var(--ink); }
-        .res-card p { font-size: 14px; color: var(--ink-2); line-height: 1.6; margin: 0; }
+        .res-card h4 { font-size: 19px; line-height: 1.4; color: var(--ink); }
+        .res-card p { font-size: 15px; color: var(--ink-2); line-height: 1.62; margin: 0; }
 
-        /* Stretch the one link over the whole card so any point opens the post,
-           bounded by position:relative on .res-card above. The card needs no
-           click handler and keyboard users still get a single, properly
-           labelled tab stop. */
-        .res-card-link::after { content: ""; position: absolute; inset: 0; z-index: 1; }
         /* margin-top:auto pins it to the bottom of the card whatever the excerpt
-           length, so the links line up across a row. No divider above it. */
-        .res-card-link { margin-top: auto; padding-top: 6px; align-self: flex-start;
+           length, so the "Read more" lines up across a row. No divider above it. */
+        .res-card-link { margin-top: auto; padding-top: 10px; align-self: flex-start;
           display: inline-flex; align-items: center; gap: 6px;
-          font-size: 14px; font-weight: 500; color: var(--g600); }
-        .res-card-link svg { width: 14px; height: 14px; flex: none;
+          font-size: 15px; font-weight: 500; color: var(--g600); }
+        .res-card-link svg { width: 15px; height: 15px; flex: none;
           transition: transform .3s var(--e-out); }
         .res-card:hover .res-card-link { color: var(--g900); }
         .res-card:hover .res-card-link svg { transform: translate(2px, -2px); }
         [dir="rtl"] .res-card-link svg { transform: scaleX(-1); }
         [dir="rtl"] .res-card:hover .res-card-link svg { transform: scaleX(-1) translate(2px, -2px); }
-        /* the stretched layer sits over the text, so restore selectability */
-        .res-card-body h4, .res-card-body p, .res-card-tag { position: relative; z-index: 2; }
+        /* Nothing in the body is lifted above the stretched layer: raising the
+           title, excerpt or tag made those areas swallow the click, so only the
+           blank parts of the card opened the post. Every pixel opens it now —
+           the cost is that the card's text can no longer be drag-selected. */
         .res-card:focus-within { outline: 2px solid var(--g600); outline-offset: 3px; }
         .res-card-link:focus-visible { outline: none; }
 
@@ -254,15 +287,20 @@ export default function ResourcesPage() {
            and shunt the footer up the moment someone subscribes. */
         .res-news-done { flex: 1; min-height: 150px; display: flex; flex-direction: column;
           align-items: center; justify-content: center; text-align: center; gap: 8px; }
-        .res-news-done h2 { color: #fff; margin: 0; font-size: clamp(22px, 2.6vw, 30px); }
+        /* one line: no width cap, and the size tracks the viewport steeply
+           enough that the sentence keeps fitting as the box narrows */
+        .res-news-done h2 { color: #fff; margin: 0; font-size: clamp(15px, 3.1vw, 30px);
+          line-height: 1.2; }
         .res-news-done p { color: #b3cbe5; font-size: 14.5px; margin: 0; }
 
         @media (max-width: 900px) {
-          .res-grid { grid-template-columns: repeat(2, 1fr); }
+          .res-grid { grid-template-columns: repeat(2, 1fr); gap: 26px; }
         }
         @media (max-width: 640px) {
           .res-toolbar { flex-direction: column; align-items: stretch; }
-          .res-grid { grid-template-columns: 1fr; }
+          /* one column: a 32px gutter between stacked cards reads as a hole */
+          .res-grid { grid-template-columns: 1fr; gap: 22px; }
+          .res-card-body { padding: 22px 22px 24px; }
           .res-news { padding: 34px 24px; }
           .res-news-form { width: 100%; }
           .res-news-form input { flex: 1; min-width: 0; }
@@ -275,7 +313,15 @@ export default function ResourcesPage() {
             <span className="brand-mark" aria-hidden="true"></span>Tahara AI
           </a>
           <div className="nav-links" id="navLinks">
-            <a href="/#platform" className="has-mega">
+            <a
+              href="/#platform"
+              className="has-mega"
+              id="megaBtn"
+              role="button"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-controls="mega"
+            >
               <span>{tr('nav_platform', lang)}</span>
               <svg className="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
                 <path d="M1.6 3.4 5 6.8l3.4-3.4" />
@@ -298,7 +344,54 @@ export default function ResourcesPage() {
           </div>
           <span className="prog" id="prog" aria-hidden="true"></span>
         </nav>
+
+        {/* Platform mega-menu. Only the shell lives here — tahara-mega.js fills
+            in the columns and the "more" row, same as on the landing page. */}
+        <div className="mega" id="mega" role="region" aria-label="Platform menu">
+          <div className="mega-card">
+            <div className="mega-inner" id="megaInner">
+              {/* columns injected before this panel */}
+              <div className="mega-demo">
+                <span className="demo-k">{tr('mega_demo_k', lang)}</span>
+                <h4>{tr('mega_demo_title', lang)}</h4>
+                <p>{tr('mega_demo_desc', lang)}</p>
+                <span className="demo-walk-k">{tr('mega_demo_walk', lang)}</span>
+                <ul className="demo-steps">
+                  <li className="demo-step" style={{ ['--si' as string]: 0 } as React.CSSProperties}>
+                    <span className="demo-dot"></span><span>{tr('stage_assess', lang)}</span>
+                    <svg className="demo-si" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                      <circle cx="8.5" cy="8.5" r="5" /><path d="M12.5 12.5 17 17" strokeLinecap="round" />
+                    </svg>
+                  </li>
+                  <li className="demo-step" style={{ ['--si' as string]: 1 } as React.CSSProperties}>
+                    <span className="demo-dot"></span><span>{tr('stage_govern', lang)}</span>
+                    <svg className="demo-si" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                      <path d="M10 2.5 4 5v4.6c0 3.4 2.4 5.8 6 6.4 3.6-.6 6-3 6-6.4V5z" strokeLinejoin="round" />
+                    </svg>
+                  </li>
+                  <li className="demo-step" style={{ ['--si' as string]: 2 } as React.CSSProperties}>
+                    <span className="demo-dot"></span><span>{tr('stage_test', lang)}</span>
+                    <svg className="demo-si" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                      <circle cx="10" cy="10" r="6.5" /><circle cx="10" cy="10" r="2.4" />
+                    </svg>
+                  </li>
+                  <li className="demo-step" style={{ ['--si' as string]: 3 } as React.CSSProperties}>
+                    <span className="demo-dot"></span><span>{tr('stage_monitor', lang)}</span>
+                    <svg className="demo-si" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                      <path d="M2 10h3l2.2-5 3 10 2.2-6 1.4 3H18" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </li>
+                </ul>
+                <a data-cal-link="tahara-ai-xpf7u0/product-demo" className="demo-btn">
+                  <span>{tr('cta_demo', lang)}</span> <span className="arw" aria-hidden="true">→</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </header>
+
+      <div className="mega-scrim" id="megaScrim" aria-hidden="true"></div>
 
       {/* ══════════ page content ══════════ */}
       <main style={{ minHeight: '60vh', padding: '120px 0 0' }}>
@@ -352,23 +445,28 @@ export default function ResourcesPage() {
           {visible.length === 0 && <p className="res-empty">{tr('res_empty', lang)}</p>}
           {visible.map((post) => (
             <article className="res-card" key={post.slug}>
-              {/* artwork only: the headline sits below, so it isn't repeated here */}
-              <div className="res-card-banner" aria-hidden="true" />
-              <div className="res-card-body">
-                <div className="res-card-top">
-                  <span className="res-card-tag">{post.featured ? `Featured · ${post.tag}` : post.tag}</span>
-                  <span className="res-card-date">{post.date}</span>
+              {/* The link wraps the entire card — banner, text and all — so every
+                  part of it navigates. "Read more" is a span, not a second link:
+                  one card, one destination, one tab stop. */}
+              <Link className="res-card-hit" href={`/resources/${post.slug}`}>
+                {/* artwork only: the headline sits below, so it isn't repeated here */}
+                <div className="res-card-banner" aria-hidden="true" />
+                <div className="res-card-body">
+                  <div className="res-card-top">
+                    <span className="res-card-tag">{post.featured ? `Featured · ${post.tag}` : post.tag}</span>
+                    <span className="res-card-date">{post.date}</span>
+                  </div>
+                  <h4>{post.title}</h4>
+                  <p>{post.excerpt}</p>
+                  <span className="res-card-link">
+                    {tr('card_open', lang)}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9"
+                      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M7 17 17 7M8.5 7H17v8.5" />
+                    </svg>
+                  </span>
                 </div>
-                <h4>{post.title}</h4>
-                <p>{post.excerpt}</p>
-                <Link className="res-card-link" href={`/resources/${post.slug}`}>
-                  {tr('card_open', lang)}
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9"
-                    strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M7 17 17 7M8.5 7H17v8.5" />
-                  </svg>
-                </Link>
-              </div>
+              </Link>
             </article>
           ))}
         </section>

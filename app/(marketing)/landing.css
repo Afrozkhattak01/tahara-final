@@ -713,10 +713,15 @@ code,pre{font-family:var(--font-mono)}
 /* ── statement band — the one serif on the page, sat between the standards
    marquee and the record cards. Light ground like every other section; the
    contrast comes from the typeface, not a colour block. ── */
-.stmt{padding:82px 0 74px;text-align:center}
+/* padding trimmed with the heading: one line instead of two takes ~65px out of
+   the block, and the old 82/74 left it floating in its own section */
+.stmt{padding:70px 0 62px;text-align:center}
+/* No max-width — the statement reads as a single line, and a ch cap was what
+   broke it in two. The size tracks the viewport so it keeps fitting as the
+   screen narrows rather than wrapping. */
 .stmt-t{font-family:var(--font-display);font-weight:400;font-style:normal;letter-spacing:-.01em;
-  line-height:1.25;font-size:clamp(30px,4vw,52px);color:var(--ink);
-  max-width:22ch;margin:0 auto}
+  line-height:1.25;font-size:clamp(20px,4.4vw,52px);color:var(--ink);
+  margin:0 auto}
 .stmt-t em{font-style:italic;font-weight:400;color:var(--g600)}
 .stmt-d{font-size:clamp(15px,1.3vw,17.5px);color:var(--ink-2);line-height:1.62;
   max-width:60ch;margin:20px auto 0}
@@ -724,9 +729,9 @@ code,pre{font-family:var(--font-mono)}
    the serif has no Arabic glyphs, and a synthesised italic on Arabic script
    reads as a rendering fault. Matches the h2 declaration exactly. */
 [dir="rtl"] .stmt-t{font-family:'IBM Plex Sans Arabic',var(--font-body);font-weight:500;
-  letter-spacing:-.02em;max-width:22ch}
+  letter-spacing:-.02em}
 [dir="rtl"] .stmt-t em{font-style:normal;font-weight:500;color:var(--g600)}
-@media(max-width:700px){ .stmt{padding:58px 0 52px} }
+@media(max-width:700px){ .stmt{padding:48px 0 42px} }
 
 /* ── platform: website walkthrough video ── */
 .pvideo{margin-top:22px}
@@ -813,7 +818,8 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 .nav-right{display:flex;align-items:center;gap:18px;font-size:14.5px}
 
 /* ════════════════════════════════════════════════════════════
-   Platform mega-menu — floating card, four columns + demo panel
+   Platform mega-menu — floating card, three columns + demo panel,
+   with a "more" row beneath the columns
    ════════════════════════════════════════════════════════════ */
 .mega{position:absolute;left:0;right:0;top:100%;padding:10px 24px 0;
   opacity:0;transform:translateY(-10px);pointer-events:none;visibility:hidden;
@@ -821,34 +827,64 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 .mega.open{opacity:1;transform:none;pointer-events:auto;visibility:visible;
   transition:opacity .5s var(--e-out),transform .5s var(--e-out),visibility 0s}
 
-.mega-card{max-width:1160px;margin:0 auto;background:#fff;
+/* narrower than the old four-column card — three columns at the same
+   comfortable width, not three stretched to fill 1160px */
+.mega-card{max-width:1080px;margin:0 auto;background:#fff;
   border:1px solid rgba(0,0,0,.06);border-radius:20px;
   box-shadow:0 24px 80px rgba(0,0,0,.08);
-  padding:44px 40px 48px;
+  padding:34px 38px 32px;
+  /* the panel is sized to fit the viewport outright — this cap is a safety
+     net for very short windows, not the normal reading mode */
   max-height:calc(100vh - 132px);overflow-y:auto;overscroll-behavior:contain}
 
-.mega-inner{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) 260px;gap:36px}
+.mega-inner{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 260px;gap:36px}
 
 .mega-col{opacity:0}
 .mega.lit .mega-col{animation:megaCol .45s var(--e-out) both;
   animation-delay:calc(var(--c,0) * 40ms)}
 @keyframes megaCol{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-.mega-h{font-family:var(--font-body);font-size:11px;font-weight:500;letter-spacing:.11em;
-  text-transform:uppercase;color:#6394c1;margin-bottom:24px}
+/* kicker, same as every other eyebrow on the site: mono, wide, --ink-3 */
+.mega-h{font-family:var(--font-mono);font-size:10.5px;font-weight:500;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:18px}
 
 /* padding stays constant on hover — only the background changes, so a row
    never shifts height and pushes its neighbours */
-/* no monogram tile — the row is title over description */
-.mega-item{display:block;margin:0 -8px;padding:10px 8px;border-radius:10px;
+/* no monogram tile — the row is title over description. Roomy by default;
+   the max-height steps further down tighten it for shorter windows so the
+   panel is always one screenful. */
+.mega-item{display:block;margin:0 -8px;padding:9px 8px;border-radius:10px;
   transition:background .2s ease}
 .mega-item:hover,.mega-item:focus-visible{background:rgba(6,36,80,.03)}
 
 .mega-item b{display:block;font-family:var(--font-body);font-size:14px;font-weight:500;
-  letter-spacing:-.01em;line-height:1.3;color:#051f47;transition:color .2s ease}
-.mega-item:hover b{color:#062450}
-.mega-item span.d{display:block;font-size:12.5px;font-weight:400;letter-spacing:-.01em;
-  line-height:1.5;color:#6394c1;margin-top:2px}
+  letter-spacing:-.012em;line-height:1.3;color:var(--ink);transition:color .2s ease}
+.mega-item:hover b{color:var(--g600)}
+.mega-item span.d{display:block;font-size:12.5px;font-weight:400;letter-spacing:-.005em;
+  line-height:1.5;color:var(--ink-3);margin-top:2px}
+
+/* second group inside a column (vulnerability rows under PII guardrails) —
+   a rule, then its own kicker, so the two groups read as separate lists */
+.mega-sub{position:relative;margin:18px 0 12px;padding-top:18px;
+  font-family:var(--font-mono);font-size:10.5px;font-weight:500;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3)}
+.mega-sub::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:var(--line)}
+
+/* ── "more" row ──
+   Sits below the columns and stops where the demo panel starts, so the
+   strip never runs under the dark card. */
+.mega-more{margin-top:24px;padding-top:18px;border-top:1px solid var(--line);
+  margin-inline-end:calc(260px + 36px);opacity:0}
+.mega.lit .mega-more{animation:megaCol .45s var(--e-out) .14s both}
+.mega-more .mega-h{margin-bottom:6px}
+.more-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 36px}
+.more-item{display:block;margin:0 -8px;padding:7px 8px;border-radius:10px;
+  transition:background .2s ease}
+.more-item:hover,.more-item:focus-visible{background:rgba(6,36,80,.03)}
+.more-item b{display:block;font-family:var(--font-body);font-size:13px;font-weight:500;
+  letter-spacing:-.012em;line-height:1.3;color:var(--ink);transition:color .2s ease}
+.more-item:hover b{color:var(--g600)}
 
 /* ── resources dropdown (compact) ── */
 .nav-drop{position:relative;display:inline-flex;align-items:center}
@@ -866,11 +902,13 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 .res-menu a.mega-item::after{content:none}
 [dir="rtl"] .res-menu{left:auto;right:-12px}
 
-.soon{display:inline-block;margin-top:8px;font-style:normal;
-  font-family:var(--font-body);font-size:9px;font-weight:500;letter-spacing:.1em;
+/* sits beside the title, not under it — a badge on its own line cost the
+   Governance column ~50px it doesn't have */
+.soon{display:inline-block;margin-inline-start:8px;font-style:normal;
+  font-family:var(--font-mono);font-size:9px;font-weight:500;letter-spacing:.1em;
   text-transform:uppercase;color:var(--soon-color,#d9a05c);
   background:var(--soon-bg,rgba(217,160,92,.1));
-  padding:3px 8px;border-radius:4px}
+  padding:2px 6px;border-radius:4px;vertical-align:1px;white-space:nowrap}
 
 /* ── demo panel ── */
 .mega-demo{position:relative;overflow:hidden;
@@ -1669,9 +1707,50 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
   .mega-card{padding:36px 28px 40px}
   .mega-inner{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
   .mega-demo{grid-column:1 / -1}
+  /* the demo panel is its own full-width row here, so nothing is left to
+     stop short of — the strip takes the full card */
+  .mega-more{margin-inline-end:0}
+  .more-grid{gap:2px 28px}
 }
 @media(max-width:640px){
   .mega-inner{grid-template-columns:1fr}
+  .more-grid{grid-template-columns:1fr;gap:0}
+}
+/* ── short windows ──
+   The panel opens as one screenful, so it gives up breathing room a step at a
+   time as the window shortens rather than growing a scrollbar. Type sizes hold
+   until the last step — spacing goes first, because that reads as tight where
+   shrunken text reads as broken. */
+@media(max-height:900px){
+  .mega-card{padding:28px 36px 26px}
+  .mega-h{margin-bottom:14px}
+  .mega-item{padding:7px 8px}
+  .mega-sub{margin:14px 0 10px;padding-top:14px}
+  .mega-more{margin-top:18px;padding-top:14px}
+}
+@media(max-height:800px){
+  .mega-card{padding:24px 32px 22px}
+  .mega-h{margin-bottom:12px}
+  .mega-item{padding:6px 8px}
+  .mega-item span.d{line-height:1.45}
+  .mega-sub{margin:12px 0 8px;padding-top:12px}
+  .mega-more{margin-top:15px;padding-top:12px}
+  .more-item{padding:6px 8px}
+  .mega-demo{padding:22px 22px 18px}
+}
+@media(max-height:700px){
+  .mega-card{padding:20px 28px 18px}
+  .mega-h{margin-bottom:10px}
+  .mega-item{padding:4px 8px}
+  .mega-item b{font-size:13.5px;line-height:1.25}
+  .mega-item span.d{font-size:11.5px;line-height:1.35}
+  .mega-sub{margin:10px 0 7px;padding-top:10px}
+  .mega-more{margin-top:12px;padding-top:10px}
+  .more-item{padding:4px 8px}
+  .mega-demo{padding:16px 18px 14px}
+  .mega-demo h4{font-size:17px;margin:5px 0}
+  .demo-walk-k{margin:12px 0 2px}
+  .demo-steps{margin-bottom:12px}
 }
 @media(max-width:1100px){
   .integ-grid{grid-template-columns:repeat(8,1fr)}
@@ -1721,6 +1800,8 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
   .mega{padding:8px 12px 0}
   .mega-card{max-height:calc(100vh - 84px);-webkit-overflow-scrolling:touch;padding:26px 20px 30px}
   .mega-inner{grid-template-columns:1fr;gap:22px}
+  .mega-more{margin-top:22px;padding-top:18px}
+  .more-grid{grid-template-columns:1fr;gap:0}
   .recs{grid-template-columns:1fr}
   .rec-tall{min-height:0}
   .life{grid-template-columns:1fr;gap:34px}
@@ -1776,7 +1857,7 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
   .stack-item{opacity:1}
   .q-a .ln i{transform:none;opacity:1}
   .bg-blob,.bg-grid{animation:none}
-  .mega-col{opacity:1 !important;transform:none !important;animation:none !important}
+  .mega-col,.mega-more{opacity:1 !important;transform:none !important;animation:none !important}
   .proof-slot,.seal-stamp,.cta-strip svg,.drawer-body li{opacity:1 !important;transform:none !important}
   .cta-strip svg{stroke-dashoffset:0 !important}
   .journey .run{stroke-dashoffset:0 !important}
