@@ -738,8 +738,12 @@ code,pre{font-family:var(--font-mono)}
 /* The platform band lost its heading, so its top padding and the video's own
    offset would stack with .stmt's 74px into a ~188px hole. Drop both: the
    video should read as belonging to the statement above it, not as a new
-   section starting after a gap. */
-#platform{padding-top:0}
+   section starting after a gap.
+
+   Below the video the same thing happened in reverse — this band's 92px,
+   #lifecycle's 92px and the pinned block's 48px stacked into a ~230px void
+   before "What we do". One band's worth of air is enough between them. */
+#platform{padding-top:0;padding-bottom:44px}
 #platform .pvideo{margin-top:0}
 .pv-frame{position:relative;aspect-ratio:16/9;border-radius:20px;overflow:hidden;
   background:linear-gradient(160deg,var(--g900) 0%,var(--g700) 58%,var(--g600) 100%);
@@ -1232,9 +1236,12 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
    and the highlight steps through the four while it is held. The travel is
    160vh — deliberately shorter than the 340vh of the Architecture pin below,
    so two consecutive sticky sections don't read as the same device. */
+/* padding-top:0 — the pin centres its own content in the viewport, so band
+   padding above the track is dead space the reader scrolls past twice */
+#lifecycle{padding-top:0}
 .life-track{position:relative;height:260vh}
 .life-pin{position:sticky;top:0;min-height:100vh;display:flex;flex-direction:column;
-  justify-content:center;padding:48px 0}
+  justify-content:center;padding:28px 0 48px}
 .life-pin .head-row{margin-bottom:34px}
 /* The step-through is the only reason to hold the section. With reduced motion
    nothing advances, so a pin would just be 1.6 screens of dead scrolling.
@@ -1244,6 +1251,9 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
   .life-track{height:auto}
   .life-pin{position:static;min-height:0;padding:0;display:block}
   .life-pin .head-row{margin-bottom:0}
+  /* unpinned, nothing centres the head in a viewport any more, so the band
+     needs its own air back or the heading sits on top of the video */
+  #lifecycle{padding-top:56px}
 }
 .life{display:grid;grid-template-columns:repeat(2,1fr);gap:30px 16px}
 .dossier{position:relative;display:flex;flex-direction:column;transition:transform .5s var(--e-out)}
@@ -1763,6 +1773,7 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
   /* rail hidden here, so the pin goes with it — nothing to step through */
   .life-track{height:auto}
   .life-pin{position:static;min-height:0;padding:0;display:block}
+  #lifecycle{padding-top:56px}
   .dossier.dim{opacity:1}
   .stack-track{height:auto}
   .stack-pin{position:static;height:auto;min-height:0;padding:20px 0 70px;display:block}
@@ -1968,6 +1979,7 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
   /* rail hidden here, so the pin goes with it — nothing to step through */
   .life-track{height:auto}
   .life-pin{position:static;min-height:0;padding:0;display:block}
+  #lifecycle{padding-top:56px}
   .dossier.dim{opacity:1}
 }
 @media(max-width:1050px){
