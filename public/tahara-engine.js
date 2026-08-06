@@ -1753,12 +1753,17 @@ window.TaharaI18N = (function(){
      removes a forced synchronous layout from the hot loop, which is the
      main reason the assembly felt steppy while scrolling.
      ───────────────────────────────────────────────────────── */
-  let mTrackTop = 0, mTrackLen = 1, mSvgTop = 0, mVH = innerHeight, mWide = innerWidth > 1000;
+  let mTrackTop = 0, mTrackLen = 1, mSvgTop = 0, mVH = innerHeight,
+      mWide = innerWidth > 1000 && innerHeight > 720;
   function measure(){
     if (!track) return;
     const y = scrollY || pageYOffset;
     mVH   = innerHeight;
-    mWide = innerWidth > 1000;
+    /* Track-progress only while the section is actually pinned. The CSS
+       releases the pin under 1050px wide OR 720px tall; on an auto-height
+       track mTrackLen collapses and the assembly would jump 0-100% in a few
+       pixels of scroll, so the height test has to match the stylesheet. */
+    mWide = innerWidth > 1000 && innerHeight > 720;
     const tr = track.getBoundingClientRect();
     mTrackTop = tr.top + y;                       /* track's absolute document top */
     mTrackLen = Math.max(1, track.offsetHeight - mVH);

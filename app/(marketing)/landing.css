@@ -718,9 +718,10 @@ code,pre{font-family:var(--font-mono)}
 /* ── statement band — the one serif on the page, sat between the standards
    marquee and the record cards. Light ground like every other section; the
    contrast comes from the typeface, not a colour block. ── */
-/* padding trimmed with the heading: one line instead of two takes ~65px out of
-   the block, and the old 82/74 left it floating in its own section */
-.stmt{padding:70px 0 62px;text-align:center}
+/* 100px above matches the 100px below the video (#platform's 72 + the lifecycle
+   pin's 28), so the statement-and-video block sits evenly between the standards
+   strip and "What we do" */
+.stmt{padding:100px 0 62px;text-align:center}
 /* No max-width — the statement reads as a single line, and a ch cap was what
    broke it in two. The size tracks the viewport so it keeps fitting as the
    screen narrows rather than wrapping. */
@@ -747,8 +748,9 @@ code,pre{font-family:var(--font-mono)}
 
    Below the video the same thing happened in reverse — this band's 92px,
    #lifecycle's 92px and the pinned block's 48px stacked into a ~230px void
-   before "What we do". One band's worth of air is enough between them. */
-#platform{padding-top:0;padding-bottom:44px}
+   before "What we do". 72px here plus the pin's 28px gives the video room to
+   end before the next section starts, without returning to that hole. */
+#platform{padding-top:0;padding-bottom:72px}
 #platform .pvideo{margin-top:0}
 .pv-frame{position:relative;aspect-ratio:16/9;border-radius:20px;overflow:hidden;
   background:linear-gradient(160deg,var(--g900) 0%,var(--g700) 58%,var(--g600) 100%);
@@ -1245,8 +1247,12 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
    padding above the track is dead space the reader scrolls past twice */
 #lifecycle{padding-top:0}
 .life-track{position:relative;height:260vh}
+/* flex-start, not center: centring in a 100vh box put 100-140px of slack above
+   the heading on top of the padding, so the space under the video read as far
+   larger than the space above the statement. Aligned to the top, the gap you
+   see is the gap that is declared. */
 .life-pin{position:sticky;top:0;min-height:100vh;display:flex;flex-direction:column;
-  justify-content:center;padding:28px 0 48px}
+  justify-content:flex-start;padding:28px 0 48px}
 .life-pin .head-row{margin-bottom:34px}
 /* The step-through is the only reason to hold the section. With reduced motion
    nothing advances, so a pin would just be 1.6 screens of dead scrolling.
@@ -1548,12 +1554,25 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
    ════════════════════════════════════════════════════════════ */
 .stack-sec{background:rgba(237,243,251,.66);backdrop-filter:blur(6px);
   border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-/* same as .head: room for one line, and the padding follows the shorter block */
-.stack-intro{padding:76px 0 40px;max-width:1080px}
+/* Inside the pinned panel now, so no band padding of its own — just the gap
+   down to the progress row. Same 1080px as .head so the heading holds one line. */
+.stack-intro{padding:0 0 20px;max-width:1080px}
 .stack-track{height:440vh;position:relative}
 .stack-pin{position:sticky;top:0;height:100vh;min-height:600px;display:flex;align-items:center;
   padding:40px 0 60px}
 .stack-pin > .wrap{width:100%;position:relative}
+/* The panel now carries the heading as well as the progress row and the stack.
+   A short viewport can't hold all three at 100vh — the top would be clipped
+   with no way to scroll to it — so the pin is released there. The engine
+   switches to viewport-progress at the same 720px threshold, otherwise the
+   assembly would race 0-100% over an auto-height track. */
+@media(max-height:720px){
+  .stack-track{height:auto}
+  .stack-pin{position:static;height:auto;min-height:0;padding:24px 0 60px;display:block}
+  .stack-intro{padding-bottom:16px}
+  #stackSvg{max-height:none}
+  .stack-mark{position:relative;inset:auto;margin-top:24px;opacity:1;transform:none}
+}
 .pin-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
 .pin-head .label{font-size:10px;white-space:nowrap}
 .pin-rail{flex:1;height:1px;background:var(--line-2);margin:0 18px;position:relative}
