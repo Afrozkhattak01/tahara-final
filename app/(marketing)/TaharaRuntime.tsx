@@ -17,11 +17,20 @@ export default function TaharaRuntime({ html }: { html: string }) {
     // The id guard also stops React StrictMode's double-invoke (dev) from
     // attaching a second copy of the scroll/rAF listeners.
     if (document.getElementById('tahara-engine')) return;
-    const s = document.createElement('script');
-    s.id = 'tahara-engine';
-    s.src = '/tahara-engine.js';
-    s.defer = true;
-    document.body.appendChild(s);
+    // The mega-menu is its own script, shared with /resources. async=false
+    // keeps dynamically-inserted scripts in order (they default to async),
+    // so it is defined before the engine boots and calls into it.
+    const scripts: [id: string, src: string][] = [
+      ['tahara-mega', '/tahara-mega.js'],
+      ['tahara-engine', '/tahara-engine.js'],
+    ];
+    scripts.forEach(([id, src]) => {
+      const s = document.createElement('script');
+      s.id = id;
+      s.src = src;
+      s.async = false;
+      document.body.appendChild(s);
+    });
   }, []);
 
   return <div dangerouslySetInnerHTML={{ __html: html }} suppressHydrationWarning />;

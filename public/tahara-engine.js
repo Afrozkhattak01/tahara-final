@@ -299,43 +299,8 @@ window.TAHARA_DATA = (function(){
     ]]
   ];
 
-  /* ── Platform mega-menu ──────────────────────────────────────
-     [ column heading, [ monogram, title, one-line description, comingSoon ] ]
-     ───────────────────────────────────────────────────────── */
-  /* [title, description, comingSoon, href?] — href is optional and currently
-     unset on every item: the menu is presentational until the pages exist. */
-  const PLATFORM_MENU = [
-    ['Governance', [
-      ['Statement of Applicability', 'Every control, justified',   false],
-      ['Evidence Locker',            'Proof, stored and dated',    false],
-      ['Audit Ledger',               'Tamper-proof history',       false],
-      ['AI Inventory',               'Every system, tracked',      false],
-      ['Risk Classification',        'Tiered by exposure',         false],
-      ['Agent Constraints',          'Boundaries, enforced',       false],
-      ['Compliance Reporting',       'Ready when asked',           false],
-      ['Continuous Dashboard',       'Live, not annual',           false],
-      ['Vendor Risk',                'Third-party AI tracked',     true ],
-      ['Access Reviews',             'Checked regularly, always',  true ]
-    ]],
-    ['Adversarial', [
-      ['Attack Simulation',          'Scheduled, staging only',    false],
-      ['OWASP LLM Top 10',           'Every category, tracked',    false],
-      ['Red-Team Scheduling',        'Recurring, not annual',      false],
-      ['Findings Register',          'Every result, kept',         false],
-      ['Continuous Dashboard',       'Attacks, tracked live',      false]
-    ]],
-    ['PII Guardrails', [
-      ['Prompt Inspection',          'Checked before the model sees it',   false],
-      ['Masking & Redaction',        'Reversible, on our side only',       false],
-      ['Bilingual Detection',        'English and Roman Urdu',             false],
-      ['Cookie & Consent',           'Banner rules, tracker checks',       true ]
-    ]],
-    ['Vulnerability Scanner', [
-      ['Cloud Config Scan',          'IAM, storage, network rules',        false],
-      ['Dependency Checks',          'Known CVEs, flagged',                false],
-      ['Secret Detection',           'Exposed keys, caught early',         false]
-    ]]
-  ];
+  /* The platform mega-menu (data, markup, behaviour) lives in
+     tahara-mega.js — shared with the /resources page. */
 
   /* ── connector marquee: two rows, monochrome icons ──────────
      Row content and order exactly as specified. Glyph lookup is
@@ -425,7 +390,7 @@ window.TAHARA_DATA = (function(){
      'and a record that stays open until it’s resolved.']
   ];
 
-  return { FEED, STANDARDS, GLYPH, CONNECTORS, GRID_LAYOUT, PLATFORM_MENU, ANSWERS,
+  return { FEED, STANDARDS, GLYPH, CONNECTORS, GRID_LAYOUT, ANSWERS,
            CUSTOMER_BAR, CUSTOMER_SLOTS, CUSTOMERS, FRAMEWORK_DETAIL,
            MARQUEE_ROW_1, MARQUEE_ROW_2, MARQUEE_GLYPH, MARQUEE_SLUG, FOOTER_LINKS };
 })();
@@ -600,118 +565,15 @@ window.TaharaUI = (function(){
   }
 
   /* ── platform mega-menu ─────────────────────────────────────
-     Opens on hover with intent on pointer devices, on tap or Enter
-     everywhere. Closes on outside click, Escape, a real scroll, or
-     when the pointer leaves the header and panel together.
+     Data, markup and behaviour all live in tahara-mega.js, which the
+     /resources page mounts too — one menu, one place to edit it. This is
+     only the boot/language hook the rest of the engine calls.
      ───────────────────────────────────────────────────────── */
-  function mega(langData){
-    const btn   = $('#megaBtn');
-    const panel = $('#mega');
-    const card  = panel && panel.querySelector('.mega-card');
-    const inner = $('#megaInner');
-    const demo  = inner && inner.querySelector('.mega-demo');
-    const scrim = $('#megaScrim');
-    const header = $('#siteHeader');
-    if (!btn || !panel || !inner) return;
-
-    /* rebuilding the columns (English on boot, or Arabic on a language
-       switch) never touches the open/close behaviour below — that's
-       wired once, guarded by mega._wired, so a rebuild can't double-bind
-       the same listeners */
-    inner.querySelectorAll('.mega-col').forEach(c => c.remove());
-    const source = langData || D.PLATFORM_MENU;
-    source.forEach(([heading, items], c) => {
-      const col = document.createElement('div');
-      col.className = 'mega-col';
-      col.style.setProperty('--c', c);
-      const h = document.createElement('div');
-      h.className = 'mega-h';
-      h.textContent = heading;
-      col.appendChild(h);
-      /* the AR menu sets the same `soon` flag, so the badge follows the locale */
-      const soonTxt = window.TaharaI18N && window.TaharaI18N.current === 'ar' ? 'قريبًا' : 'Coming soon';
-      items.forEach(([title, desc, soon, href]) => {
-        const a = document.createElement('a');
-        a.className = 'mega-item';
-        a.href = href || '#platform';
-        a.innerHTML =
-          '<span><b>' + title + (soon ? ' <i class="soon">' + soonTxt + '</i>' : '') + '</b>' +
-          '<span class="d">' + desc + '</span></span>';
-        col.appendChild(a);
-      });
-      inner.insertBefore(col, demo || null);
-    });
-    if (panel.classList.contains('open')){
-      panel.classList.remove('lit');
-      requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('lit')));
-    }
-    if (mega._wired) return;
-    mega._wired = true;
-
-    const links  = $('#navLinks');
-    const toggle = $('#navToggle');
-    let open = false, hideT = 0, openedAt = 0;
-
-    /* Cap the panel to the room left under the header. Measured off the
-       header, not the panel — the panel carries a translate while closed,
-       which would report a top 12px too high. */
-    function fit(){
-      const top = header.getBoundingClientRect().bottom;
-      const h = Math.max(220, innerHeight - top - 18) + 'px';
-      if (card) card.style.maxHeight = h; else panel.style.maxHeight = h;
-    }
-    addEventListener('resize', () => { if (open) fit(); });
-
-    function set(v){
-      if (open === v) return;
-      open = v;
-      if (v) document.dispatchEvent(new CustomEvent('tahara:menu-open', { detail:'platform' }));
-      if (v) fit();
-      panel.classList.toggle('open', v);
-      /* Let the panel render one frame before the columns animate — an
-         animation started on the frame an element becomes visible can be
-         dropped. The timeout is a safety net: if rAF is starved the menu
-         must still become readable, so it never depends on a frame landing. */
-      if (v){
-        const light = () => { if (open) panel.classList.add('lit'); };
-        requestAnimationFrame(() => requestAnimationFrame(light));
-        setTimeout(light, 120);
-      } else {
-        panel.classList.remove('lit');
-      }
-      scrim && scrim.classList.toggle('on', v);
-      btn.setAttribute('aria-expanded', String(v));
-      if (v){
-        openedAt = scrollY || 0;
-        /* on small screens the panel and the burger list share the same
-           slot under the header, so they take turns rather than stack */
-        if (innerWidth <= 860 && links){
-          links.classList.remove('open');
-          toggle && toggle.setAttribute('aria-expanded', 'false');
-        }
-      }
-    }
-    /* opening the burger list closes the panel */
-    toggle && toggle.addEventListener('click', () => set(false));
-    /* only one header menu open at a time — close if another one opened */
-    document.addEventListener('tahara:menu-open', e => { if (e.detail !== 'platform') set(false); });
-
-    btn.addEventListener('click', e => { e.preventDefault(); set(!open); });
-    btn.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); set(!open); }
-    });
-
-    panel.addEventListener('click', e => { if (e.target.closest('.mega-item')) set(false); });
-    scrim && scrim.addEventListener('click', () => set(false));
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && open){ set(false); btn.focus(); }
-    });
-    document.addEventListener('click', e => {
-      if (open && !panel.contains(e.target) && !btn.contains(e.target)) set(false);
-    });
-    addEventListener('scroll', () => {
-      if (open && Math.abs((scrollY || 0) - openedAt) > 60) set(false);
-    }, { passive:true });
+  function mega(lang){
+    const go = () => window.TaharaMega.mount(lang || (window.TaharaI18N && window.TaharaI18N.current) || 'en');
+    /* the two scripts load independently; whichever lands second starts it */
+    if (window.TaharaMega) go();
+    else addEventListener('tahara:mega-ready', go, { once:true });
   }
 
   /* ── customer proof bar ── */
@@ -1476,6 +1338,9 @@ window.TaharaI18N = (function(){
     'mega.demo.walk':  { en:'What we walk through', ar:'ما الذي نستعرضه' },
     'mega.soon':       { en:'Coming soon', ar:'قريبًا' },
 
+    /* the menu's own strings (column headings, rows, "more") live in
+       tahara-mega.js, which builds that markup for both pages */
+
     /* the four lifecycle stage names — shared by the mega-menu demo panel
        and the dossier tabs, so they can never drift apart */
     'stage.assess':  { en:'Assess',  ar:'التقييم' },
@@ -1568,39 +1433,6 @@ window.TaharaI18N = (function(){
   /* ── AR mirrors of dynamically-built content (mega-menu, FAQ answers,
      footer links) — the SAME builder functions in ui.js read from these
      when Arabic is active, so there's exactly one code path either way ── */
-  const PLATFORM_MENU_AR = [
-    ['الحوكمة', [
-      ['بيان الانطباق',        'كل ضابط، مبرَّر',              false],
-      ['خزانة الأدلة',         'إثبات، مخزَّن ومؤرَّخ',        false],
-      ['سجلّ التدقيق',         'سجلّ غير قابل للتلاعب',        false],
-      ['جرد الذكاء الاصطناعي', 'كل نظام، متتبَّع',             false],
-      ['تصنيف المخاطر',        'مُدرَّج حسب درجة التعرّض',      false],
-      ['قيود الوكلاء',         'حدود، مفروضة',                false],
-      ['تقارير الامتثال',      'جاهزة عند الطلب',              false],
-      ['لوحة متابعة مستمرة',   'حيّة، لا سنوية',               false],
-      ['مخاطر المورّدين',      'ذكاء اصطناعي خارجي متتبَّع',    true ],
-      ['مراجعات الوصول',       'مُراجَعة دوريًا، دائمًا',       true ]
-    ]],
-    ['الاختبار العدائي', [
-      ['محاكاة الهجوم',        'مجدولة، في بيئة التجهيز فقط',  false],
-      ['OWASP LLM Top 10',     'كل فئة، متتبَّعة',             false],
-      ['جدولة الفريق الأحمر',  'متكررة، وليست سنوية',          false],
-      ['سجلّ النتائج',         'كل نتيجة، محفوظة',             false],
-      ['لوحة متابعة مستمرة',   'الهجمات، متتبَّعة مباشرة',      false]
-    ]],
-    ['ضوابط حماية البيانات الشخصية', [
-      ['فحص الطلبات',          'يُفحص قبل وصوله إلى النموذج',   false],
-      ['الإخفاء والتنقيح',     'قابل للعكس، من جانبنا فقط',     false],
-      ['الكشف ثنائي اللغة',    'الإنجليزية والأردية باللاتينية', false],
-      ['ملفات الارتباط والموافقة', 'قواعد اللافتات وفحوصات المتتبّعات', true ]
-    ]],
-    ['الفحص الأمني', [
-      ['فحص إعدادات السحابة',  'إدارة الهوية والتخزين وقواعد الشبكة', false],
-      ['فحص التبعيات',         'ثغرات معروفة، مُعلَّمة',        false],
-      ['كشف الأسرار',          'مفاتيح مكشوفة، تُكتشف مبكرًا',   false]
-    ]]
-  ];
-
   const ANSWERS_AR = [
     ['داخل بيئتكم الخاصة. لا يطلب Tahara AI مغادرة البيانات لأنظمتكم،',
      'بل يعمل حيث توجد البنية التحتية أصلًا، ولا يقرأ إلا ما مُنح إذنًا برؤيته،',
@@ -1721,7 +1553,7 @@ window.TaharaI18N = (function(){
     /* rebuild the array-driven sections in the new language — same
        builder functions as English, just pointed at the AR data */
     if (window.TaharaUI){
-      if (window.TaharaUI.mega)  window.TaharaUI.mega(lang === 'ar' ? PLATFORM_MENU_AR : null);
+      if (window.TaharaUI.mega)  window.TaharaUI.mega(lang);
       if (window.TaharaUI.faq)   window.TaharaUI.faq(lang === 'ar' ? ANSWERS_AR : null);
       if (window.TaharaUI.footer) window.TaharaUI.footer(lang === 'ar' ? FOOTER_LINKS_AR : null);
       if (window.TaharaDrawer && window.TaharaDrawer.setLocale)
