@@ -20,7 +20,7 @@ const T = {
   author_role:     { en: 'Contributor', ar: 'مساهم' },
   not_found_title: { en: 'Post not found', ar: 'المقال غير موجود' },
   not_found_desc:  { en: "This entry doesn't exist yet.", ar: 'هذا المقال غير موجود بعد.' },
-  footer_tagline:  { en: 'Safety, governance and transparency for the AI you actually run.', ar: 'السلامة والحوكمة والشفافية للذكاء الاصطناعي الذي تشغّلونه فعليًا.' },
+  footer_tagline:  { en: 'Safety, Governance and Transparency for the AI you actually run.', ar: 'السلامة والحوكمة والشفافية للذكاء الاصطناعي الذي تشغّلونه فعليًا.' },
   footer_copyright:{ en: '© 2026 Tahara AI. All rights reserved.', ar: '© 2026 Tahara AI. جميع الحقوق محفوظة.' },
   footer_motto:    { en: 'SAFE · ETHICAL · TRANSPARENT', ar: 'آمن · أخلاقي · شفّاف' },
 };
