@@ -166,7 +166,12 @@ code,pre{font-family:var(--font-mono)}
 .wrap-wide{max-width:calc(1440px + var(--gutter) * 2)}
 .band{padding:92px 0}
 .band-tight{padding:52px 0}
-.head{max-width:620px;margin-bottom:44px}
+/* Wide enough for the section headings to hold one line — at 620px they broke
+   in two. The lede below keeps its own 56ch measure from .lede, so only the
+   heading takes the extra width; body copy this wide would be tiring to read.
+   Bottom margin comes down with the block: a line shorter, so the old 44px
+   read as a hole. */
+.head{max-width:1080px;margin-bottom:32px}
 .head h2{margin-bottom:12px}
 .head-row{display:flex;justify-content:space-between;align-items:flex-end;gap:48px;
   margin-bottom:44px;flex-wrap:wrap}
@@ -1543,7 +1548,8 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
    ════════════════════════════════════════════════════════════ */
 .stack-sec{background:rgba(237,243,251,.66);backdrop-filter:blur(6px);
   border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.stack-intro{padding:92px 0 56px;max-width:660px}
+/* same as .head: room for one line, and the padding follows the shorter block */
+.stack-intro{padding:76px 0 40px;max-width:1080px}
 .stack-track{height:440vh;position:relative}
 .stack-pin{position:sticky;top:0;height:100vh;min-height:600px;display:flex;align-items:center;
   padding:40px 0 60px}
