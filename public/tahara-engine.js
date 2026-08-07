@@ -1,178 +1,4 @@
 /* ════════════════════════════════════════════════════════════
-   TAHARA AI · 3D background
-   A wireframe lattice drawn with real perspective projection — no
-   library, no WebGL, one canvas. Rotates on two axes, drifts with
-   scroll, leans slightly toward the pointer.
-
-   Kept cheap on purpose: geometry is built once, draw calls are
-   batched into a handful of alpha buckets rather than one call per
-   edge, device pixel ratio is capped, and it renders at ~30fps.
-   ════════════════════════════════════════════════════════════ */
-window.TaharaScene = (function(){
-  const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const N       = 78;      // lattice points
-  const LINK    = 0.40;    // edge threshold in unit-sphere space
-  const FOV     = 2.6;     // perspective depth
-  const SPIN    = 0.00016; // radians per ms, y axis
-  const TILT    = 0.00009; // radians per ms, x axis wobble
-  const BUCKETS = 7;       // alpha quantisation for batching
-  const MIN_MS  = 32;      // ~30fps ceiling
-  const MAX_DPR = 1.5;
-
-  function init(canvas){
-    if (!canvas || !canvas.getContext) return;
-    const ctx = canvas.getContext('2d', { alpha:true });
-    if (!ctx) return;
-
-    /* ── geometry: fibonacci sphere + proximity edges, built once ── */
-    const px = new Float32Array(N), py = new Float32Array(N), pz = new Float32Array(N);
-    const big = new Uint8Array(N);
-    const golden = Math.PI * (3 - Math.sqrt(5));
-    for (let i = 0; i < N; i++){
-      const y = 1 - (i / (N - 1)) * 2;
-      const r = Math.sqrt(Math.max(0, 1 - y * y));
-      const th = golden * i;
-      px[i] = Math.cos(th) * r; py[i] = y; pz[i] = Math.sin(th) * r;
-      big[i] = i % 11 === 0 ? 1 : 0;
-    }
-    const ea = [], eb = [], ew = [];
-    for (let i = 0; i < N; i++){
-      for (let j = i + 1; j < N; j++){
-        const dx = px[i]-px[j], dy = py[i]-py[j], dz = pz[i]-pz[j];
-        const d = Math.sqrt(dx*dx + dy*dy + dz*dz);
-        if (d < LINK){ ea.push(i); eb.push(j); ew.push(1 - d / LINK * 0.55); }
-      }
-    }
-    const E = ea.length;
-
-    /* scratch buffers, reused every frame */
-    const sx = new Float32Array(N), sy = new Float32Array(N);
-    const sk = new Float32Array(N), sz = new Float32Array(N);
-    const edgeBins = []; const nodeBins = [];
-    for (let i = 0; i < BUCKETS; i++){ edgeBins.push([]); nodeBins.push([]); }
-
-    /* ── viewport ── */
-    let W = 0, H = 0, R = 0;
-    function resize(){
-      const dpr = Math.min(devicePixelRatio || 1, MAX_DPR);
-      W = innerWidth; H = innerHeight;
-      canvas.width  = Math.round(W * dpr);
-      canvas.height = Math.round(H * dpr);
-      canvas.style.width  = W + 'px';
-      canvas.style.height = H + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.lineWidth = 1;
-      R = Math.min(W, H) * 0.56;
-    }
-    resize();
-    addEventListener('resize', resize);
-
-    /* ── input ── */
-    let scrollRot = 0, wantScrollRot = 0, lx = 0, ly = 0, wlx = 0, wly = 0;
-    addEventListener('scroll', () => {
-      wantScrollRot = (scrollY || pageYOffset) * 0.00042;
-    }, { passive:true });
-    if (matchMedia('(hover:hover)').matches){
-      addEventListener('pointermove', e => {
-        wlx = (e.clientX / innerWidth  - 0.5) * 0.24;
-        wly = (e.clientY / innerHeight - 0.5) * 0.18;
-      }, { passive:true });
-    }
-
-    /* ── render ── */
-    function draw(ay, ax){
-      ctx.clearRect(0, 0, W, H);
-      const cy = Math.cos(ay), siy = Math.sin(ay);
-      const cx = Math.cos(ax), six = Math.sin(ax);
-      const ox = W / 2, oy = H * 0.46;
-
-      for (let i = 0; i < N; i++){
-        const x1 =  px[i] * cy + pz[i] * siy;
-        const z1 = -px[i] * siy + pz[i] * cy;
-        const y2 =  py[i] * cx - z1 * six;
-        const z2 =  py[i] * six + z1 * cx;
-        const k  = FOV / (FOV + z2);
-        sx[i] = ox + x1 * R * k;
-        sy[i] = oy + y2 * R * k;
-        sk[i] = k;
-        sz[i] = z2;
-      }
-
-      for (let i = 0; i < BUCKETS; i++){ edgeBins[i].length = 0; nodeBins[i].length = 0; }
-
-      /* bin edges by depth-derived alpha */
-      for (let e = 0; e < E; e++){
-        const i = ea[e], j = eb[e];
-        const near = 1 - ((sz[i] + sz[j]) * 0.5 + 1) * 0.5;
-        const a = (0.05 + near * 0.17) * ew[e];
-        let bin = (a / 0.22 * BUCKETS) | 0;
-        if (bin < 0) bin = 0; else if (bin >= BUCKETS) bin = BUCKETS - 1;
-        edgeBins[bin].push(i, j);
-      }
-      for (let b = 0; b < BUCKETS; b++){
-        const list = edgeBins[b];
-        if (!list.length) continue;
-        ctx.strokeStyle = 'rgba(9,47,104,' + (((b + 0.5) / BUCKETS) * 0.22).toFixed(3) + ')';
-        ctx.beginPath();
-        for (let q = 0; q < list.length; q += 2){
-          ctx.moveTo(sx[list[q]], sy[list[q]]);
-          ctx.lineTo(sx[list[q+1]], sy[list[q+1]]);
-        }
-        ctx.stroke();
-      }
-
-      /* bin nodes the same way */
-      for (let i = 0; i < N; i++){
-        const near = 1 - (sz[i] + 1) * 0.5;
-        const a = 0.10 + near * 0.34;
-        let bin = (a / 0.46 * BUCKETS) | 0;
-        if (bin < 0) bin = 0; else if (bin >= BUCKETS) bin = BUCKETS - 1;
-        nodeBins[bin].push(i);
-      }
-      for (let b = 0; b < BUCKETS; b++){
-        const list = nodeBins[b];
-        if (!list.length) continue;
-        ctx.fillStyle = 'rgba(9,47,104,' + (((b + 0.5) / BUCKETS) * 0.46).toFixed(3) + ')';
-        ctx.beginPath();
-        for (let q = 0; q < list.length; q++){
-          const i = list[q], rad = (big[i] ? 2.4 : 1.5) * sk[i];
-          ctx.moveTo(sx[i] + rad, sy[i]);
-          ctx.arc(sx[i], sy[i], rad, 0, 6.2832);
-        }
-        ctx.fill();
-      }
-    }
-
-    /* ── loop ── */
-    if (REDUCE){ draw(0.6, 0.42); return; }
-
-    const t0 = performance.now();
-    let last = 0, running = true, raf = 0;
-
-    function step(now){
-      if (!running){ raf = 0; return; }
-      raf = requestAnimationFrame(step);
-      if (now - last < MIN_MS) return;
-      last = now;
-      const t = now - t0;
-      scrollRot += (wantScrollRot - scrollRot) * 0.08;
-      lx += (wlx - lx) * 0.06;
-      ly += (wly - ly) * 0.06;
-      draw(t * SPIN + scrollRot + lx, 0.34 + Math.sin(t * TILT) * 0.18 + ly);
-    }
-
-    document.addEventListener('visibilitychange', () => {
-      running = !document.hidden;
-      if (running && !raf) raf = requestAnimationFrame(step);
-    });
-    raf = requestAnimationFrame(step);
-  }
-
-  return { init };
-})();
-
-/* ════════════════════════════════════════════════════════════
    TAHARA AI · content data
    Edit copy here — the UI modules read from this object only.
    ════════════════════════════════════════════════════════════ */
@@ -986,9 +812,13 @@ window.TaharaMarquee2 = (function(){
 
   /* Full-colour marks, three deep: a local brand file if we have one, else the
      Simple Icons mark in the brand's own colour (requesting no colour suffix
-     returns the official hex), else the geometric glyph. Sources mix freely,
-     so the local set can be filled in one brand at a time — a local file always
-     wins, which is what makes a true multi-colour mark worth adding.
+     returns the official hex), else the geometric glyph.
+
+     Local-first is not a nicety. Simple Icons serves no mark at all — 404, not
+     merely an uncoloured one — for openai, slack, amazonwebservices,
+     microsoftazure and cohere, so those five only ever render from
+     public/logos. Anything that drops the local branch loses them.
+
      'local' | 'cdn' — 'cdn' skips straight to the CDN for every brand. */
   const LOGO_SOURCE = 'local';
   const cdnUrl   = slug => 'https://cdn.simpleicons.org/' + slug;
@@ -1705,7 +1535,6 @@ window.TaharaI18N = (function(){
     try { c.style.setProperty('--rl', Math.ceil(c.getTotalLength())); }
     catch(_){ c.style.setProperty('--rl', 880); }
   });
-  if (window.TaharaScene) window.TaharaScene.init($('#scene3d'));
 
   /* ── lifecycle journey rail ── */
   const journey = $('#journey');
@@ -2000,6 +1829,7 @@ window.TaharaI18N = (function(){
 
   /* ── 5 · header, progress bar, console ── */
   let ticking = false, counted = false;
+  const fieldEl = $('#field'), fieldEnd = $('#lifecycle');
   function frame(){
     ticking = false;
     const vh = innerHeight, y = scrollY || pageYOffset;
@@ -2010,6 +1840,18 @@ window.TaharaI18N = (function(){
     prog.style.width = (max > 0 ? clamp(y / max, 0, 1) * 100 : 0) + '%';
 
     paintJourney();
+
+    /* The survey field runs from the hero down through "Cover the whole life of
+       a model." It holds full strength while that section is still below the
+       fold and is gone by the time its bottom edge clears the top of the
+       window, so the architecture stack below starts on the plain background.
+       Driving opacity off the section's own position rather than a pixel count
+       keeps the cut-off tied to the section wherever the copy above it reflows. */
+    if (fieldEl && fieldEnd){
+      const b = fieldEnd.getBoundingClientRect().bottom;
+      fieldEl.style.setProperty('--field-o', clamp(b / vh, 0, 1).toFixed(3));
+    }
+
     const stage = $('.console-stage');
     if (stage){
       const r = stage.getBoundingClientRect();

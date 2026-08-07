@@ -110,51 +110,42 @@ code,pre{font-family:var(--font-mono)}
     radial-gradient(900px 900px at 46% 112%, #d4e1f2 0%, transparent 58%),
     linear-gradient(180deg, #eaf0f9 0%, #dfe9f6 52%, #e3ebf7 100%);
 }
-.bg-blob{position:fixed;border-radius:50%;z-index:-3;pointer-events:none;
-  filter:blur(90px);will-change:transform}
-.blob-1{width:620px;height:620px;top:-200px;left:-180px;opacity:.34;
-  background:radial-gradient(circle at 34% 34%, #92b2d1, transparent 68%);
-  animation:drift1 74s ease-in-out infinite}
-.blob-2{width:720px;height:720px;top:26%;right:-280px;opacity:.28;
-  background:radial-gradient(circle at 58% 42%, #6c9ac4, transparent 66%);
-  animation:drift2 96s ease-in-out infinite}
-.blob-3{width:560px;height:560px;bottom:-220px;left:34%;opacity:.26;
-  background:radial-gradient(circle at 50% 50%, #aac4e0, transparent 66%);
-  animation:drift3 112s ease-in-out infinite}
-@keyframes drift1{
-  0%,100%{transform:translate3d(0,0,0) scale(1)}
-  33%{transform:translate3d(90px,60px,0) scale(1.12)}
-  66%{transform:translate3d(30px,-50px,0) scale(.94)}
-}
-@keyframes drift2{
-  0%,100%{transform:translate3d(0,0,0) scale(1)}
-  40%{transform:translate3d(-120px,70px,0) scale(1.08)}
-  70%{transform:translate3d(-40px,-80px,0) scale(.96)}
-}
-@keyframes drift3{
-  0%,100%{transform:translate3d(0,0,0) scale(1)}
-  50%{transform:translate3d(70px,-70px,0) scale(1.14)}
-}
-/* faint survey grid, faded top and bottom */
-.bg-grid{position:fixed;inset:-64px;z-index:-1;pointer-events:none;opacity:.55;
+/* ── survey field ──────────────────────────────────────────────
+   Major grid + a fine dot matrix inside each cell, in the page's own navy
+   rather than an accent colour of its own. Nothing here moves: the drifting
+   lattice and blobs that used to live here were removed on purpose.
+
+   --field-o is written by the engine on scroll and winds the whole thing down
+   to nothing across the statement section. The default of 1 matters — if the
+   engine never runs, the field simply stays put rather than vanishing. */
+.field{position:fixed;inset:0;z-index:-2;pointer-events:none;
+  opacity:var(--field-o,1)}
+.field-grid{position:absolute;inset:-1px;
   background-image:
-    linear-gradient(rgba(9,47,104,.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(9,47,104,.055) 1px, transparent 1px);
-  background-size:64px 64px;
-  -webkit-mask-image:radial-gradient(ellipse 120% 62% at 50% 0%, #000 6%, transparent 68%);
-  mask-image:radial-gradient(ellipse 120% 62% at 50% 0%, #000 6%, transparent 68%);
-  animation:gridDrift 120s linear infinite}
-@keyframes gridDrift{to{transform:translate3d(64px,64px,0)}}
+    linear-gradient(rgba(9,47,104,.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(9,47,104,.07) 1px, transparent 1px),
+    radial-gradient(rgba(9,47,104,.11) 1.1px, transparent 1.1px);
+  background-size:224px 224px,224px 224px,28px 28px}
+/* The pair of masks below are complements — where one reaches full black the
+   other is fully transparent — so the sharp field and the blurred field meet
+   across the same soft edge and never double up or leave a gap. The ellipse is
+   offset upward and made wide because that is where the headline and the
+   dashboard actually sit. */
+.field-grid.is-sharp{
+  -webkit-mask-image:radial-gradient(ellipse 44% 46% at 50% 38%, transparent 34%, #000 84%);
+  mask-image:radial-gradient(ellipse 44% 46% at 50% 38%, transparent 34%, #000 84%)}
+.field-grid.is-soft{filter:blur(7px);opacity:.5;
+  -webkit-mask-image:radial-gradient(ellipse 44% 46% at 50% 38%, #000 34%, transparent 84%);
+  mask-image:radial-gradient(ellipse 44% 46% at 50% 38%, #000 34%, transparent 84%)}
+/* the few accent dots that pick out grid intersections in the corners */
+.field-dot{position:absolute;left:var(--x);top:var(--y);
+  width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;
+  background:var(--g400);opacity:.5}
 
 /* fine grain over the whole field — 2% opacity, keeps large flat areas from banding */
 .bg-noise{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.022;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:160px 160px}
-
-/* 3D lattice — real perspective projection, drawn in js/scene.js */
-#scene3d{position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.62;
-  -webkit-mask-image:radial-gradient(ellipse 82% 74% at 50% 44%, #000 26%, transparent 80%);
-  mask-image:radial-gradient(ellipse 82% 74% at 50% 44%, #000 26%, transparent 80%)}
 
 /* ════════════════════════════════════════════════════════════
    Layout
@@ -675,12 +666,16 @@ code,pre{font-family:var(--font-mono)}
 /* ── panel frame ── */
 .dash-panel{position:relative;display:grid;grid-template-columns:230px 1fr;
   padding:16px;min-height:730px;align-items:stretch}
-/* content dissolves and blurs behind the floating composer */
-.dash-panel::after{content:'';position:absolute;inset:auto 0 0 0;height:210px;z-index:4;
-  pointer-events:none;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
-  -webkit-mask-image:linear-gradient(180deg,transparent,#000 62%);
-  mask-image:linear-gradient(180deg,transparent,#000 62%);
-  background:linear-gradient(180deg,rgba(247,248,253,0),rgba(247,248,253,.86) 55%,var(--d-fade) 92%)}
+/* Content dissolves and blurs behind the floating composer. The mask is what
+   makes this readable rather than a hard band: it ramps the blur in from
+   nothing at the top of the strip, so rows do not meet a visible edge where
+   the effect starts. Taller and blurrier than the panel needs strictly, so the
+   composer sits on genuinely soft ground rather than on legible rows. */
+.dash-panel::after{content:'';position:absolute;inset:auto 0 0 0;height:260px;z-index:4;
+  pointer-events:none;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 58%);
+  mask-image:linear-gradient(180deg,transparent,#000 58%);
+  background:linear-gradient(180deg,rgba(247,248,253,0),rgba(247,248,253,.88) 52%,var(--d-fade) 90%)}
 
 /* ── sidebar ── */
 .dash-side{background:#fff;border:1px solid var(--d-line);border-radius:18px;
@@ -919,15 +914,23 @@ code,pre{font-family:var(--font-mono)}
   transition:opacity .5s var(--e-out),transform .5s var(--e-out)}
 
 /* ── composer — frosted, floats over the panel ── */
-.dash-ask{position:absolute;left:50%;transform:translateX(-50%);bottom:20px;z-index:7;
-  width:min(700px,calc(100% - 130px))}
-.dash-ask-in{border:1px solid rgba(255,255,255,.7);border-radius:20px;padding:18px 20px 13px;
-  background:rgba(255,255,255,.72);
-  -webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);
-  box-shadow:0 20px 52px -14px rgba(17,24,39,.24),0 2px 8px rgba(17,24,39,.05),
-             inset 0 1px 0 rgba(255,255,255,.6)}
-.dash-ask-q{font-size:15px;color:var(--d-ink);line-height:1.5;min-height:4.5em}
-.dash-caret{display:inline-block;width:1.6px;height:16px;margin-left:1px;vertical-align:-3px;
+.dash-ask{position:absolute;left:50%;transform:translateX(-50%);bottom:22px;z-index:7;
+  width:min(760px,calc(100% - 110px))}
+/* Whiter and more blurred than the strip behind it on purpose: the panel below
+   is now soft enough that a translucent composer would read as part of the
+   haze. The extra opacity is what keeps it forward of its own backdrop. */
+.dash-ask-in{border:1px solid rgba(255,255,255,.86);border-radius:22px;padding:20px 22px 14px;
+  background:rgba(255,255,255,.86);
+  -webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7);
+  box-shadow:0 28px 64px -16px rgba(17,24,39,.28),0 2px 10px rgba(17,24,39,.06),
+             inset 0 1px 0 rgba(255,255,255,.75)}
+/* min-height, not height: the box takes its size from this reserved space, so
+   raising it grows the composer downward without the typed question having to
+   fill it. Kept off the narrow layout below, where the panel has no room. */
+.dash-ask-q{font-size:16.5px;font-weight:600;color:var(--d-ink);line-height:1.5;min-height:6.6em;
+  letter-spacing:-.005em}
+/* sized off .dash-ask-q — a caret shorter than its line reads as a stray tick */
+.dash-caret{display:inline-block;width:1.8px;height:18px;margin-left:2px;vertical-align:-3.5px;
   background:var(--d-ink);animation:caretBlink 1s step-end infinite}
 [dir="rtl"] .dash-caret{margin-left:0;margin-right:1px}
 @keyframes caretBlink{50%{opacity:0}}
@@ -950,11 +953,12 @@ code,pre{font-family:var(--font-mono)}
 .dash-avatars b{background:#f2f4f9;color:var(--d-ink-3)}
 .dash-ask-tag{font-size:13px;font-weight:500;color:var(--d-ink-2);background:rgba(255,255,255,.6);
   border:1px solid var(--d-line);border-radius:10px;padding:7px 14px}
-.dash-ask-send{margin-inline-start:auto;flex:none;width:38px;height:38px;border-radius:50%;
+.dash-ask-send{margin-inline-start:auto;flex:none;width:40px;height:40px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;background:#1f2430;color:#fff;
+  box-shadow:0 4px 12px -2px rgba(17,24,39,.32);
   transition:background .2s ease,transform .3s var(--e-out)}
 .dash-ask-send:hover{background:#111827;transform:translateY(-1px)}
-.dash-ask-send svg{width:17px;height:17px}
+.dash-ask-send svg{width:18px;height:18px}
 
 /* ── narrow ── */
 @media(max-width:1240px){
@@ -1524,15 +1528,21 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
    160vh — deliberately shorter than the 340vh of the Architecture pin below,
    so two consecutive sticky sections don't read as the same device. */
 /* padding-top:0 — the pin centres its own content in the viewport, so band
-   padding above the track is dead space the reader scrolls past twice */
-#lifecycle{padding-top:0}
+   padding above the track is dead space the reader scrolls past twice.
+
+   Bottom, same problem as under the platform video: this band's 92px and the
+   pinned block's own 48px stacked into ~140px of nothing between the last card
+   and the Architecture panel. 34px here plus the pin's 22px is enough to close
+   the section without the two running together. The media queries below only
+   ever reset padding-top, so this survives them. */
+#lifecycle{padding-top:0;padding-bottom:34px}
 .life-track{position:relative;height:260vh}
 /* flex-start, not center: centring in a 100vh box put 100-140px of slack above
    the heading on top of the padding, so the space under the video read as far
    larger than the space above the statement. Aligned to the top, the gap you
    see is the gap that is declared. */
 .life-pin{position:sticky;top:0;min-height:100vh;display:flex;flex-direction:column;
-  justify-content:flex-start;padding:28px 0 48px}
+  justify-content:flex-start;padding:28px 0 22px}
 .life-pin .head-row{margin-bottom:34px}
 /* The step-through is the only reason to hold the section. With reduced motion
    nothing advances, so a pin would just be 1.6 screens of dead scrolling.
@@ -1721,13 +1731,26 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 .cta-dia::after{content:'';position:absolute;inset:8px;background:var(--g900);border-radius:3px}
 .close-cta.in .cta-dia{transform:rotate(45deg) scale(1)}
 .close-cta > *{position:relative;z-index:1}
-.close-cta h2{margin-bottom:12px}
+/* The one heading on the page in the sans rather than the serif, and the only
+   one at 700 — which is why Archivo 700 is loaded in layout.tsx. Bigger than a
+   normal h2 so the line carries the width of the box instead of floating in the
+   middle of it, and tracked in, because a grotesque this heavy opens up at
+   size. Line-height off the 1.2 the type scale gives every other heading: at
+   56px that reads as a gap rather than leading. */
+.close-cta h2{margin-bottom:14px;
+  font-family:var(--font-body);font-weight:700;
+  font-size:clamp(30px,3.9vw,49px);line-height:1.1;letter-spacing:-.022em}
+/* Archivo carries no Arabic, so the sans switch would silently drop the heading
+   onto a system fallback. Same face the statement line uses for the same
+   reason — see the note on [dir="rtl"] .stmt-t above. */
+[dir="rtl"] .close-cta h2{font-family:'IBM Plex Sans Arabic',var(--font-body);
+  font-weight:700;letter-spacing:-.02em}
 /* The 44ch cap broke this one sentence into two short centred lines that sat
    well inside the heading above it, leaving the box looking mostly empty. The
    line runs the width of the box now; the 92% keeps it off the rounded corners
    and the percentage takes over from the ch cap on narrow screens, where the
    sentence has to wrap anyway — balance splits it evenly when it does. */
-.close-cta p{color:#b3cbe5;max-width:min(92ch,92%);margin:0 auto 26px;font-size:15.5px;
+.close-cta p{color:#b3cbe5;max-width:min(92ch,92%);margin:0 auto 28px;font-size:17px;
   text-wrap:balance}
 .close-cta .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 .cta-strip{margin-top:30px;display:flex;justify-content:center;gap:26px;flex-wrap:wrap;
@@ -2183,7 +2206,6 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
   .stack-mark{position:relative;inset:auto;opacity:1;transform:none;margin-top:24px}
   .stack-item{opacity:1}
   .q-a .wd i{transform:none;opacity:1}
-  .bg-blob,.bg-grid{animation:none}
   .mega-col,.mega-more{opacity:1 !important;transform:none !important;animation:none !important}
   .proof-slot,.seal-stamp,.cta-strip svg,.drawer-body li{opacity:1 !important;transform:none !important}
   .cta-strip svg{stroke-dashoffset:0 !important}
@@ -2339,16 +2361,16 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
   transition:border-color .2s ease}
 .mchip:hover{border-color:rgba(6,36,80,.3)}
 
-/* real logo — two stacked, pre-tinted images crossfade on hover since a
-   raster mark can't retint the way an inline SVG glyph can */
+/* real logo, in the brand's own colours — a raster mark can't be retinted the
+   way an inline SVG glyph can, so it is shown as the source supplies it */
 .mlogo{position:absolute;left:50%;top:50%;width:48px;height:48px;object-fit:contain;
   transform:translate(-50%,-50%);transform-origin:center;
   transition:opacity .2s ease-out,transform .2s ease-out}
 /* one full-colour mark per chip — nothing to cross-fade to, so hover just scales */
 .mchip:hover .mlogo{transform:translate(-50%,-50%) scale(1.1)}
 
-/* geometric fallback — used only when a brand has no reliable single-colour
-   mark, or a logo request 404s */
+/* geometric fallback — used only when a brand has no mark at the requested
+   slug, or a logo request 404s */
 .mchip svg{width:48px;height:48px;stroke:#3b79b9;fill:none;stroke-width:1.4;
   stroke-linecap:round;stroke-linejoin:round;transform-origin:center;
   transition:stroke .2s ease-out,transform .2s ease-out}
