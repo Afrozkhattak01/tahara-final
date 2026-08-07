@@ -1722,7 +1722,13 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 .close-cta.in .cta-dia{transform:rotate(45deg) scale(1)}
 .close-cta > *{position:relative;z-index:1}
 .close-cta h2{margin-bottom:12px}
-.close-cta p{color:#b3cbe5;max-width:44ch;margin:0 auto 26px;font-size:15.5px}
+/* The 44ch cap broke this one sentence into two short centred lines that sat
+   well inside the heading above it, leaving the box looking mostly empty. The
+   line runs the width of the box now; the 92% keeps it off the rounded corners
+   and the percentage takes over from the ch cap on narrow screens, where the
+   sentence has to wrap anyway — balance splits it evenly when it does. */
+.close-cta p{color:#b3cbe5;max-width:min(92ch,92%);margin:0 auto 26px;font-size:15.5px;
+  text-wrap:balance}
 .close-cta .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 .cta-strip{margin-top:30px;display:flex;justify-content:center;gap:26px;flex-wrap:wrap;
   font-family:var(--font-mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
