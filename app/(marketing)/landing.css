@@ -1686,11 +1686,16 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 .q-panel > *{position:relative;z-index:1}
 .q-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .q-head .label{font-size:10px}
-.q-a{font-size:15.5px;color:var(--ink-2);line-height:1.68}
-.q-a .ln{display:block;overflow:hidden}
-.q-a .ln i{display:block;font-style:normal;transform:translateY(102%);opacity:0;
-  transition:transform .7s var(--e-out),opacity .4s ease;transition-delay:calc(var(--li) * 70ms)}
-.q-a.show .ln i{transform:none;opacity:1}
+.q-a{font-size:15.5px;color:var(--ink-2);line-height:1.68;text-wrap:pretty}
+/* One word per masked box rather than one clause per block: the paragraph then
+   breaks where the panel runs out, not where the source text did. Overflow
+   pulls the box off the baseline, so vertical-align:top puts every word back on
+   the same line. The delay step is small — a whole answer's worth of words at a
+   line's pace would take seconds to finish. */
+.q-a .wd{display:inline-block;overflow:hidden;vertical-align:top}
+.q-a .wd i{display:inline-block;font-style:normal;transform:translateY(102%);opacity:0;
+  transition:transform .55s var(--e-out),opacity .35s ease;transition-delay:calc(var(--li) * 16ms)}
+.q-a.show .wd i{transform:none;opacity:1}
 .q-foot{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);display:flex;
   align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
 .q-foot span{font-size:13px;color:var(--ink-3)}
@@ -2171,7 +2176,7 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
   #stackSvg .layer{transform:none;opacity:1}
   .stack-mark{position:relative;inset:auto;opacity:1;transform:none;margin-top:24px}
   .stack-item{opacity:1}
-  .q-a .ln i{transform:none;opacity:1}
+  .q-a .wd i{transform:none;opacity:1}
   .bg-blob,.bg-grid{animation:none}
   .mega-col,.mega-more{opacity:1 !important;transform:none !important;animation:none !important}
   .proof-slot,.seal-stamp,.cta-strip svg,.drawer-body li{opacity:1 !important;transform:none !important}

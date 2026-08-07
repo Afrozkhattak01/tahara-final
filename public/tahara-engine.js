@@ -368,9 +368,9 @@ window.TAHARA_DATA = (function(){
   };
 
 
-  /* ── FAQ answers, one array entry per rendered line ── */
-  /* Each entry is one answer, split into lines that slide up in sequence —
-     the breaks are clause boundaries, not wrapping (the panel wraps on its own). */
+  /* ── FAQ answers ── */
+  /* Each entry is one answer. The clause split is for reading the source only:
+     the panel joins them into a single paragraph and wraps it itself. */
   const ANSWERS = [
     ['Inside your own environment. Tahara AI never asks for data to leave your systems,',
      'it runs where the infrastructure already lives, reads only what it’s given permission to see,',
@@ -896,8 +896,13 @@ window.TaharaUI = (function(){
       /* pad rather than prefixing a literal '0' — past nine that read "Answer · 010" */
       label.textContent = (ar ? 'الإجابة · ' : 'Answer · ') + String(i + 1).padStart(2, '0');
       answer.classList.remove('show');
-      answer.innerHTML = activeAnswers[i]
-        .map((l, j) => '<span class="ln"><i style="--li:' + j + '">' + l + '</i></span>').join('');
+      /* The stored clauses are joined back into one paragraph and re-split on
+         words: as blocks they broke wherever the source clause happened to end,
+         which left a comma dangling and one or two words stranded on the next
+         line. Words wrap at the panel edge like normal prose, and each one is
+         its own masked box so the staggered reveal survives the change. */
+      answer.innerHTML = activeAnswers[i].join(' ').split(/\s+/)
+        .map((w, j) => '<span class="wd"><i style="--li:' + j + '">' + w + '</i></span>').join(' ');
       void answer.offsetWidth;
       answer.classList.add('show');
     }
