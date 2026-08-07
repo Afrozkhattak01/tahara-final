@@ -1207,12 +1207,67 @@ window.TaharaI18N = (function(){
 
     'ribbon.tag':  { en:'Free', ar:'مجاني' },
     'ribbon.text': { en:'Run an AI surface check on your endpoint', ar:'شغّل فحص سطح الذكاء الاصطناعي على نقطتك الطرفية' },
-    'surface.kicker': { en:'Surface check', ar:'فحص السطح' },
-    'surface.title':  { en:'See what your AI exposes', ar:'اطّلع على ما يكشفه ذكاؤك الاصطناعي' },
-    'surface.desc':   { en:'Point us at a public endpoint. We map the models, agents and prompts behind it, then rank what an attacker would reach for first.',
-                        ar:'وجِّهنا إلى نقطة طرفية عامة. نرسم النماذج والوكلاء والطلبات خلفها، ثم نرتّب ما قد يستهدفه المهاجم أولًا.' },
-    'surface.cta':    { en:'Run check', ar:'شغّل الفحص' },
-    'surface.note':   { en:'Illustrative preview. Nothing is sent from your browser.', ar:'معاينة توضيحية. لا يُرسَل شيء من متصفحك.' },
+    'surface.kicker': { en:'AI attack surface assessment', ar:'تقييم سطح الهجوم للذكاء الاصطناعي' },
+    'surface.title':  { en:'Discover Your AI Attack Surface', ar:'اكتشف سطح الهجوم للذكاء الاصطناعي لديك' },
+    'surface.desc':   { en:"Assess your organization's publicly accessible AI infrastructure, identify deployed technologies, detect security weaknesses, and generate evidence-backed findings from a single endpoint.",
+                        ar:'قيّم البنية التحتية للذكاء الاصطناعي المتاحة علنًا في مؤسستك، وحدّد التقنيات المنشورة، واكشف نقاط الضعف الأمنية، واحصل على نتائج مدعومة بالأدلة انطلاقًا من نقطة طرفية واحدة.' },
+    'surface.cta':    { en:'Start Assessment', ar:'ابدأ التقييم' },
+    'surface.c1':     { en:'Discovers exposed domains, subdomains, hosts, and AI-facing infrastructure.',
+                        ar:'يكتشف النطاقات والنطاقات الفرعية والمضيفين والبنية التحتية المكشوفة المرتبطة بالذكاء الاصطناعي.' },
+    'surface.c2':     { en:'Fingerprints technologies, AI frameworks, APIs, SDKs, and externally accessible services.',
+                        ar:'يحدّد بصمات التقنيات وأطر الذكاء الاصطناعي وواجهات البرمجة وحزم التطوير والخدمات المتاحة خارجيًا.' },
+    'surface.c3':     { en:'Detects known vulnerabilities, configuration weaknesses, and exposed attack surfaces.',
+                        ar:'يرصد الثغرات المعروفة وضعف الإعدادات وأسطح الهجوم المكشوفة.' },
+    'surface.c4':     { en:'Validates findings and prioritizes risks based on severity and exploitability.',
+                        ar:'يتحقق من النتائج ويرتّب المخاطر حسب الخطورة وقابلية الاستغلال.' },
+    'surface.c5':     { en:'Generates an evidence-backed security assessment with actionable remediation guidance.',
+                        ar:'ينتج تقييمًا أمنيًا مدعومًا بالأدلة مع إرشادات معالجة قابلة للتنفيذ.' },
+    'surface.err':    { en:'Enter a valid domain, for example your-company.ai',
+                        ar:'أدخل نطاقًا صالحًا، مثل your-company.ai' },
+    'surface.note':   { en:'Read-only external assessment. No credentials required. No production traffic modified.',
+                        ar:'تقييم خارجي للقراءة فقط. لا يتطلب بيانات اعتماد. لا يُعدَّل أي من حركة الإنتاج.' },
+    /* screen 2 — the footer swaps to this while the scripted run plays */
+    'surface.preview':{ en:'Illustrative preview. Nothing is sent from your browser.',
+                        ar:'معاينة توضيحية. لا يُرسَل شيء من متصفحك.' },
+    'live.k1':        { en:'Discovering attack surface',   ar:'اكتشاف سطح الهجوم' },
+    'live.k2':        { en:'Fingerprinting technologies',  ar:'تحديد بصمات التقنيات' },
+    'live.k3':        { en:'Enumerating AI assets',        ar:'حصر أصول الذكاء الاصطناعي' },
+    'live.k4':        { en:'Scanning for vulnerabilities', ar:'الفحص بحثًا عن الثغرات' },
+    'live.k5':        { en:'Validating findings',          ar:'التحقق من النتائج' },
+    'live.k6':        { en:'Generating assessment report', ar:'إنشاء تقرير التقييم' },
+    'live.trace':     { en:'Live trace', ar:'التتبع المباشر' },
+    'live.running':   { en:'Assessment running',  ar:'التقييم قيد التشغيل' },
+    'live.complete':  { en:'Assessment complete', ar:'اكتمل التقييم' },
+    /* screen 3 — report chrome. The findings and coverage rows themselves are
+       rendered from tables in the modal module, not from here. */
+    'rep.kicker':  { en:'Assessment report', ar:'تقرير التقييم' },
+    'rep.sub':     { en:'External security assessment', ar:'تقييم أمني خارجي' },
+    'rep.c1':      { en:'Attack surface', ar:'سطح الهجوم' },
+    'rep.c1d':     { en:'Public endpoints, APIs, hosts and AI services',
+                     ar:'نقاط طرفية عامة وواجهات برمجة ومضيفون وخدمات ذكاء اصطناعي' },
+    'rep.c2':      { en:'Detected assets', ar:'الأصول المرصودة' },
+    'rep.c2d':     { en:'Domains, services, models and dependencies',
+                     ar:'نطاقات وخدمات ونماذج واعتماديات' },
+    'rep.c3':      { en:'Validated findings', ar:'النتائج المتحقق منها' },
+    'rep.c3d':     { en:'CVEs, misconfigurations, exposed services',
+                     ar:'ثغرات وأخطاء إعداد وخدمات مكشوفة' },
+    'rep.c4':      { en:'Priority remediations', ar:'المعالجات ذات الأولوية' },
+    'rep.c4d':     { en:'Immediate remediation recommended', ar:'يوصى بمعالجة فورية' },
+    'rep.findings':{ en:'Validated findings', ar:'النتائج المتحقق منها' },
+    'rep.total':   { en:'total', ar:'الإجمالي' },
+    'rep.risk':    { en:'Attack surface risk', ar:'مخاطر سطح الهجوم' },
+    'rep.riskd':   { en:'Calculated from validated findings, exposed services, detected vulnerabilities, and attack surface complexity.',
+                     ar:'محسوبة من النتائج المتحقق منها والخدمات المكشوفة والثغرات المرصودة وتعقيد سطح الهجوم.' },
+    'rep.cov':     { en:'Security assessment coverage', ar:'تغطية التقييم الأمني' },
+    'rep.tested':  { en:'tested', ar:'مُختبَرة' },
+    'rep.rec':     { en:'Highest priority recommendation', ar:'التوصية ذات الأولوية القصوى' },
+    'rep.recb':    { en:'Remediate critical vulnerabilities affecting externally accessible services before addressing medium and low-risk findings. Prioritize issues that enable unauthorized access or remote code execution.',
+                     ar:'عالج الثغرات الحرجة التي تؤثر على الخدمات المتاحة خارجيًا قبل معالجة النتائج متوسطة ومنخفضة الخطورة. أعطِ الأولوية للمشكلات التي تتيح وصولًا غير مصرح به أو تنفيذ تعليمات برمجية عن بُعد.' },
+    'rep.dl':      { en:'Security assessment report', ar:'تقرير التقييم الأمني' },
+    'rep.pdf':     { en:'PDF', ar:'PDF' },
+    'rep.evid':    { en:'Evidence included', ar:'تتضمن الأدلة' },
+    'rep.dlb':     { en:'Download report', ar:'تنزيل التقرير' },
+    'rep.dln':     { en:'Preview only — no file is generated.', ar:'معاينة فقط — لا يتم إنشاء أي ملف.' },
 
     'hero.title': { en:'Know what your AI did, and <span class="accent">prove it</span>.',
                     ar:'اعرف ما فعله ذكاؤك الاصطناعي، و<span class="accent">أثبت ذلك</span>.' },
@@ -2036,13 +2091,375 @@ window.TaharaI18N = (function(){
   window.TaharaDrawer && window.TaharaDrawer.init();
   window.TaharaMarquee2 && window.TaharaMarquee2.init();
 
-  /* ── surface-check modal — opened by the ribbon, closed by X / scrim / Esc ── */
+  /* ── surface-check modal — opened by the ribbon, closed by X / scrim / Esc.
+     Submitting hands a validated host to /assessment. The scan itself is not
+     wired yet; this side only decides whether what was typed is a host worth
+     handing over. ── */
   (function(){
     const link  = document.getElementById('ribbonLink');
     const modal = document.getElementById('surfaceModal');
     const scrim = document.getElementById('surfaceScrim');
     const closeX = document.getElementById('surfaceX');
     if (!link || !modal || !scrim) return;
+    const form  = document.getElementById('surfaceForm');
+    const inp   = document.getElementById('surfaceInput');
+    const field = document.getElementById('surfaceFieldWrap');
+    const err   = document.getElementById('surfaceErr');
+
+    /* One label, 1-63 chars, no leading/trailing hyphen; at least two labels so
+       a bare "localhost" or a typo'd "example" can't through; alphabetic TLD.
+       Length-capped at 253 to match what DNS will actually resolve. */
+    const HOST_RE = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
+
+    /* The field already prints https://, so a pasted scheme is stripped rather
+       than rejected — people paste whole URLs out of the address bar. Only the
+       surrounding whitespace goes: squeezing out an interior space would turn
+       a typo'd "exa mple.com" into a real, different host and assess that one
+       without saying so. Interior space is left in place to fail the test. */
+    function clean(raw){
+      return String(raw || '').trim()
+        .replace(/^[a-z][a-z0-9+.-]*:\/\//i, '')
+        .replace(/^\/+/, '');
+    }
+    function hostOf(v){
+      const host = v.split(/[/?#]/)[0];
+      const port = host.match(/:(\d{1,5})$/);        /* :8443 is legitimate here */
+      if (port) return Number(port[1]) > 65535 ? '' : host.slice(0, -port[0].length);
+      return host.includes(':') ? '' : host;         /* anything else with a colon is not a host */
+    }
+    /* The message itself is data-i18n'd markup, so it is already in the right
+       language by the time it is unhidden — this only toggles visibility. */
+    function showErr(on){
+      if (!err || !field) return;
+      err.hidden = !on;
+      field.classList.toggle('is-bad', on);
+    }
+
+    /* ── screen 2 · the run ──────────────────────────────────────
+       Every number below is scripted. Nothing is requested, measured or
+       sent; the sequence exists so the flow can be seen end to end before
+       the scan engine is connected. Keep it that way until it is.
+       ──────────────────────────────────────────────────────────── */
+    const body   = document.getElementById('surfaceBody');
+    const live   = document.getElementById('surfaceLive');
+    const wedge  = document.getElementById('liveWedge');
+    const pctEl  = document.getElementById('livePct');
+    const stgEl  = document.getElementById('liveStage');
+    const tgtEl  = document.getElementById('liveTarget');
+    const barEl  = document.getElementById('liveBar');
+    const traceEl= document.getElementById('liveTrace');
+    const stateEl= document.getElementById('liveState');
+    const report = document.getElementById('surfaceReport');
+    const repTgt = document.getElementById('repTarget');
+    const repMeta= document.getElementById('repMeta');
+    const repList= document.getElementById('repList');
+    const repCov = document.getElementById('repCov');
+    const gauge  = document.querySelector('.rep-gauge-fg');
+    const noteEl = document.getElementById('surfaceNote');
+    const checks = document.getElementById('liveChecks');
+
+    const RUN_MS = 11000;
+    const TRACE_KEEP = 5;                              /* what fits the box without scrolling */
+
+    /* Stage caption under the dial — `to` is the progress it holds until. */
+    const STAGES = [
+      { to:  6, en:'Initializing assessment',           ar:'تهيئة التقييم' },
+      { to: 18, en:'Discovering attack surface',        ar:'اكتشاف سطح الهجوم' },
+      { to: 30, en:'Enumerating subdomains',            ar:'حصر النطاقات الفرعية' },
+      { to: 42, en:'Scanning exposed services',         ar:'فحص الخدمات المكشوفة' },
+      { to: 55, en:'Fingerprinting technologies',       ar:'تحديد بصمات التقنيات' },
+      { to: 64, en:'Analyzing TLS configuration',       ar:'تحليل إعدادات TLS' },
+      { to: 78, en:'Correlating known vulnerabilities', ar:'مطابقة الثغرات المعروفة' },
+      { to: 90, en:'Validating findings',               ar:'التحقق من النتائج' },
+      { to:100, en:'Generating assessment report',      ar:'إنشاء تقرير التقييم' }
+    ];
+
+    /* Six fixed checklist rows, each owning a slice of the run. */
+    const CHECK_AT = [[0,20],[20,40],[40,60],[60,76],[76,90],[90,100]];
+
+    /* Trace lines, in scan order, each printed as the run passes `at`. */
+    const TRACE = [
+      { at:  4, k:'dns',    en:'DNS records resolved (4 hosts)',      ar:'تم حل سجلات DNS (٤ مضيفين)' },
+      { at: 12, k:'sub',    en:'Subdomains discovered (12)',          ar:'تم اكتشاف نطاقات فرعية (١٢)' },
+      { at: 21, k:'http',   en:'HTTP services identified (8)',        ar:'تم تحديد خدمات HTTP (٨)' },
+      { at: 29, k:'port',   en:'Open ports: 80, 443',                 ar:'المنافذ المفتوحة: ٨٠، ٤٤٣' },
+      { at: 37, k:'tech',   en:'Detected Nginx 1.24',                 ar:'تم رصد Nginx 1.24' },
+      { at: 45, k:'stack',  en:'Detected FastAPI framework',          ar:'تم رصد إطار FastAPI' },
+      { at: 53, k:'tls',    en:'TLS 1.3 configuration verified',      ar:'تم التحقق من إعدادات TLS 1.3' },
+      { at: 60, k:'agent',  en:'Detected LangChain integration',      ar:'تم رصد تكامل LangChain' },
+      { at: 66, k:'api',    en:'Detected OpenAI API usage',           ar:'تم رصد استخدام واجهة OpenAI' },
+      { at: 71, k:'mcp',    en:'Detected MCP endpoint',               ar:'تم رصد نقطة MCP' },
+      { at: 76, k:'vector', en:'Detected Vector Database',            ar:'تم رصد قاعدة بيانات متجهة' },
+      { at: 81, k:'cache',  en:'Detected Redis service',              ar:'تم رصد خدمة Redis' },
+      { at: 87, k:'cve',    en:'CVE-2025-XXXX matched',               ar:'تمت مطابقة CVE-2025-XXXX' },
+      { at: 93, k:'evid',   en:'Evidence package updated',            ar:'تم تحديث حزمة الأدلة' },
+      { at: 98, k:'rep',    en:'Assessment report initialized',       ar:'تم تهيئة تقرير التقييم' }
+    ];
+
+    /* ── screen 3 · report contents ──────────────────────────────
+       Hand-written, not measured. If a scan engine is ever wired in, these
+       two tables are what it replaces — nothing else on screen 3 holds data.
+       ──────────────────────────────────────────────────────────── */
+    const RISK = 62;
+    const FINDINGS = [
+      { sev:'critical', tag:'CVE-2025-XXXX', asset:'api.example.com',
+        en:['Remote Code Execution vulnerability detected',
+            'Validated evidence confirms that the affected service is susceptible to arbitrary code execution.'],
+        ar:['تم رصد ثغرة تنفيذ تعليمات برمجية عن بُعد',
+            'تؤكد الأدلة المتحقق منها أن الخدمة المتأثرة عرضة لتنفيذ تعليمات برمجية عشوائية.'] },
+      { sev:'high', tag:'Misconfiguration', asset:'/admin',
+        en:['Publicly exposed administrative endpoint',
+            'Administrative interface accessible without authentication.'],
+        ar:['نقطة إدارية مكشوفة للعموم',
+            'واجهة الإدارة متاحة دون مصادقة.'] },
+      { sev:'high', tag:'FastAPI', asset:'dependency',
+        en:['Outdated dependency detected',
+            '3 known CVEs affecting the deployed version.'],
+        ar:['تم رصد اعتمادية قديمة',
+            'ثلاث ثغرات معروفة تؤثر على الإصدار المنشور.'] },
+      { sev:'high', tag:'TLS', asset:'network',
+        en:['Weak TLS configuration',
+            'Legacy cipher suites remain enabled.'],
+        ar:['إعدادات TLS ضعيفة',
+            'لا تزال مجموعات التشفير القديمة مفعّلة.'] },
+      { sev:'medium', tag:'Cloud', asset:'s3://assets-public',
+        en:['Public S3 bucket exposure',
+            'Storage bucket readable without authentication.'],
+        ar:['حاوية تخزين S3 مكشوفة',
+            'يمكن قراءة حاوية التخزين دون مصادقة.'] },
+      { sev:'medium', tag:'API', asset:'/v1/infer',
+        en:['Unauthenticated inference endpoint',
+            'Model inference route responds without a credential.'],
+        ar:['نقطة استدلال بلا مصادقة',
+            'مسار استدلال النموذج يستجيب دون بيانات اعتماد.'] },
+      { sev:'medium', tag:'Vector', asset:'vdb.example.com',
+        en:['Vector database reachable from the internet',
+            'Index contents readable without authorisation.'],
+        ar:['قاعدة بيانات متجهة يمكن الوصول إليها من الإنترنت',
+            'يمكن قراءة محتويات الفهرس دون تصريح.'] },
+      { sev:'low', tag:'Configuration', asset:'www',
+        en:['Verbose error responses enabled',
+            'Stack traces disclose framework and version detail.'],
+        ar:['استجابات أخطاء مفصّلة مفعّلة',
+            'تكشف تتبعات المكدس عن تفاصيل الإطار والإصدار.'] }
+    ];
+    /* state drives both the word and the bar; fill is how much of the
+       category came back clean */
+    const COVERAGE = [
+      { s:'fail',  fill:62,  en:'Infrastructure',        ar:'البنية التحتية' },
+      { s:'watch', fill:78,  en:'Network exposure',      ar:'الانكشاف الشبكي' },
+      { s:'watch', fill:81,  en:'Web services',          ar:'خدمات الويب' },
+      { s:'pass',  fill:100, en:'Technologies',          ar:'التقنيات' },
+      { s:'fail',  fill:54,  en:'Dependencies',          ar:'الاعتماديات' },
+      { s:'fail',  fill:67,  en:'TLS configuration',     ar:'إعدادات TLS' },
+      { s:'fail',  fill:49,  en:'Known vulnerabilities', ar:'الثغرات المعروفة' },
+      { s:'pass',  fill:100, en:'AI components',         ar:'مكوّنات الذكاء الاصطناعي' },
+      { s:'watch', fill:84,  en:'Authentication',        ar:'المصادقة' },
+      { s:'watch', fill:76,  en:'Configuration',         ar:'الإعدادات' }
+    ];
+    const SEV = {
+      critical:{ en:'Critical', ar:'حرجة' }, high:{ en:'High', ar:'عالية' },
+      medium:  { en:'Medium',   ar:'متوسطة' }, low: { en:'Low',  ar:'منخفضة' }
+    };
+    const COV_S = {
+      pass:{ en:'Pass', ar:'مجتاز' }, watch:{ en:'Watch', ar:'مراقبة' }, fail:{ en:'Fail', ar:'إخفاق' }
+    };
+
+    const lang = () => (window.TaharaI18N && window.TaharaI18N.current === 'ar') ? 'ar' : 'en';
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let raf = 0, t0 = 0, printed = 0, running = false, handoff = 0, runTarget = '';
+
+    function paint(p){
+      const whole = Math.round(p);
+      if (wedge) wedge.style.setProperty('--p', p.toFixed(2));
+      if (pctEl) pctEl.textContent = String(whole);
+      if (barEl){
+        const fill = barEl.firstElementChild;
+        if (fill) fill.style.width = p + '%';
+        barEl.setAttribute('aria-valuenow', String(whole));
+      }
+      if (stgEl){
+        const s = STAGES.find(x => p < x.to) || STAGES[STAGES.length - 1];
+        const txt = s[lang()];
+        if (stgEl.textContent !== txt) stgEl.textContent = txt;
+      }
+      if (checks){
+        const rows = checks.children;
+        for (let i = 0; i < rows.length && i < CHECK_AT.length; i++){
+          const [from, to] = CHECK_AT[i];
+          const done = p >= to;
+          const on   = !done && p >= from;
+          rows[i].classList.toggle('is-done', done);
+          rows[i].classList.toggle('is-live', on);
+          const cell = rows[i].querySelector('.live-check-p');
+          if (cell){
+            cell.textContent = done ? '100%'
+              : on ? Math.round(((p - from) / (to - from)) * 100) + '%'
+              : '';
+          }
+        }
+      }
+      while (printed < TRACE.length && p >= TRACE[printed].at){
+        const row = TRACE[printed++];
+        if (!traceEl) continue;
+        const li = document.createElement('li');
+        /* Reduced motion prints the whole log at once, so elapsed time would
+           read 0.0s on every line — the scripted position stands in for it. */
+        const secs = reduced ? (row.at / 10) : (performance.now() - t0) / 1000;
+        li.innerHTML = '<span class="lt-t"></span><span class="lt-k"></span><span class="lt-m"></span>';
+        li.children[0].textContent = secs.toFixed(1) + 's';
+        li.children[1].textContent = row.k;
+        li.children[2].textContent = row[lang()];
+        traceEl.appendChild(li);
+        while (traceEl.children.length > TRACE_KEEP) traceEl.removeChild(traceEl.firstChild);
+      }
+    }
+
+    const GAUGE_C = 238.76;                          /* 2πr at r=38, matches the CSS */
+
+    function buildReport(target){
+      if (repTgt)  repTgt.textContent = target;
+      if (repMeta){
+        const secs = (RUN_MS / 1000).toFixed(1) + 's';
+        repMeta.textContent = (lang() === 'ar' ? 'اكتمل · ' : 'Completed · ') + secs + ' · SHA256 4F9C…B120';
+      }
+      const L = lang();
+      if (repList){
+        repList.textContent = '';
+        FINDINGS.forEach(f => {
+          const li = document.createElement('li');
+          li.className = 'rep-find is-' + f.sev;
+          li.innerHTML = '<span class="rep-sev"><span class="rep-sev-l"></span><span class="rep-tag"></span></span>' +
+                         '<span class="rep-find-t"></span><span class="rep-asset"></span>' +
+                         '<span class="rep-find-d"></span>';
+          li.querySelector('.rep-sev-l').textContent = (SEV[f.sev] || SEV.low)[L];
+          li.querySelector('.rep-tag').textContent   = f.tag;
+          li.querySelector('.rep-find-t').textContent= f[L][0];
+          li.querySelector('.rep-find-d').textContent= f[L][1];
+          li.querySelector('.rep-asset').textContent = f.asset;
+          repList.appendChild(li);
+        });
+      }
+      if (repCov){
+        repCov.textContent = '';
+        COVERAGE.forEach(c => {
+          const li = document.createElement('li');
+          li.className = 'is-' + c.s;
+          li.innerHTML = '<span class="rep-cov-n"></span><span class="rep-cov-s"></span>' +
+                         '<span class="rep-cov-bar"><i></i></span>';
+          li.querySelector('.rep-cov-n').textContent = c[L];
+          li.querySelector('.rep-cov-s').textContent = COV_S[c.s][L];
+          li.querySelector('.rep-cov-bar > i').style.width = c.fill + '%';
+          repCov.appendChild(li);
+        });
+      }
+      if (gauge){
+        gauge.style.strokeDashoffset = String(GAUGE_C);      /* reset, then draw */
+        requestAnimationFrame(() => {
+          gauge.style.strokeDashoffset = String(GAUGE_C * (1 - RISK / 100));
+        });
+      }
+    }
+
+    function showReport(target){
+      if (!report || !live) return;
+      live.hidden = true;
+      report.hidden = false;
+      modal.classList.remove('is-live');
+      modal.classList.add('is-report');
+      buildReport(target);
+      if (report.scrollTop) report.scrollTop = 0;
+    }
+
+    function finish(target){
+      running = false;
+      paint(100);
+      /* paint() leaves the caption on the last stage, which still reads as
+         work in progress once the dial has stopped. */
+      if (stgEl) stgEl.textContent = lang() === 'ar' ? 'اكتمل التقييم' : 'Assessment complete';
+      if (stateEl){
+        stateEl.classList.add('is-done');
+        const label = stateEl.querySelector('[data-i18n]');
+        if (label){
+          label.setAttribute('data-i18n', 'live.complete');
+          label.textContent = lang() === 'ar' ? 'اكتمل التقييم' : 'Assessment complete';
+        }
+      }
+      const dot = document.querySelector('.live-trace-dot');
+      if (dot) dot.style.animation = 'none';
+      /* A beat on 100% before the report replaces it — swapping on the same
+         frame the dial fills reads as the run having been skipped. */
+      if (reduced) showReport(target);
+      else handoff = setTimeout(() => showReport(target), 1100);
+    }
+
+    function tick(now){
+      if (!running) return;
+      const t = Math.min(1, (now - t0) / RUN_MS);
+      /* ease-in-out: a run that crawls off the line and eases into the last
+         few percent reads as work, where a linear sweep reads as a timer */
+      paint(100 * (1 - Math.cos(Math.PI * t)) / 2);
+      if (t < 1) raf = requestAnimationFrame(tick);
+      else finish(runTarget);
+    }
+
+    function startRun(target){
+      if (!live || !body) return;
+      runTarget = target;
+      body.hidden = true;
+      live.hidden = false;
+      modal.classList.add('is-live');
+      if (tgtEl) tgtEl.textContent = target;
+      if (noteEl){
+        /* The run is scripted, so the footer has to say so — the screen-1
+           wording would be a claim about a scan that is not happening. */
+        noteEl.setAttribute('data-i18n', 'surface.preview');
+        noteEl.textContent = lang() === 'ar'
+          ? 'معاينة توضيحية. لا يُرسَل شيء من متصفحك.'
+          : 'Illustrative preview. Nothing is sent from your browser.';
+      }
+      if (stateEl) stateEl.hidden = false;
+      if (reduced){ printed = 0; t0 = performance.now(); finish(target); return; }
+      printed = 0;
+      running = true;
+      t0 = performance.now();
+      raf = requestAnimationFrame(tick);
+    }
+
+    function resetRun(){
+      running = false;
+      if (raf) cancelAnimationFrame(raf);
+      if (handoff) clearTimeout(handoff);
+      raf = 0; handoff = 0; printed = 0; runTarget = '';
+      if (live) live.hidden = true;
+      if (report) report.hidden = true;
+      if (body) body.hidden = false;
+      modal.classList.remove('is-live', 'is-report');
+      if (traceEl) traceEl.textContent = '';
+      if (gauge) gauge.style.strokeDashoffset = String(GAUGE_C);
+      if (stateEl){
+        stateEl.hidden = true;
+        stateEl.classList.remove('is-done');
+        const label = stateEl.querySelector('[data-i18n]');
+        if (label){
+          label.setAttribute('data-i18n', 'live.running');
+          label.textContent = lang() === 'ar' ? 'التقييم قيد التشغيل' : 'Assessment running';
+        }
+      }
+      if (noteEl){
+        noteEl.setAttribute('data-i18n', 'surface.note');
+        noteEl.textContent = lang() === 'ar'
+          ? 'تقييم خارجي للقراءة فقط. لا يتطلب بيانات اعتماد. لا يُعدَّل أي من حركة الإنتاج.'
+          : 'Read-only external assessment. No credentials required. No production traffic modified.';
+      }
+      if (checks) Array.prototype.forEach.call(checks.children, r => {
+        r.classList.remove('is-done', 'is-live');
+        const c = r.querySelector('.live-check-p'); if (c) c.textContent = '';
+      });
+      paint(0);
+    }
+
     let open = false;
     function set(v){
       open = v;
@@ -2051,14 +2468,29 @@ window.TaharaI18N = (function(){
       modal.setAttribute('aria-hidden', String(!v));
       scrim.setAttribute('aria-hidden', String(!v));
       document.body.style.overflow = v ? 'hidden' : '';
-      const inp = modal.querySelector('.surface-input');
       if (v){ inp && setTimeout(() => inp.focus(), 80); }
-      else { if (inp) inp.value = ''; link.focus(); }   /* reset the field when closed */
+      /* Closing throws the run away and returns to the form — reopening
+         mid-animation to a half-finished dial would look like a real job
+         that had been left running in the background. */
+      else { if (inp) inp.value = ''; showErr(false); resetRun(); link.focus(); }
     }
     link.addEventListener('click', e => { e.preventDefault(); set(true); });
     closeX && closeX.addEventListener('click', () => set(false));
     scrim.addEventListener('click', () => set(false));
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && open) set(false); });
+
+    /* Clear on the next keystroke — leaving the error up while someone is
+       fixing the value makes the field look broken rather than corrected. */
+    inp && inp.addEventListener('input', () => { if (err && !err.hidden) showErr(false); });
+
+    form && form.addEventListener('submit', e => {
+      e.preventDefault();
+      const target = clean(inp && inp.value);
+      const host   = hostOf(target);
+      if (!host || !HOST_RE.test(host)){ showErr(true); inp && inp.focus(); return; }
+      showErr(false);
+      startRun(host);
+    });
   })();
 
   /* ── auth modals — "Sign in" opens the sign-in modal; its "Create an account"
