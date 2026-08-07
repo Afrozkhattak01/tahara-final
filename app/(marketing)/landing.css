@@ -241,16 +241,22 @@ code,pre{font-family:var(--font-mono)}
   backdrop-filter:blur(6px);opacity:0;pointer-events:none;visibility:hidden;
   transition:opacity .35s var(--e-out),visibility 0s .35s}
 .surface-scrim.on{opacity:1;pointer-events:auto;visibility:visible;transition:opacity .35s var(--e-out)}
+/* The card carries five bullets now, so it can outgrow a laptop viewport.
+   Column layout + a capped height keeps the footer band pinned to the bottom
+   edge and scrolls the middle instead of pushing the top off-screen. */
 .surface-modal{position:fixed;z-index:121;left:50%;top:50%;
-  width:min(560px,calc(100vw - 40px));
+  width:min(660px,calc(100vw - 40px));
+  max-height:calc(100vh - 32px);
+  display:flex;flex-direction:column;overflow:hidden;
   transform:translate(-50%,-46%) scale(.97);
   background:var(--paper);border:1px solid var(--line);border-radius:22px;
-  box-shadow:var(--sh-l);padding:34px 34px 26px;
+  box-shadow:var(--sh-l);
   opacity:0;pointer-events:none;visibility:hidden;
   transition:opacity .4s var(--e-out),transform .4s var(--e-back),visibility 0s .4s}
 .surface-modal.on{opacity:1;pointer-events:auto;visibility:visible;
   transform:translate(-50%,-50%) scale(1);
   transition:opacity .4s var(--e-out),transform .5s var(--e-back)}
+.surface-body{padding:40px 44px 34px;overflow-y:auto}
 .surface-x{position:absolute;top:18px;right:18px;width:34px;height:34px;
   display:grid;place-items:center;border-radius:50%;border:1px solid var(--line);
   background:#fff;color:var(--ink-3);
@@ -260,15 +266,18 @@ code,pre{font-family:var(--font-mono)}
 .surface-kicker{font-family:var(--font-mono);font-size:11px;font-weight:500;
   letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
 .surface-modal h3{font-family:var(--font-display);font-weight:400;
-  font-size:27px;letter-spacing:-.02em;line-height:1.15;color:var(--ink);margin:12px 0}
-.surface-desc{font-size:15.5px;line-height:1.6;color:var(--ink-2);max-width:46ch;margin-bottom:22px}
-.surface-field{display:flex;align-items:center;gap:6px;
-  background:#fff;border:1.5px solid #cdddf5;border-radius:16px;padding:6px 6px 6px 18px;
+  font-size:30px;letter-spacing:-.02em;line-height:1.2;color:var(--ink);margin:14px 0 0}
+/* Capped well inside the wider card — the extra width is there to give the
+   block room to breathe, not to stretch the sentence to 90 characters. */
+.surface-desc{font-size:16px;line-height:1.68;color:var(--ink-2);max-width:54ch;
+  margin:16px 0 28px}
+.surface-field{display:flex;align-items:center;gap:8px;
+  background:#fff;border:1.5px solid #cdddf5;border-radius:16px;padding:7px 7px 7px 20px;
   box-shadow:0 1px 2px rgba(3,24,56,.04);transition:border-color .25s ease,box-shadow .25s ease}
 .surface-field:focus-within{border-color:var(--g600);box-shadow:0 0 0 4px rgba(17,64,134,.1)}
 .surface-proto{font-family:var(--font-mono);font-size:14.5px;color:var(--g600);font-weight:500}
 .surface-input{flex:1;min-width:0;border:none;outline:none;background:transparent;
-  font-family:var(--font-mono);font-size:14.5px;color:var(--ink);padding:9px 4px}
+  font-family:var(--font-mono);font-size:14.5px;color:var(--ink);padding:11px 4px}
 .surface-input::placeholder{color:var(--ink-3)}
 .surface-run{flex:none;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;cursor:pointer;
   background:var(--g900);color:#fff;border-radius:12px;padding:12px 20px;
@@ -277,14 +286,285 @@ code,pre{font-family:var(--font-mono)}
 .surface-run:hover{background:var(--g800)}
 .surface-run .arw{transition:transform .3s var(--e-out)}
 .surface-run:hover .arw{transform:translateX(3px)}
-.surface-note{display:block;text-align:center;margin-top:18px;
-  font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;
+/* Rejected input: the field borrows the same red the error line uses, so the
+   two read as one message rather than two unrelated signals. */
+.surface-field.is-bad{border-color:#c4443a;box-shadow:0 0 0 4px rgba(196,68,58,.1)}
+.surface-err{margin:10px 2px 0;font-size:13px;line-height:1.5;color:#a5372e}
+.surface-err[hidden]{display:none}
+/* Bare ticks, not the circled ones the account modal uses — five circles in a
+   column read as a form to fill in rather than a list of what runs. */
+.surface-checks{display:grid;gap:16px;margin-top:30px}
+.surface-checks li{display:grid;grid-template-columns:14px 1fr;gap:15px;
+  align-items:start;font-size:15px;line-height:1.55;color:var(--ink)}
+.surface-tick{width:14px;height:12px;margin-top:6px}
+.surface-tick path{fill:none;stroke:var(--g600);stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round}
+/* Footer band, flush to the card's edges — it is a standing condition of the
+   assessment, not a caption on the form, so it sits outside the padded body.
+   text-align:start so it flips with the page in Arabic. */
+.surface-foot{flex:none;display:flex;align-items:center;justify-content:space-between;
+  gap:18px;padding:17px 44px;border-top:1px solid var(--line);background:#f2f6fc}
+.surface-note{text-align:start;
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;
+  line-height:1.7;text-transform:uppercase;color:var(--ink-3)}
+
+/* ════════════════════════════════════════════════════════════
+   screen 2 · live assessment
+   Everything here animates off a fixed script — nothing is measured.
+   ════════════════════════════════════════════════════════════ */
+/* The live view needs two columns side by side, so the card grows when it
+   swaps in. Width is the only thing that changes; the card does not move. */
+.surface-modal.is-live{width:min(1080px,calc(100vw - 40px))}
+.surface-live{padding:26px 26px 22px;overflow-y:auto}
+.live-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:stretch}
+
+/* ── left · dial ── */
+.live-dial{position:relative;overflow:hidden;border-radius:18px;min-height:420px;
+  display:grid;place-items:center;
+  background:linear-gradient(158deg,var(--g900) 0%,var(--g800) 52%,#0a3a7d 100%)}
+.live-dial-grid{position:absolute;inset:0;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:38px 38px}
+.live-ring{position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.1)}
+.live-ring-1{width:74%;aspect-ratio:1}
+.live-ring-2{width:52%;aspect-ratio:1}
+/* The wedge is the progress read-out: a conic sweep clipped to a circle, so it
+   fills like a pie rather than a bar. --p is written by the engine. */
+.live-wedge{position:absolute;width:74%;aspect-ratio:1;border-radius:50%;
+  background:conic-gradient(from -90deg,rgba(255,255,255,.15) calc(var(--p,0) * 1%),transparent 0)}
+.live-orb{position:absolute;border-radius:50%;background:rgba(255,255,255,.34);
+  animation:live-float 7s var(--e-io) infinite}
+.live-orb-1{width:11px;height:11px;top:26%;left:18%}
+.live-orb-2{width:13px;height:13px;top:16%;right:22%;animation-delay:-2.4s}
+.live-orb-3{width:15px;height:15px;bottom:22%;left:26%;animation-delay:-4.8s}
+@keyframes live-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
+.live-mid{position:relative;display:grid;justify-items:center;gap:2px;text-align:center}
+.live-pct{display:flex;align-items:flex-start;color:#fff;line-height:1}
+.live-pct b{font-family:var(--font-body);font-weight:600;font-size:clamp(52px,7vw,76px);
+  letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.live-pct i{font-style:normal;font-size:22px;font-weight:500;margin-top:6px;
+  color:rgba(255,255,255,.72)}
+.live-stage{margin-top:12px;font-size:16px;color:rgba(255,255,255,.9)}
+.live-target{margin-top:18px;max-width:100%;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;border:1px solid rgba(255,255,255,.24);border-radius:10px;
+  padding:8px 16px;font-family:var(--font-mono);font-size:13px;color:rgba(255,255,255,.86)}
+
+/* ── right · checklist ── */
+.live-side{display:flex;flex-direction:column;min-width:0}
+.live-checks{display:grid;gap:14px}
+.live-check{display:grid;grid-template-columns:18px 1fr auto;gap:14px;align-items:center;
+  font-size:15px;color:var(--ink-3);transition:color .3s ease}
+.live-check.is-live,.live-check.is-done{color:var(--ink)}
+.live-ic{position:relative;width:18px;height:18px;display:grid;place-items:center}
+.live-ic::before{content:'';position:absolute;inset:0;border-radius:50%;
+  border:1.6px solid var(--line-2)}
+/* One open quadrant + a spin is the only motion in the list — it reads as
+   "this one is working" without needing a colour change to carry it. */
+.live-check.is-live .live-ic::before{border-color:var(--g600);
+  border-right-color:transparent;border-bottom-color:transparent;
+  animation:live-spin 1s linear infinite}
+.live-check.is-done .live-ic::before{border:none}
+.live-ic-tick{width:18px;height:18px;opacity:0;transform:scale(.6);
+  transition:opacity .25s ease,transform .3s var(--e-back)}
+.live-check.is-done .live-ic-tick{opacity:1;transform:scale(1)}
+.live-ic-tick circle{fill:var(--g600)}
+.live-ic-tick path{fill:none;stroke:#fff;stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round}
+@keyframes live-spin{to{transform:rotate(360deg)}}
+.live-check-p{font-family:var(--font-mono);font-size:12.5px;color:var(--ink-3);
+  font-variant-numeric:tabular-nums}
+
+.live-bar{margin:20px 0 18px;height:3px;border-radius:2px;background:var(--line);
+  overflow:hidden}
+.live-bar > i{display:block;height:100%;width:0;border-radius:2px;background:var(--g700)}
+
+/* ── right · live trace ── */
+.live-trace{flex:1;min-height:0;display:flex;flex-direction:column;
+  border:1px solid var(--line);border-radius:14px;background:var(--bg-2);overflow:hidden}
+.live-trace-head{flex:none;display:flex;align-items:center;justify-content:space-between;
+  padding:11px 16px;border-bottom:1px solid var(--line);
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--ink-3)}
+.live-trace-dot{width:6px;height:6px;border-radius:50%;background:var(--g400);
+  animation:live-pulse 1.6s ease-in-out infinite}
+@keyframes live-pulse{0%,100%{opacity:.3}50%{opacity:1}}
+.live-trace-list{flex:1;min-height:132px;padding:10px 16px;display:flex;
+  flex-direction:column;justify-content:flex-end;gap:7px;overflow:hidden}
+.live-trace-list li{display:grid;grid-template-columns:38px 54px 1fr;gap:12px;
+  font-family:var(--font-mono);font-size:12.5px;line-height:1.4;color:var(--ink-2);
+  animation:live-in .32s var(--e-out) both}
+.live-trace-list .lt-t{color:var(--ink-3);font-variant-numeric:tabular-nums}
+.live-trace-list .lt-k{color:var(--g600)}
+@keyframes live-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── footer state chip ── */
+.live-state{flex:none;display:inline-flex;align-items:center;gap:9px;white-space:nowrap;
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3)}
+.live-state[hidden]{display:none}
+.live-state > i{width:6px;height:6px;border-radius:50%;background:var(--g400);
+  animation:live-pulse 1.6s ease-in-out infinite}
+.live-state.is-done > i{background:var(--g600);animation:none}
+.live-state.is-done{color:var(--g700)}
+
+@media(prefers-reduced-motion:reduce){
+  .live-orb,.live-trace-dot,.live-state > i{animation:none}
+  .live-check.is-live .live-ic::before{animation:none}
+  .live-trace-list li{animation:none}
+}
+
+/* ════════════════════════════════════════════════════════════
+   screen 3 · report
+   Written by hand, not measured. See the note in the markup.
+   ════════════════════════════════════════════════════════════ */
+.surface-modal.is-report{width:min(1180px,calc(100vw - 40px))}
+.surface-report{overflow-y:auto}
+.rep-grid{display:grid;grid-template-columns:minmax(0,1.62fr) minmax(0,1fr);align-items:start}
+.rep-main{padding:34px 34px 30px;min-width:0}
+/* The sidebar is a different surface, not a different card — one rule, no gap,
+   so the report reads as a single sheet with a margin column. */
+.rep-side{padding:34px 30px 30px;min-width:0;background:var(--bg-2);
+  border-left:1px solid var(--line);align-self:stretch}
+
+.rep-kicker{display:block;font-family:var(--font-mono);font-size:11px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.rep-target{display:flex;align-items:center;gap:12px;margin:14px 0 0;
+  font-family:var(--font-mono);font-weight:500;font-size:26px;letter-spacing:-.02em;
+  color:var(--ink);word-break:break-all;line-height:1.2}
+.rep-dot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--signal);
+  box-shadow:0 0 0 4px rgba(181,101,29,.15)}
+.rep-meta{margin-top:12px;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;
+  line-height:1.8;text-transform:uppercase;color:var(--ink-3)}
+
+/* ── summary cards ── */
+.rep-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  margin-top:26px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.rep-cards li{display:grid;align-content:start;gap:6px;padding:20px 20px 20px 0;min-width:0}
+.rep-cards li + li{padding-left:20px;border-left:1px solid var(--line)}
+.rep-card-l{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);line-height:1.5}
+.rep-cards b{font-family:var(--font-body);font-weight:600;font-size:34px;
+  letter-spacing:-.02em;color:var(--ink);line-height:1.05}
+/* The one number that asks for action gets the page's only signal colour. */
+.rep-cards b.is-sig{color:var(--signal)}
+.rep-card-d{font-size:13.5px;line-height:1.5;color:var(--ink-2)}
+
+/* ── findings ── */
+.rep-sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  margin-top:26px;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3)}
+.rep-count b{color:var(--ink);font-weight:500}
+.rep-list{margin-top:14px}
+.rep-find{display:grid;grid-template-columns:auto 1fr auto;gap:0 16px;align-items:start;
+  padding:16px 0;border-top:1px solid var(--line)}
+.rep-find:first-child{border-top:none}
+/* Severity is carried by a rule down the left edge as well as the word, so the
+   list can be skimmed without reading every label. */
+.rep-sev{grid-row:1 / span 2;align-self:stretch;display:grid;align-content:start;gap:10px;
+  padding-left:14px;border-left:2px solid var(--line-2);min-width:96px}
+.rep-find.is-critical .rep-sev,.rep-find.is-high .rep-sev{border-left-color:var(--signal)}
+.rep-find.is-medium .rep-sev{border-left-color:#d6a25e}
+.rep-sev-l{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3)}
+.rep-find.is-critical .rep-sev-l,.rep-find.is-high .rep-sev-l{color:var(--signal)}
+.rep-tag{justify-self:start;font-family:var(--font-mono);font-size:11px;color:var(--ink-2);
+  background:var(--bg-2);border:1px solid var(--line);border-radius:7px;padding:3px 9px;
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rep-find-t{font-size:16.5px;color:var(--ink);line-height:1.35}
+.rep-find-d{grid-column:2;font-size:14px;line-height:1.55;color:var(--ink-2);margin-top:5px}
+.rep-asset{justify-self:end;font-family:var(--font-mono);font-size:12.5px;color:var(--ink-3);
+  max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── sidebar · risk gauge ── */
+.rep-risk{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.rep-gauge{width:88px;height:88px;flex:none}
+/* Only the arcs are rotated to start the sweep at 12 o'clock — rotating the
+   whole <svg> would take the number round with it. */
+.rep-gauge circle{fill:none;stroke-width:7;stroke-linecap:round;
+  transform:rotate(-90deg);transform-origin:44px 44px}
+.rep-gauge-bg{stroke:var(--line)}
+/* 38r → 238.76 circumference; the engine writes the dash offset for the score */
+.rep-gauge-fg{stroke:var(--signal);stroke-dasharray:238.76;stroke-dashoffset:238.76;
+  transition:stroke-dashoffset 1.1s var(--e-out)}
+.rep-gauge-n{font-family:var(--font-body);font-weight:600;font-size:26px;fill:var(--ink)}
+.rep-risk-t{display:block;font-size:18px;color:var(--ink);line-height:1.3}
+.rep-risk-d{margin-top:7px;font-size:13.5px;line-height:1.55;color:var(--ink-2)}
+
+/* ── sidebar · coverage ── */
+.rep-side-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+  margin-top:26px;padding-top:20px;border-top:1px solid var(--line);
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3)}
+.rep-cov{display:grid;gap:13px;margin-top:16px}
+.rep-cov li{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:baseline}
+.rep-cov-n{font-size:14px;color:var(--ink)}
+.rep-cov-s{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3)}
+.rep-cov li.is-fail .rep-cov-s{color:var(--signal)}
+.rep-cov-bar{grid-column:1 / -1;height:2px;border-radius:1px;background:var(--line)}
+.rep-cov-bar > i{display:block;height:100%;border-radius:1px;background:var(--g600)}
+.rep-cov li.is-fail .rep-cov-bar > i{background:var(--signal)}
+.rep-cov li.is-watch .rep-cov-bar > i{background:var(--g400)}
+
+/* ── sidebar · recommendation + download ── */
+.rep-rec{margin-top:26px;padding-top:20px;border-top:1px solid var(--line)}
+.rep-rec-t{display:flex;align-items:center;gap:9px;font-family:var(--font-mono);
+  font-size:10.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--signal)}
+.rep-rec-t > i{width:7px;height:7px;background:var(--signal);transform:rotate(45deg)}
+.rep-rec p{margin-top:11px;font-size:13.5px;line-height:1.6;color:var(--ink-2)}
+.rep-dl{margin-top:24px;padding:18px;border:1px solid var(--line);border-radius:14px;
+  background:var(--paper);display:grid;gap:4px}
+.rep-dl-t{font-size:14.5px;font-weight:500;color:var(--ink)}
+.rep-dl-m{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3)}
+.rep-dl-b{margin-top:12px;width:100%;cursor:pointer;background:var(--g900);color:#fff;
+  border-radius:11px;padding:11px 18px;font-family:var(--font-body);font-weight:500;
+  font-size:14px;transition:background .25s ease}
+.rep-dl-b:hover{background:var(--g800)}
+.rep-dl-n{margin-top:9px;font-size:12px;line-height:1.5;color:var(--ink-3)}
+
+@media(prefers-reduced-motion:reduce){
+  .rep-gauge-fg{transition:none}
+}
+
+/* One column below 960 — the sidebar's bars and the findings list both stop
+   being readable before that, and the sidebar drops under the report. */
+@media(max-width:960px){
+  .rep-grid{grid-template-columns:1fr}
+  .rep-side{border-left:none;border-top:1px solid var(--line)}
+  .rep-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rep-cards li:nth-child(odd){padding-left:0;border-left:none}
+  .rep-cards li:nth-child(n+3){border-top:1px solid var(--line)}
+}
+
+/* One column below 860 — two 1fr columns would put the trace box at ~200px,
+   which is narrower than the lines it has to print. */
+@media(max-width:860px){
+  .live-grid{grid-template-columns:1fr;gap:20px}
+  .live-dial{min-height:300px}
+}
 @media(max-width:600px){
-  .surface-modal{padding:26px 20px 20px}
+  .surface-body{padding:28px 22px 24px}
+  .surface-foot{padding:14px 22px;gap:12px}
+  .surface-live{padding:20px 18px 18px}
+  .surface-desc{font-size:15px;margin:14px 0 22px}
+  .surface-checks{gap:14px;margin-top:24px}
   .surface-modal h3{font-size:22px}
   .surface-field{flex-wrap:wrap}
   .surface-run{width:100%;justify-content:center}
+  .live-trace-list li{grid-template-columns:34px 46px 1fr;gap:9px;font-size:11.5px}
+  .rep-main{padding:26px 22px 22px}
+  .rep-side{padding:26px 22px 24px}
+  .rep-target{font-size:21px}
+  .rep-cards{grid-template-columns:1fr}
+  .rep-cards li{padding:16px 0 !important;border-left:none !important}
+  .rep-cards li + li{border-top:1px solid var(--line)}
+  /* the asset drops under the finding rather than squeezing the title */
+  .rep-find{grid-template-columns:auto 1fr}
+  .rep-asset{grid-column:2;justify-self:start;margin-top:6px;max-width:100%}
+  .rep-sev{min-width:80px}
 }
 
 /* ── create-account modal (opened from "Sign up") ── */

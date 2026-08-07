@@ -17,21 +17,152 @@
   </a>
 </div>
 
-<!-- surface-check modal, opened from the ribbon -->
+<!-- surface-check modal, opened from the ribbon. The submitted host is validated
+     in the browser and handed to /assessment; nothing is scanned from here. -->
 <div class="surface-scrim" id="surfaceScrim" aria-hidden="true"></div>
 <div class="surface-modal" id="surfaceModal" role="dialog" aria-modal="true" aria-labelledby="surfaceTitle" aria-hidden="true">
   <button class="surface-x" id="surfaceX" aria-label="Close">
     <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M2 2l10 10M12 2 2 12" stroke-linecap="round"/></svg>
   </button>
-  <span class="surface-kicker" data-i18n="surface.kicker">Surface check</span>
-  <h3 id="surfaceTitle" data-i18n="surface.title">See what your AI exposes</h3>
-  <p class="surface-desc" data-i18n="surface.desc">Point us at a public endpoint. We map the models, agents and prompts behind it, then rank what an attacker would reach for first.</p>
-  <div class="surface-field">
-    <span class="surface-proto">https://</span>
-    <input class="surface-input" type="text" placeholder="your-app.com/chat" aria-label="Endpoint URL" spellcheck="false" />
-    <button class="surface-run" type="button"><span data-i18n="surface.cta">Run check</span> <span class="arw" aria-hidden="true">→</span></button>
+  <div class="surface-body" id="surfaceBody">
+    <span class="surface-kicker" data-i18n="surface.kicker">AI attack surface assessment</span>
+    <h3 id="surfaceTitle" data-i18n="surface.title">Discover Your AI Attack Surface</h3>
+    <p class="surface-desc" data-i18n="surface.desc">Assess your organization's publicly accessible AI infrastructure, identify deployed technologies, detect security weaknesses, and generate evidence-backed findings from a single endpoint.</p>
+    <!-- novalidate: the browser's own bubble can't be translated or styled, so
+         the check runs in the engine and reports into .surface-err instead. -->
+    <form class="surface-form" id="surfaceForm" novalidate>
+      <div class="surface-field" id="surfaceFieldWrap">
+        <span class="surface-proto">https://</span>
+        <input class="surface-input" id="surfaceInput" type="text" placeholder="your-company.ai" aria-label="Endpoint URL" aria-describedby="surfaceErr" spellcheck="false" autocomplete="off" autocapitalize="off" />
+        <button class="surface-run" type="submit"><span data-i18n="surface.cta">Start Assessment</span> <span class="arw" aria-hidden="true">→</span></button>
+      </div>
+      <p class="surface-err" id="surfaceErr" role="alert" data-i18n="surface.err" hidden>Enter a valid domain, for example your-company.ai</p>
+    </form>
+    <ul class="surface-checks">
+      <li><svg class="surface-tick" viewBox="0 0 14 12" aria-hidden="true"><path d="M1 6.2 5 10.4 13 1.6"/></svg><span data-i18n="surface.c1">Discovers exposed domains, subdomains, hosts, and AI-facing infrastructure.</span></li>
+      <li><svg class="surface-tick" viewBox="0 0 14 12" aria-hidden="true"><path d="M1 6.2 5 10.4 13 1.6"/></svg><span data-i18n="surface.c2">Fingerprints technologies, AI frameworks, APIs, SDKs, and externally accessible services.</span></li>
+      <li><svg class="surface-tick" viewBox="0 0 14 12" aria-hidden="true"><path d="M1 6.2 5 10.4 13 1.6"/></svg><span data-i18n="surface.c3">Detects known vulnerabilities, configuration weaknesses, and exposed attack surfaces.</span></li>
+      <li><svg class="surface-tick" viewBox="0 0 14 12" aria-hidden="true"><path d="M1 6.2 5 10.4 13 1.6"/></svg><span data-i18n="surface.c4">Validates findings and prioritizes risks based on severity and exploitability.</span></li>
+      <li><svg class="surface-tick" viewBox="0 0 14 12" aria-hidden="true"><path d="M1 6.2 5 10.4 13 1.6"/></svg><span data-i18n="surface.c5">Generates an evidence-backed security assessment with actionable remediation guidance.</span></li>
+    </ul>
   </div>
-  <span class="surface-note" data-i18n="surface.note">Illustrative preview. Nothing is sent from your browser.</span>
+  <!-- ── screen 2 · live assessment. Swapped in place of .surface-body when a
+       host is accepted. The run is an animation on a fixed script: no request
+       leaves the browser and none of the numbers are measured. ── -->
+  <div class="surface-live" id="surfaceLive" hidden>
+    <div class="live-grid">
+
+      <!-- left · dial -->
+      <div class="live-dial">
+        <span class="live-dial-grid" aria-hidden="true"></span>
+        <span class="live-ring live-ring-1" aria-hidden="true"></span>
+        <span class="live-ring live-ring-2" aria-hidden="true"></span>
+        <span class="live-wedge" id="liveWedge" aria-hidden="true"></span>
+        <span class="live-orb live-orb-1" aria-hidden="true"></span>
+        <span class="live-orb live-orb-2" aria-hidden="true"></span>
+        <span class="live-orb live-orb-3" aria-hidden="true"></span>
+        <div class="live-mid">
+          <span class="live-pct"><b id="livePct">0</b><i>%</i></span>
+          <span class="live-stage" id="liveStage">Initializing assessment</span>
+          <span class="live-target" id="liveTarget"></span>
+        </div>
+      </div>
+
+      <!-- right · checklist, bar, trace -->
+      <div class="live-side">
+        <ul class="live-checks" id="liveChecks">
+          <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k1">Discovering attack surface</span><span class="live-check-p"></span></li>
+          <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k2">Fingerprinting technologies</span><span class="live-check-p"></span></li>
+          <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k3">Enumerating AI assets</span><span class="live-check-p"></span></li>
+          <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k4">Scanning for vulnerabilities</span><span class="live-check-p"></span></li>
+          <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k5">Validating findings</span><span class="live-check-p"></span></li>
+          <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k6">Generating assessment report</span><span class="live-check-p"></span></li>
+        </ul>
+
+        <div class="live-bar" role="progressbar" id="liveBar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
+
+        <div class="live-trace">
+          <div class="live-trace-head">
+            <span data-i18n="live.trace">Live trace</span>
+            <span class="live-trace-dot" aria-hidden="true"></span>
+          </div>
+          <!-- aria-live off: the lines land faster than a screen reader can
+               read them, and the checklist above already carries the state. -->
+          <ul class="live-trace-list" id="liveTrace" aria-hidden="true"></ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── screen 3 · report. Appears when the scripted run reaches 100%.
+       Every figure below is written into the page by hand; nothing here was
+       measured, scored or found. The footer says so and must keep saying so
+       for as long as that stays true. ── -->
+  <div class="surface-report" id="surfaceReport" hidden>
+    <div class="rep-grid">
+
+      <!-- left · report body -->
+      <div class="rep-main">
+        <span class="rep-kicker" data-i18n="rep.kicker">Assessment report</span>
+        <h3 class="rep-target"><span class="rep-dot" aria-hidden="true"></span><span id="repTarget"></span></h3>
+        <p class="rep-meta"><span data-i18n="rep.sub">External security assessment</span> · <span id="repMeta"></span></p>
+
+        <ul class="rep-cards">
+          <li><span class="rep-card-l" data-i18n="rep.c1">Attack surface</span><b>27</b><span class="rep-card-d" data-i18n="rep.c1d">Public endpoints, APIs, hosts and AI services</span></li>
+          <li><span class="rep-card-l" data-i18n="rep.c2">Detected assets</span><b>148</b><span class="rep-card-d" data-i18n="rep.c2d">Domains, services, models and dependencies</span></li>
+          <li><span class="rep-card-l" data-i18n="rep.c3">Validated findings</span><b>18</b><span class="rep-card-d" data-i18n="rep.c3d">CVEs, misconfigurations, exposed services</span></li>
+          <li><span class="rep-card-l" data-i18n="rep.c4">Priority remediations</span><b class="is-sig">4</b><span class="rep-card-d" data-i18n="rep.c4d">Immediate remediation recommended</span></li>
+        </ul>
+
+        <div class="rep-sec-head">
+          <span data-i18n="rep.findings">Validated findings</span>
+          <span class="rep-count"><b>8</b> <span data-i18n="rep.total">total</span></span>
+        </div>
+        <ul class="rep-list" id="repList"></ul>
+      </div>
+
+      <!-- right · risk, coverage, recommendation, download -->
+      <aside class="rep-side">
+        <div class="rep-risk">
+          <svg class="rep-gauge" viewBox="0 0 88 88" role="img" aria-label="Risk score 62 of 100">
+            <circle class="rep-gauge-bg" cx="44" cy="44" r="38"/>
+            <circle class="rep-gauge-fg" cx="44" cy="44" r="38"/>
+            <text class="rep-gauge-n" x="44" y="44" text-anchor="middle" dominant-baseline="central">62</text>
+          </svg>
+          <div class="rep-risk-txt">
+            <span class="rep-risk-t" data-i18n="rep.risk">Attack surface risk</span>
+            <p class="rep-risk-d" data-i18n="rep.riskd">Calculated from validated findings, exposed services, detected vulnerabilities, and attack surface complexity.</p>
+          </div>
+        </div>
+
+        <div class="rep-side-head">
+          <span data-i18n="rep.cov">Security assessment coverage</span>
+          <span class="rep-count"><b>10</b> <span data-i18n="rep.tested">tested</span></span>
+        </div>
+        <ul class="rep-cov" id="repCov"></ul>
+
+        <div class="rep-rec">
+          <span class="rep-rec-t"><i aria-hidden="true"></i><span data-i18n="rep.rec">Highest priority recommendation</span></span>
+          <p data-i18n="rep.recb">Remediate critical vulnerabilities affecting externally accessible services before addressing medium and low-risk findings. Prioritize issues that enable unauthorized access or remote code execution.</p>
+        </div>
+
+        <div class="rep-dl">
+          <span class="rep-dl-t" data-i18n="rep.dl">Security assessment report</span>
+          <span class="rep-dl-m"><span data-i18n="rep.pdf">PDF</span> · <span data-i18n="rep.evid">Evidence included</span></span>
+          <button class="rep-dl-b" type="button" id="repDl"><span data-i18n="rep.dlb">Download report</span></button>
+          <!-- Stated up front rather than on click: a button that silently does
+               nothing reads as broken, and there is no file to hand over. -->
+          <span class="rep-dl-n" data-i18n="rep.dln">Preview only — no file is generated.</span>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="surface-foot">
+    <span class="surface-note" id="surfaceNote" data-i18n="surface.note">Read-only external assessment. No credentials required. No production traffic modified.</span>
+    <span class="live-state" id="liveState" hidden><i aria-hidden="true"></i><span data-i18n="live.running">Assessment running</span></span>
+  </div>
 </div>
 
 <!-- create-account modal, opened from the "Sign up" nav link -->
