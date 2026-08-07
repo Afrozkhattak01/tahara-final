@@ -1,11 +1,23 @@
 
 <!-- ambient background -->
 <div class="bg" aria-hidden="true"></div>
-<canvas id="scene3d" aria-hidden="true"></canvas>
-<div class="bg-blob blob-1" aria-hidden="true"></div>
-<div class="bg-blob blob-2" aria-hidden="true"></div>
-<div class="bg-blob blob-3" aria-hidden="true"></div>
-<div class="bg-grid" aria-hidden="true"></div>
+<!-- Survey field: a major grid with a fine dot matrix inside each cell. Drawn
+     twice — .is-sharp is masked out of the middle of the viewport, .is-soft is
+     masked to only the middle and blurred, so the field stays crisp out at the
+     corners and goes quiet behind the headline and the dashboard. The two
+     masks are complements of one another, so they meet without a seam.
+     Opacity is driven by --field-o, which the engine winds down to 0 across
+     the statement section — the field belongs to the first three sections. -->
+<div class="field" id="field" aria-hidden="true">
+  <span class="field-grid is-sharp"></span>
+  <span class="field-grid is-soft"></span>
+  <span class="field-dot" style="--x:13%;--y:22%"></span>
+  <span class="field-dot" style="--x:27%;--y:63%"></span>
+  <span class="field-dot" style="--x:8%;--y:81%"></span>
+  <span class="field-dot" style="--x:72%;--y:17%"></span>
+  <span class="field-dot" style="--x:88%;--y:48%"></span>
+  <span class="field-dot" style="--x:79%;--y:86%"></span>
+</div>
 <div class="bg-noise" aria-hidden="true"></div>
 
 <!-- ══════════ announcement ══════════ -->

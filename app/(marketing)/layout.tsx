@@ -54,8 +54,11 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link rel="preconnect" href="https://cdn.simpleicons.org" />
+      {/* Archivo 700 is loaded for the closing CTA heading, the one heading on
+          the page set in the sans. Without it the browser synthesises a bold by
+          smearing the 600, which at 56px is plainly visible. */}
       <link
-        href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Libre+Caslon+Text:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Libre+Caslon+Text:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
         rel="stylesheet"
       />
       {children}
