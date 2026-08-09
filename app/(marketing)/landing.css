@@ -429,10 +429,22 @@ code,pre{font-family:var(--font-mono)}
   line-height:1.8;text-transform:uppercase;color:var(--ink-3)}
 
 /* ── summary cards ── */
+/* Label, number and description sit in three rows shared by all four cards, not
+   in four independent stacks — "Priority remediations" wraps to two lines at
+   this width and would otherwise carry its number down below the other three. */
 .rep-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-rows:auto auto auto;row-gap:6px;
   margin-top:26px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.rep-cards li{display:grid;align-content:start;gap:6px;padding:20px 20px 20px 0;min-width:0}
+.rep-cards li{grid-row:1 / span 3;display:grid;grid-template-rows:subgrid;
+  align-content:start;padding:20px 20px 20px 0;min-width:0}
 .rep-cards li + li{padding-left:20px;border-left:1px solid var(--line)}
+/* The last card's right edge is the report's right edge, the same way the first
+   card's left edge is — otherwise the row stops 20px short of everything else. */
+.rep-cards li:last-child{padding-right:0}
+@supports not (grid-template-rows:subgrid){
+  .rep-cards{grid-template-rows:none}
+  .rep-cards li{grid-row:auto;grid-template-rows:none;gap:6px}
+}
 .rep-card-l{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.12em;
   text-transform:uppercase;color:var(--ink-3);line-height:1.5}
 .rep-cards b{font-family:var(--font-body);font-weight:600;font-size:34px;
@@ -446,10 +458,19 @@ code,pre{font-family:var(--font-mono)}
   margin-top:26px;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--ink-3)}
 .rep-count b{color:var(--ink);font-weight:500}
-.rep-list{margin-top:14px}
-.rep-find{display:grid;grid-template-columns:auto 1fr auto;gap:0 16px;align-items:start;
-  padding:16px 0;border-top:1px solid var(--line)}
+/* The three columns are sized once, on the list, rather than once per row —
+   each row used to measure its own severity column, so a long tag
+   (Configuration) pushed that row's title further right than a short one (TLS)
+   and the titles never lined up down the page. */
+.rep-list{margin-top:14px;display:grid;
+  grid-template-columns:max-content minmax(0,1fr) max-content;column-gap:16px}
+.rep-find{grid-column:1 / -1;display:grid;grid-template-columns:subgrid;
+  gap:0 16px;align-items:start;padding:16px 0;border-top:1px solid var(--line)}
 .rep-find:first-child{border-top:none}
+@supports not (grid-template-columns:subgrid){
+  .rep-list{display:block}
+  .rep-find{grid-template-columns:132px minmax(0,1fr) auto}
+}
 /* Severity is carried by a rule down the left edge as well as the word, so the
    list can be skimmed without reading every label. */
 .rep-sev{grid-row:1 / span 2;align-self:stretch;display:grid;align-content:start;gap:10px;
@@ -462,9 +483,13 @@ code,pre{font-family:var(--font-mono)}
 .rep-tag{justify-self:start;font-family:var(--font-mono);font-size:11px;color:var(--ink-2);
   background:var(--bg-2);border:1px solid var(--line);border-radius:7px;padding:3px 9px;
   max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rep-find-t{font-size:16.5px;color:var(--ink);line-height:1.35}
+/* Title and asset are different sizes on the same line, so they align on their
+   baseline — top-aligning two different type sizes leaves the smaller one
+   floating about 2px high. */
+.rep-find-t{align-self:baseline;font-size:16.5px;color:var(--ink);line-height:1.35}
 .rep-find-d{grid-column:2;font-size:14px;line-height:1.55;color:var(--ink-2);margin-top:5px}
-.rep-asset{justify-self:end;font-family:var(--font-mono);font-size:12.5px;color:var(--ink-3);
+.rep-asset{justify-self:end;align-self:baseline;
+  font-family:var(--font-mono);font-size:12.5px;line-height:1.35;color:var(--ink-3);
   max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* ── sidebar · risk gauge ── */
@@ -525,8 +550,12 @@ code,pre{font-family:var(--font-mono)}
 @media(max-width:960px){
   .rep-grid{grid-template-columns:1fr}
   .rep-side{border-left:none;border-top:1px solid var(--line)}
-  .rep-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  /* Two across, two down — the cards go back to standing on their own rows,
+     because at this width no label wraps and there is nothing to line up. */
+  .rep-cards{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none}
+  .rep-cards li{grid-row:auto;grid-template-rows:none;gap:6px}
   .rep-cards li:nth-child(odd){padding-left:0;border-left:none}
+  .rep-cards li:nth-child(even){padding-right:0}
   .rep-cards li:nth-child(n+3){border-top:1px solid var(--line)}
 }
 
@@ -671,11 +700,11 @@ code,pre{font-family:var(--font-mono)}
    nothing at the top of the strip, so rows do not meet a visible edge where
    the effect starts. Taller and blurrier than the panel needs strictly, so the
    composer sits on genuinely soft ground rather than on legible rows. */
-.dash-panel::after{content:'';position:absolute;inset:auto 0 0 0;height:260px;z-index:4;
-  pointer-events:none;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
-  -webkit-mask-image:linear-gradient(180deg,transparent,#000 58%);
-  mask-image:linear-gradient(180deg,transparent,#000 58%);
-  background:linear-gradient(180deg,rgba(247,248,253,0),rgba(247,248,253,.88) 52%,var(--d-fade) 90%)}
+.dash-panel::after{content:'';position:absolute;inset:auto 0 0 0;height:320px;z-index:4;
+  pointer-events:none;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 52%);
+  mask-image:linear-gradient(180deg,transparent,#000 52%);
+  background:linear-gradient(180deg,rgba(247,248,253,0),rgba(247,248,253,.9) 48%,var(--d-fade) 88%)}
 
 /* ── sidebar ── */
 .dash-side{background:#fff;border:1px solid var(--d-line);border-radius:18px;
@@ -914,20 +943,24 @@ code,pre{font-family:var(--font-mono)}
   transition:opacity .5s var(--e-out),transform .5s var(--e-out)}
 
 /* ── composer — frosted, floats over the panel ── */
-.dash-ask{position:absolute;left:50%;transform:translateX(-50%);bottom:22px;z-index:7;
+/* Sits down on the panel's own padding line, so the extra height it carries
+   grows the box both upward into the panel and downward toward the edge. */
+.dash-ask{position:absolute;left:50%;transform:translateX(-50%);bottom:16px;z-index:7;
   width:min(760px,calc(100% - 110px))}
 /* Whiter and more blurred than the strip behind it on purpose: the panel below
    is now soft enough that a translucent composer would read as part of the
-   haze. The extra opacity is what keeps it forward of its own backdrop. */
-.dash-ask-in{border:1px solid rgba(255,255,255,.86);border-radius:22px;padding:20px 22px 14px;
-  background:rgba(255,255,255,.86);
-  -webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7);
-  box-shadow:0 28px 64px -16px rgba(17,24,39,.28),0 2px 10px rgba(17,24,39,.06),
-             inset 0 1px 0 rgba(255,255,255,.75)}
+   haze. The extra opacity is what keeps it forward of its own backdrop — and
+   the shadow does the rest, so the box reads as an object lying on top of the
+   dashboard rather than a lighter patch of it. */
+.dash-ask-in{border:1px solid rgba(255,255,255,.92);border-radius:22px;padding:24px 24px 18px;
+  background:rgba(255,255,255,.94);
+  -webkit-backdrop-filter:blur(34px) saturate(1.8);backdrop-filter:blur(34px) saturate(1.8);
+  box-shadow:0 40px 80px -20px rgba(17,24,39,.34),0 8px 24px -8px rgba(17,24,39,.16),
+             0 2px 6px rgba(17,24,39,.06),inset 0 1px 0 rgba(255,255,255,.85)}
 /* min-height, not height: the box takes its size from this reserved space, so
    raising it grows the composer downward without the typed question having to
    fill it. Kept off the narrow layout below, where the panel has no room. */
-.dash-ask-q{font-size:16.5px;font-weight:600;color:var(--d-ink);line-height:1.5;min-height:6.6em;
+.dash-ask-q{font-size:16.5px;font-weight:600;color:var(--d-ink);line-height:1.5;min-height:8.6em;
   letter-spacing:-.005em}
 /* sized off .dash-ask-q — a caret shorter than its line reads as a stray tick */
 .dash-caret{display:inline-block;width:1.8px;height:18px;margin-left:2px;vertical-align:-3.5px;
@@ -1532,17 +1565,18 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
 
    Bottom, same problem as under the platform video: this band's 92px and the
    pinned block's own 48px stacked into ~140px of nothing between the last card
-   and the Architecture panel. 34px here plus the pin's 22px is enough to close
-   the section without the two running together. The media queries below only
-   ever reset padding-top, so this survives them. */
-#lifecycle{padding-top:0;padding-bottom:34px}
+   and the Architecture panel. Cut to 34+22, and now to 8px here plus the pin's
+   8px — the section border does the separating, so the padding only has to stop
+   the cards touching it. The media queries below only ever reset padding-top,
+   so this survives them. */
+#lifecycle{padding-top:0;padding-bottom:8px}
 .life-track{position:relative;height:260vh}
 /* flex-start, not center: centring in a 100vh box put 100-140px of slack above
    the heading on top of the padding, so the space under the video read as far
    larger than the space above the statement. Aligned to the top, the gap you
    see is the gap that is declared. */
 .life-pin{position:sticky;top:0;min-height:100vh;display:flex;flex-direction:column;
-  justify-content:flex-start;padding:28px 0 22px}
+  justify-content:flex-start;padding:28px 0 8px}
 .life-pin .head-row{margin-bottom:34px}
 /* The step-through is the only reason to hold the section. With reduced motion
    nothing advances, so a pin would just be 1.6 screens of dead scrolling.
@@ -1872,8 +1906,11 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
    down to the progress row. Same 1080px as .head so the heading holds one line. */
 .stack-intro{padding:0 0 20px;max-width:1080px}
 .stack-track{height:440vh;position:relative}
+/* Asymmetric on purpose: the panel centres its content between these two, so
+   the smaller top value pulls the Architecture heading up out of the gap the
+   lifecycle cards leave above it. */
 .stack-pin{position:sticky;top:0;height:100vh;min-height:600px;display:flex;align-items:center;
-  padding:40px 0 60px}
+  padding:16px 0 60px}
 .stack-pin > .wrap{width:100%;position:relative}
 /* The panel now carries the heading as well as the progress row and the stack.
    A short viewport can't hold all three at 100vh — the top would be clipped

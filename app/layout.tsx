@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import CookieBanner from '@/components/CookieBanner';
 
 // Root layout — deliberately minimal. It owns only <html>/<body> and shared
 // defaults. It imports NO global stylesheet, so the landing page's CSS reset
@@ -24,7 +25,13 @@ Cal("init", { origin: "https://cal.eu" });
           }}
         />
       </head>
-      <body>{children}</body>
+      {/* Mounted here rather than in a route group so the banner reaches every
+          page — marketing, /resources and /platform/governance alike. It brings
+          its own scoped CSS Module, so this stays free of a global stylesheet. */}
+      <body>
+        {children}
+        <CookieBanner />
+      </body>
     </html>
   );
 }

@@ -26,6 +26,7 @@ hand-built HTML + vanilla-JS design served through a thin React wrapper. Everyth
 new/other is standard React/Next.
 
 **Immediate open items / next steps:**
+
 1. **Build the Governance sub-pages** — the Governance page CTAs link to
    `/platform/governance/master` and `/platform/governance/specific`, which **don't
    exist yet → they 404.** Build these as normal React pages.
@@ -36,10 +37,15 @@ new/other is standard React/Next.
 3. **Translate new sections** — the dashboard, the "One record of truth" cards, and
    the surface-check modal are **English-only** (no Arabic yet). Everything else
    is EN/AR via the engine dictionary.
-4. **Push pending work** — lots of edits were made locally; run `git status` and
+4. **Finish the cookie consent work** — the **banner UI exists and is live on every
+   page**, but nothing behind it does. No consent is recorded, and the cal.com embed
+   still loads before anyone answers. See **"Cookie consent"** below for the exact
+   remaining steps.
+5. **Push pending work** — lots of edits were made locally; run `git status` and
    `git push` to deploy (auto-deploys) if anything is uncommitted.
-5. **Optional cleanup** — delete the dead `_legacy/ components/ content/ lib/
-   styles/` folders (unused; already excluded from tsconfig).
+6. **Optional cleanup** — delete the dead `_legacy/ content/ lib/ styles/` folders
+   (unused; already excluded from tsconfig). ⚠️ **`components/` is no longer safe to
+   delete** — `CookieBanner.tsx` lives there and the root layout imports it.
 
 **How to run:** `cd` to repo root → `npm run dev` (edit) OR `npm run build && npm
 start` (real speed). ⚠️ Run **one at a time** — dev + build share `.next` and
@@ -55,15 +61,16 @@ Edit it in place. New features = standard React in their own route group.
 If asked "what's it built with": **"A Next.js (React) app in TypeScript; the
 landing page is HTML + CSS + vanilla JavaScript."**
 
-| Layer | Tech |
-| --- | --- |
-| Framework / lib | Next.js 14 (App Router), React 18 |
-| App shell / new pages | TypeScript (`.tsx` / `.jsx`) |
-| Landing markup | HTML (`app/(marketing)/tahara-body.html`) |
-| Landing engine | Vanilla JavaScript (`public/tahara-engine.js`, ~2000 lines) |
-| Styling | CSS (`landing.css`, `governance.css`) |
-| Fonts | Google Fonts — Plus Jakarta Sans (hero), Inter Tight, Inter, JetBrains Mono |
-| Icons | simpleicons.org CDN (connector marquee) |
+| Layer                 | Tech                                                                                                         |
+| --------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Framework / lib       | Next.js 14 (App Router), React 18                                                                            |
+| App shell / new pages | TypeScript (`.tsx` / `.jsx`)                                                                                 |
+| Landing markup        | HTML (`app/(marketing)/tahara-body.html`)                                                                    |
+| Landing engine        | Vanilla JavaScript (`public/tahara-engine.js`, ~2000 lines)                                                  |
+| Styling               | CSS (`landing.css`, `governance.css`) + one CSS Module (`CookieBanner.module.css`)                           |
+| Fonts                 | Google Fonts — Libre Caslon Text (display), Archivo (body), IBM Plex Mono (data), IBM Plex Sans Arabic (RTL) |
+| Icons                 | simpleicons.org CDN (connector marquee)                                                                      |
+| Third party           | cal.com embed (`app.cal.com/embed/embed.js`, loaded from the root layout)                                    |
 
 ---
 
@@ -73,6 +80,7 @@ landing page is HTML + CSS + vanilla JavaScript."**
 A large hand-tuned design driven by a ~2000-line vanilla-JS engine (canvas 3D
 background, scroll/assembly animations, rotating hero, EN/AR toggle, mega-menus,
 drawer, modals, the animated dashboard). Kept intact and served through React:
+
 - `app/(marketing)/page.tsx` — Server Component; reads `tahara-body.html` at build
   and passes it to the runtime (so markup is in the initial HTML; `/` is **static**).
 - `app/(marketing)/TaharaRuntime.tsx` — Client Component; injects the markup, then
@@ -95,6 +103,7 @@ on `/`. New pages never import `landing.css` or `tahara-engine.js`.
 ```
 app/
   layout.tsx                    minimal ROOT layout (html/body, NO global CSS)
+                                — also mounts <CookieBanner /> + the cal.com loader
   (marketing)/                  route group — "()" adds no URL, serves at "/"
     layout.tsx                  loads landing CSS + fonts + metadata (scoped)
     page.tsx                    Server Component — reads tahara-body.html
@@ -106,6 +115,11 @@ app/
       page.jsx                  → /platform/governance (real React page)
       governance.css            scoped styles
 
+components/
+  CookieBanner.tsx              ← LIVE — cookie banner, imported by the ROOT layout
+  CookieBanner.module.css       ← its scoped styles (a CSS Module, not global CSS)
+  everything else here          DEAD (Header.tsx, sections/, LanguageProvider, …)
+
 public/
   tahara-engine.js              ← landing ENGINE (must stay here; loaded as /tahara-engine.js)
 
@@ -113,9 +127,19 @@ next.config.mjs                 Next config (images.remotePatterns: cdn.simpleic
 vercel.json                     pins framework=nextjs (fixes Vercel serving-as-static bug)
 tsconfig.json                   excludes _legacy/components/content/lib/styles
 
-_legacy/ components/ content/ lib/ styles/ scripts/   DEAD — unused by the live app,
-                                excluded from tsconfig, safe to delete
+_legacy/ content/ lib/ styles/ scripts/   DEAD — unused by the live app, excluded
+                                from tsconfig, safe to delete
 ```
+
+> ⚠️ **`components/` used to be dead and is not any more.** Before the cookie banner,
+> `app/` imported nothing from it. Deleting the folder now breaks the build. Only
+> `CookieBanner.tsx` + `CookieBanner.module.css` are live; the rest is still dead.
+>
+> Note `components/` is still in **tsconfig's `exclude` list**. The banner is
+> type-checked anyway, because `tsc` follows the import from `app/layout.tsx` — but
+> nothing else in that folder is. If more live components move here, drop
+> `"components"` from `exclude` (expect errors from the dead files) or move the
+> banner into `app/`.
 
 > The three landing files work together: **markup** (`tahara-body.html`) +
 > **engine** (`tahara-engine.js`) + **styles** (`landing.css`).
@@ -126,7 +150,7 @@ _legacy/ components/ content/ lib/ styles/ scripts/   DEAD — unused by the liv
 
 - **Ribbon:** navy "FREE" badge + "Run an AI surface check on your endpoint →".
   Clicking it opens the **surface-check modal** ("See what your AI exposes", input
-  + illustrative "Run check").
+  - illustrative "Run check").
 - **Header/nav:** brand, Platform (mega-menu), Lifecycle, Architecture, **Resources
   (compact dropdown)**, FAQ, EN/AR toggle, Sign in, Request a demo.
   - Platform mega-menu "Applicability engine" → `/platform/governance`.
@@ -160,11 +184,11 @@ tokens. CTAs → `/master` and `/specific` (not built yet).
 
 ## Editing the landing page
 
-| To change… | Edit… |
-| --- | --- |
-| Text / markup / structure | `app/(marketing)/tahara-body.html` |
-| Translated text (EN/AR), menu data, rotating words, dashboard data | `public/tahara-engine.js` |
-| Colors / fonts / spacing / layout | `app/(marketing)/landing.css` |
+| To change…                                                         | Edit…                              |
+| ------------------------------------------------------------------ | ---------------------------------- |
+| Text / markup / structure                                          | `app/(marketing)/tahara-body.html` |
+| Translated text (EN/AR), menu data, rotating words, dashboard data | `public/tahara-engine.js`          |
+| Colors / fonts / spacing / layout                                  | `app/(marketing)/landing.css`      |
 
 **⚠️ i18n gotcha:** elements with `data-i18n="key"` get their text from a dictionary
 in `tahara-engine.js` at load — editing the HTML alone is overwritten. Change the
@@ -178,6 +202,89 @@ the hero rotating-word IIFE, the surface-modal IIFE, the platform count-up IIFE.
 **After editing `tahara-body.html` or `landing.css` → rebuild** (they're read at
 build time). `tahara-engine.js` is served static, but for the prod server you
 rebuild anyway.
+
+---
+
+## Cookie consent
+
+**Status: front end only. The banner is live; nothing behind it is.**
+
+### What exists
+
+| File                                 | What it is                                                                                                                                                                  |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `components/CookieBanner.tsx`        | The banner. Client Component, mounted from the **root** layout so it appears on every route — landing, `/resources`, `/platform/governance`.                                |
+| `components/CookieBanner.module.css` | Scoped styles. A **CSS Module** on purpose: the root layout imports no global CSS, and the module keeps the banner from leaking into the landing reset or `governance.css`. |
+
+Design notes worth keeping if it gets rewritten:
+
+- Palette values are **restated** in the module, not read from `landing.css` custom
+  properties — those only exist inside the `(marketing)` route group, so the banner
+  would render unstyled on `/platform/governance` if it depended on them.
+- **EN/AR automatic.** A `MutationObserver` watches `dir`/`lang` on `<html>`, which
+  covers both language systems (the engine on `/`, `LanguageProvider` elsewhere)
+  without the banner knowing which is driving. Positioned with `inset-inline-start`
+  so it moves to the opposite corner under RTL.
+- **`z-index: 118`** — deliberately _below_ the surface/account modals (121–131), so
+  an open dialog covers it instead of the card floating over its scrim.
+- **Accept and reject are equal size, same row.** An easier accept than reject is the
+  most common way a consent banner is found non-compliant.
+- Appears after a **1.2s delay** so it doesn't land on the landing page's intro run.
+
+### What does NOT exist yet
+
+1. **No consent is recorded.** Both buttons do the same thing — dismiss and set a
+   localStorage flag, `tahara-cookie-banner-dismissed`. Named that way on purpose so
+   nobody mistakes it for a consent record. Nothing reads it to decide anything.
+2. **cal.com is not gated.** `app/layout.tsx` injects `app.cal.com/embed/embed.js`
+   into `<head>` on **every page, on load**, before the visitor answers. This is the
+   one third-party script on the site and the entire reason the banner exists.
+3. **The policy link 404s.** It points at `/privacy`, which isn't built.
+4. **No way to change your mind** — no "Cookie settings" link anywhere.
+5. Banner strings are **inline in the component**, not in `content/i18n.ts` where the
+   rest of the translations live. The Arabic has not been reviewed by a native speaker.
+
+### Procedure to finish it
+
+**Step 0 — scope.** The non-essential list is exactly one item: the cal.com embed.
+No analytics, no ads, no pixels. `tahara-lang` is a user-set preference (functional,
+stays exempt) — document it, don't gate it.
+
+**Step 1 — real cookie.** Replace the localStorage flag with `tahara-consent`.
+Version the value (`v1:…`) so you can re-ask when the cookie set changes.
+`Max-Age` ~6 months, `SameSite=Lax`, `Secure`, `Path=/`, and **not `HttpOnly`** —
+client JS has to read it to decide whether to load a script. That flag is the one
+people get wrong.
+
+**Step 2 — gate client-side, not server-side.** `/` is **statically prerendered**
+(`○ /` in the build output). Calling `cookies()` in `app/layout.tsx` makes the whole
+tree dynamic and gives up CDN delivery. Read the cookie in a Client Component instead
+and keep the static render.
+
+**Step 3 — cal.com.** Move the inline script out of `app/layout.tsx`.
+⚠️ **cal.com _is_ the demo booking** — `data-cal-link` is on buttons in
+`tahara-body.html`, the governance page and the resources pages. Gate it naively and
+every "Request a demo" button silently dies for anyone who rejects.
+
+Recommended instead: **load `embed.js` on first click of a demo button.** A widget the
+visitor explicitly asked for is generally treated as necessary for a service they
+requested, so it needs no consent — _and_ the script stops shipping to every visitor
+who never books. The catch: `embed.js` auto-binds `data-cal-link` at load, so
+click-to-load means intercepting the click, loading the script, then opening the modal
+yourself. That's the only fiddly part of this job.
+
+**Step 4 — withdrawal.** A "Cookie settings" link in the footer that reopens the
+banner. Withdrawing has to be as easy as consenting.
+
+**Step 5 — policy page.** `/privacy` (or `/cookies`), listing each cookie: name,
+purpose, duration, who sets it.
+
+**Step 6 — optional consent log.** A `app/api/consent/route.ts` recording timestamp +
+version + choices, if you want the evidence trail the product itself is about. Note
+that logging IP/user-agent is personal data with its own basis and retention questions.
+
+> Engineering guidance, not legal advice — confirm the specifics for your markets with
+> someone qualified.
 
 ---
 
@@ -199,11 +306,22 @@ rebuild anyway.
    stop servers, delete `.next`, restart **one** mode.
 8. **Repo history:** the app was **flattened** to the repo root (it used to be
    nested in a `tahara-next/` subfolder) so Vercel's Root Directory can be `./`.
+9. **cal.com loads pre-consent** — a third-party script fires on every page before
+   the visitor answers the cookie banner. Awkward for a company whose own product
+   sells "Cookie & consent — banner rules, tracker checks". See "Cookie consent".
+10. **`components/` is half-dead** — one live file (the cookie banner) in a folder
+    that is otherwise unused _and_ still listed in tsconfig's `exclude`.
+11. **`/logos/*.svg` all 404** — the connector marquee requests ~19 local logo files
+    (`anthropic`, `meta`, `okta`, `datadog`, …) that aren't in `public/`. Visible in
+    the dev server log on every page load. Falls back to glyphs, so nothing looks
+    broken, but the requests are wasted.
 
 ---
 
 ## Roadmap / planned
 
+- **Finish cookie consent** — real cookie, gate/lazy-load cal.com, footer "Cookie
+  settings" link, `/privacy` page. Steps written out under "Cookie consent".
 - Build `/platform/governance/master` and `/platform/governance/specific` (React).
 - Add real full-color connector logos.
 - Arabic translations for the new sections (if wanted).
@@ -250,3 +368,5 @@ implementing, keep the `.mchip`/`.mlogo` CSS (single centered image scales on ho
 3. **Never import** `landing.css` or `tahara-engine.js` into other pages.
 4. **Never move** `tahara-engine.js` out of `public/` (it's loaded as `/tahara-engine.js`).
 5. Run **dev OR build/start** — not both. Push to `main` → site deploys itself.
+6. **Don't delete `components/`** — it holds the live cookie banner now. The rest of
+   its contents are still dead; the folder is not.
