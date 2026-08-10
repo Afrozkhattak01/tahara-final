@@ -1,0 +1,40 @@
+<svg class="fig" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 760" font-family="Archivo, system-ui, -apple-system, sans-serif">
+<rect width="1600" height="760" fill="#edf3fb"/>
+<text x="120" y="120" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="15" letter-spacing="3.2" fill="#103f86">REGULATION (EU) 2026/1744 &#183; IN FORCE 27 JULY 2026</text>
+<text x="118" y="200" font-size="60" font-weight="600" letter-spacing="-1.5" fill="#03152f">The calendar moved.</text>
+<text x="120" y="246" font-size="22" fill="#103f86">Two deadlines shifted by sixteen and twelve months. The obligations behind them did not change.</text>
+<line x1="180" y1="460" x2="1420" y2="460" stroke="#c6d7ed" stroke-width="1.5"/>
+<circle cx="180" cy="460" r="7" fill="#edf3fb" stroke="#b5651d" stroke-width="2.5"/>
+<line x1="180" y1="470" x2="180" y2="490" stroke="#c6d7ed"/>
+<text x="110" y="516" text-anchor="start" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" letter-spacing="1.6" fill="#b5651d">2 AUG 2026</text>
+<text x="110" y="544" text-anchor="start" font-size="19" font-weight="600" fill="#03152f">Transparency live</text>
+<text x="110" y="568" text-anchor="start" font-size="14" fill="#103f86">Article 50 duties apply.</text>
+<text x="110" y="587" text-anchor="start" font-size="14" fill="#103f86">Nothing here moved.</text>
+<circle cx="391" cy="460" r="7" fill="#edf3fb" stroke="#03152f" stroke-width="2.5"/>
+<line x1="391" y1="450" x2="391" y2="430" stroke="#c6d7ed"/>
+<text x="391" y="364" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" letter-spacing="1.6" fill="#03152f">2 DEC 2026</text>
+<text x="391" y="392" text-anchor="middle" font-size="19" font-weight="600" fill="#03152f">Two new bans</text>
+<text x="391" y="416" text-anchor="middle" font-size="14" fill="#103f86">NCII and CSAM generators off the</text>
+<text x="391" y="435" text-anchor="middle" font-size="14" fill="#103f86">market. Marking grace ends.</text>
+<circle cx="800" cy="460" r="7" fill="#edf3fb" stroke="#103f86" stroke-width="2.5"/>
+<line x1="800" y1="470" x2="800" y2="490" stroke="#c6d7ed"/>
+<text x="800" y="516" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" letter-spacing="1.6" fill="#103f86">2 AUG 2027</text>
+<text x="800" y="544" text-anchor="middle" font-size="19" font-weight="600" fill="#03152f">Sandboxes due</text>
+<text x="800" y="568" text-anchor="middle" font-size="14" fill="#103f86">Member states must have one</text>
+<text x="800" y="587" text-anchor="middle" font-size="14" fill="#103f86">national sandbox running.</text>
+<circle cx="998" cy="460" r="7" fill="#edf3fb" stroke="#b5651d" stroke-width="2.5"/>
+<line x1="998" y1="450" x2="998" y2="430" stroke="#c6d7ed"/>
+<text x="998" y="364" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" letter-spacing="1.6" fill="#b5651d">2 DEC 2027</text>
+<text x="998" y="392" text-anchor="middle" font-size="19" font-weight="600" fill="#03152f">Annex III high-risk</text>
+<text x="998" y="416" text-anchor="middle" font-size="14" fill="#103f86">Moved from 2 Aug 2026.</text>
+<text x="998" y="435" text-anchor="middle" font-size="14" fill="#103f86">Employment, credit, biometrics, education.</text>
+<circle cx="1420" cy="460" r="7" fill="#edf3fb" stroke="#b5651d" stroke-width="2.5"/>
+<line x1="1420" y1="470" x2="1420" y2="490" stroke="#c6d7ed"/>
+<text x="1490" y="516" text-anchor="end" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" letter-spacing="1.6" fill="#b5651d">2 AUG 2028</text>
+<text x="1490" y="544" text-anchor="end" font-size="19" font-weight="600" fill="#03152f">Annex I high-risk</text>
+<text x="1490" y="568" text-anchor="end" font-size="14" fill="#103f86">Moved from 2 Aug 2027. AI</text>
+<text x="1490" y="587" text-anchor="end" font-size="14" fill="#103f86">embedded in regulated products.</text>
+<line x1="120" y1="676" x2="1480" y2="676" stroke="#c6d7ed"/>
+<text x="120" y="710" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="14" fill="#103f86">Public-authority legacy systems: 2 August 2030</text>
+<text x="1480" y="710" text-anchor="end" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="14" fill="#103f86">Prohibitions and GPAI duties: unchanged</text>
+</svg>

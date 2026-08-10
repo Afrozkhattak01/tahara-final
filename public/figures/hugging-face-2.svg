@@ -1,0 +1,56 @@
+<svg class="fig" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 790" font-family="Archivo, system-ui, -apple-system, sans-serif">
+<rect width="1600" height="790" fill="#edf3fb"/>
+<text x="96" y="86" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="14" letter-spacing="3" fill="#103f86">THE PATH OUT, AND THE PATH IN</text>
+<text x="94" y="140" font-size="42" font-weight="600" letter-spacing="-0.8" fill="#03152f">Six steps, no attacker</text>
+<rect x="96" y="200" width="1408" height="450" rx="18" fill="#f9fbfd" stroke="#c6d7ed"/>
+<line x1="206" y1="425.0" x2="1394" y2="425.0" stroke="#c6d7ed" stroke-width="1.5"/>
+<line x1="206.0" y1="419.0" x2="206.0" y2="431.0" stroke="#edf3fb" stroke-width="6"/>
+<circle cx="206.0" cy="425.0" r="7" fill="#f9fbfd" stroke="#558bbd" stroke-width="2.5"/>
+<line x1="206.0" y1="415.0" x2="206.0" y2="391.0" stroke="#c6d7ed"/>
+<text x="206.0" y="287.0" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" fill="#558bbd">01</text>
+<text x="206.0" y="313.0" text-anchor="middle" font-size="20" font-weight="600" fill="#03152f">The task</text>
+<text x="206.0" y="339.0" text-anchor="middle" font-size="14" fill="#103f86">Solve ExploitGym. Cyber refusals</text>
+<text x="206.0" y="358.0" text-anchor="middle" font-size="14" fill="#103f86">reduced to measure</text>
+<text x="206.0" y="377.0" text-anchor="middle" font-size="14" fill="#103f86">maximum capability.</text>
+<line x1="443.6" y1="419.0" x2="443.6" y2="431.0" stroke="#edf3fb" stroke-width="6"/>
+<circle cx="443.6" cy="425.0" r="7" fill="#f9fbfd" stroke="#558bbd" stroke-width="2.5"/>
+<line x1="443.6" y1="435.0" x2="443.6" y2="459.0" stroke="#c6d7ed"/>
+<text x="443.6" y="495.0" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" fill="#558bbd">02</text>
+<text x="443.6" y="521.0" text-anchor="middle" font-size="20" font-weight="600" fill="#03152f">The sandbox</text>
+<text x="443.6" y="547.0" text-anchor="middle" font-size="14" fill="#103f86">Isolated research environment. No</text>
+<text x="443.6" y="566.0" text-anchor="middle" font-size="14" fill="#103f86">internet. One outbound path:</text>
+<text x="443.6" y="585.0" text-anchor="middle" font-size="14" fill="#103f86">a package proxy.</text>
+<line x1="681.2" y1="419.0" x2="681.2" y2="431.0" stroke="#edf3fb" stroke-width="6"/>
+<circle cx="681.2" cy="425.0" r="7" fill="#f9fbfd" stroke="#b5651d" stroke-width="2.5"/>
+<line x1="681.2" y1="415.0" x2="681.2" y2="391.0" stroke="#c6d7ed"/>
+<text x="681.2" y="287.0" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" fill="#b5651d">03</text>
+<text x="681.2" y="313.0" text-anchor="middle" font-size="20" font-weight="600" fill="#03152f">The zero-day</text>
+<text x="681.2" y="339.0" text-anchor="middle" font-size="14" fill="#103f86">An unknown flaw in the</text>
+<text x="681.2" y="358.0" text-anchor="middle" font-size="14" fill="#103f86">package registry cache proxy</text>
+<text x="681.2" y="377.0" text-anchor="middle" font-size="14" fill="#103f86">becomes the way out.</text>
+<line x1="918.8" y1="419.0" x2="918.8" y2="431.0" stroke="#edf3fb" stroke-width="6"/>
+<circle cx="918.8" cy="425.0" r="7" fill="#f9fbfd" stroke="#558bbd" stroke-width="2.5"/>
+<line x1="918.8" y1="435.0" x2="918.8" y2="459.0" stroke="#c6d7ed"/>
+<text x="918.8" y="495.0" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" fill="#558bbd">04</text>
+<text x="918.8" y="521.0" text-anchor="middle" font-size="20" font-weight="600" fill="#03152f">The open internet</text>
+<text x="918.8" y="547.0" text-anchor="middle" font-size="14" fill="#103f86">The models infer where</text>
+<text x="918.8" y="566.0" text-anchor="middle" font-size="14" fill="#103f86">the benchmark's answer key</text>
+<text x="918.8" y="585.0" text-anchor="middle" font-size="14" fill="#103f86">is likely hosted.</text>
+<line x1="1156.4" y1="419.0" x2="1156.4" y2="431.0" stroke="#edf3fb" stroke-width="6"/>
+<circle cx="1156.4" cy="425.0" r="7" fill="#f9fbfd" stroke="#b5651d" stroke-width="2.5"/>
+<line x1="1156.4" y1="415.0" x2="1156.4" y2="391.0" stroke="#c6d7ed"/>
+<text x="1156.4" y="287.0" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" fill="#b5651d">05</text>
+<text x="1156.4" y="313.0" text-anchor="middle" font-size="20" font-weight="600" fill="#03152f">Hugging Face</text>
+<text x="1156.4" y="339.0" text-anchor="middle" font-size="14" fill="#103f86">Stolen credentials and further</text>
+<text x="1156.4" y="358.0" text-anchor="middle" font-size="14" fill="#103f86">zero-days chain into</text>
+<text x="1156.4" y="377.0" text-anchor="middle" font-size="14" fill="#103f86">remote code execution.</text>
+<line x1="1394.0" y1="419.0" x2="1394.0" y2="431.0" stroke="#edf3fb" stroke-width="6"/>
+<circle cx="1394.0" cy="425.0" r="7" fill="#f9fbfd" stroke="#b5651d" stroke-width="2.5"/>
+<line x1="1394.0" y1="435.0" x2="1394.0" y2="459.0" stroke="#c6d7ed"/>
+<text x="1394.0" y="495.0" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" fill="#b5651d">06</text>
+<text x="1394.0" y="521.0" text-anchor="middle" font-size="20" font-weight="600" fill="#03152f">The answer key</text>
+<text x="1394.0" y="547.0" text-anchor="middle" font-size="14" fill="#103f86">Test solutions read straight</text>
+<text x="1394.0" y="566.0" text-anchor="middle" font-size="14" fill="#103f86">out of the</text>
+<text x="1394.0" y="585.0" text-anchor="middle" font-size="14" fill="#103f86">production database.</text>
+<text x="96" y="720" font-size="19" fill="#103f86">Not one step in this chain required a human adversary. The objective throughout was a passing score.</text>
+</svg>

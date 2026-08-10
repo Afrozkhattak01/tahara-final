@@ -1,0 +1,17 @@
+<svg class="fig" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 760" font-family="Archivo, system-ui, -apple-system, sans-serif">
+<rect width="1600" height="760" fill="#edf3fb"/>
+<text x="96" y="86" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="14" letter-spacing="3" fill="#103f86">WHERE THE BREACH ACTUALLY LIVED</text>
+<text x="94" y="140" font-size="42" font-weight="600" letter-spacing="-0.8" fill="#03152f">Written down vs. actually enforced</text>
+<rect x="96" y="200" width="1408" height="464" rx="18" fill="#f9fbfd" stroke="#c6d7ed"/>
+<line x1="743.6800000000001" y1="201" x2="743.6800000000001" y2="663" stroke="#c6d7ed"/>
+<text x="144" y="256" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" letter-spacing="2.4" fill="#103f86">ON PAPER</text>
+<text x="791.6800000000001" y="256" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" letter-spacing="2.4" fill="#b5651d">IN PRODUCTION</text>
+<text x="144" y="358.0" font-size="21" fill="#103f86">Runs in an isolated environment.</text>
+<text x="791.6800000000001" y="358.0" font-size="21" font-weight="500" fill="#03152f">Held until a model went looking at the package cache.</text>
+<line x1="144" y1="408.0" x2="1456" y2="408.0" stroke="#c6d7ed"/>
+<text x="144" y="474.0" font-size="21" fill="#103f86">Classifiers block high-risk cyber activity.</text>
+<text x="791.6800000000001" y="474.0" font-size="21" font-weight="500" fill="#03152f">Switched off on purpose, to measure maximum capability.</text>
+<line x1="144" y1="524.0" x2="1456" y2="524.0" stroke="#c6d7ed"/>
+<text x="144" y="590.0" font-size="21" fill="#103f86">Forensic tooling is there when we need it.</text>
+<text x="791.6800000000001" y="590.0" font-size="21" font-weight="500" fill="#03152f">Refused the responders' own attack logs mid-incident.</text>
+</svg>

@@ -179,6 +179,18 @@ export default function BlogPostPage() {
           list-style: none; position: relative; padding-left: 4px; }
         .post-body li::before { content: '–'; position: absolute; left: -18px; color: var(--ink-3); }
 
+        /* Charts. The SVG carries its own background, so the frame here is just
+           a hairline and a radius to match the cards on /resources. */
+        .post-fig { margin: 38px 0 40px; }
+        .post-fig img { width: 100%; height: auto; display: block;
+          border: 1px solid var(--line); border-radius: var(--r-m); background: var(--paper); }
+        .post-fig figcaption { font-family: var(--font-mono); font-size: 12px;
+          line-height: 1.6; color: var(--ink-3); margin-top: 12px; }
+        /* The figure text is positioned inside the SVG, so it stays LTR under
+           RTL — mirroring the container would scramble the labels. */
+        [dir="rtl"] .post-fig { direction: ltr; }
+        [dir="rtl"] .post-fig figcaption { direction: rtl; text-align: right; }
+
         /* Libre Caslon carries no Arabic glyphs, and a synthesised serif reads as
            a rendering fault, so Arabic headings fall back like the landing page's. */
         [dir="rtl"] .post-title,
@@ -265,6 +277,17 @@ export default function BlogPostPage() {
                 <div className="post-body">
                   {post.content.map((block, i) => {
                     if (block.type === 'h2') return <h2 key={i}>{block.text}</h2>;
+                    if (block.type === 'figure') {
+                      return (
+                        /* Plain <img>, not next/image: these are self-contained
+                           SVGs with their own type and colours baked in, and
+                           next/image does not optimise SVG anyway. */
+                        <figure key={i} className="post-fig">
+                          <img src={block.src} alt={block.alt ?? block.caption} loading="lazy" />
+                          <figcaption>{block.caption}</figcaption>
+                        </figure>
+                      );
+                    }
                     if (block.type === 'list') {
                       return (
                         <ul key={i}>

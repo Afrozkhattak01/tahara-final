@@ -67,7 +67,8 @@ landing page is HTML + CSS + vanilla JavaScript."**
 | App shell / new pages | TypeScript (`.tsx` / `.jsx`)                                                                                 |
 | Landing markup        | HTML (`app/(marketing)/tahara-body.html`)                                                                    |
 | Landing engine        | Vanilla JavaScript (`public/tahara-engine.js`, ~2000 lines)                                                  |
-| Styling               | CSS (`landing.css`, `governance.css`) + one CSS Module (`CookieBanner.module.css`)                           |
+| Blog content          | A typed `POSTS` array in `app/(marketing)/resources/posts.ts` (no CMS, no markdown)                            |
+| Styling               | CSS (`landing.css`, `governance.css`) + per-page `<style jsx>` on /resources + one CSS Module (`CookieBanner.module.css`) |
 | Fonts                 | Google Fonts — Libre Caslon Text (display), Archivo (body), IBM Plex Mono (data), IBM Plex Sans Arabic (RTL) |
 | Icons                 | simpleicons.org CDN (connector marquee)                                                                      |
 | Third party           | cal.com embed (`app.cal.com/embed/embed.js`, loaded from the root layout)                                    |
@@ -115,6 +116,11 @@ app/
       page.jsx                  → /platform/governance (real React page)
       governance.css            scoped styles
 
+    resources/                  ← THE BLOG (inside the marketing group)
+      page.tsx                  → /resources (cards, search, category pills)
+      posts.ts                  ← ALL post content lives here (POSTS array)
+      [slug]/page.tsx           → /resources/<slug> (article + its own <style>)
+
 components/
   CookieBanner.tsx              ← LIVE — cookie banner, imported by the ROOT layout
   CookieBanner.module.css       ← its scoped styles (a CSS Module, not global CSS)
@@ -122,6 +128,7 @@ components/
 
 public/
   tahara-engine.js              ← landing ENGINE (must stay here; loaded as /tahara-engine.js)
+  figures/*.svg                 ← blog chart figures, referenced from posts.ts
 
 next.config.mjs                 Next config (images.remotePatterns: cdn.simpleicons.org)
 vercel.json                     pins framework=nextjs (fixes Vercel serving-as-static bug)
@@ -288,6 +295,93 @@ that logging IP/user-agent is personal data with its own basis and retention que
 
 ---
 
+## The blog — `/resources`
+
+**There is one blog and it lives at `/resources`.** Not `/blog`. It is inside the
+`(marketing)` route group, so it gets the landing page's CSS tokens and fonts.
+Three posts, all English.
+
+- `app/(marketing)/resources/page.tsx` — the index: cards, search box, category pills
+- `app/(marketing)/resources/posts.ts` — **all post content**, the `POSTS` array
+- `app/(marketing)/resources/[slug]/page.tsx` — the article, with its own `<style>`
+
+**To add a post:** add one object to `POSTS`. A card appears on `/resources` and
+the article page exists at `/resources/<slug>` with no other file touched. The
+file's own header comment documents the fields.
+
+### Content is typed blocks, not markdown
+
+`content` is a `Block[]` rendered in order:
+
+```ts
+{ type: 'p',  text: '…' }                                   paragraph
+{ type: 'h2', text: '…' }                                   subheading
+{ type: 'list', items: ['…', '…'] }                          bulleted list
+{ type: 'figure', src: '/figures/x.svg', caption: '…' }      chart
+```
+
+Paragraphs and list items take either a plain string or an `Inline[]` for runs
+that need emphasis or a link: `{ b: 'bold' }`, `{ i: 'italic' }`,
+`{ t: 'label', href: '…' }`.
+
+⚠️ **`category` must be one of `'craft' | 'governance' | 'news'`** — it drives the
+filter pills. A new value needs the pill list updated too, or the post becomes
+unreachable by filter.
+
+### Figures
+
+`{ type: 'figure' }` was added for the charts in the two long posts. The SVGs are
+standalone files in **`public/figures/`**, rendered as a plain `<img>` — not
+`next/image`, which does not optimise SVG anyway.
+
+They are deliberately self-contained: fonts and hex values are baked into each
+file, so they do not inherit page CSS and cannot be broken by a token change.
+The trade-off is that **restyling one means editing the SVG**.
+
+The source artwork came in a green/sage palette (`#16332F` ink, `#EFF4F2` canvas,
+Inter / JetBrains Mono) and was remapped to the site's navy — including every
+hardcoded hex inside the SVGs, roughly 50 per figure:
+
+| Source  | → Site  |          | Source  | → Site  |
+| ------- | ------- | -------- | ------- | ------- |
+| #EFF4F2 | #edf3fb | canvas   | #A9C0B0 | #afc8e3 |
+| #FFFFFF | #f9fbfd | panel    | #8AAEC6 | #558bbd |
+| #16332F | #03152f | ink      | #4E7A5E | #114086 |
+| #6E8683 | #103f86 | muted    | #4A7391 | #558bbd |
+| #D3E0DA | #c6d7ed | hairline | #A85A4A | #b5651d |
+
+Fonts inside the SVGs were swapped Inter → Archivo, SF Mono → IBM Plex Mono.
+
+⚠️ **Figures can't be translated.** Their text is positioned SVG
+(`<text x="206" y="313">`), so Arabic would need RTL layout, flipped
+`text-anchor`s and every string re-measured by hand. Both the article and card CSS
+force `direction: ltr` on figures inside RTL for that reason.
+
+### Card thumbnails
+
+Each card's banner repeats the post title over the gradient, matching the article
+page's `.post-banner`. It is `aria-hidden` and the real heading is the `<h4>`
+below — screen readers should hear the title once, not twice. The title is
+`-webkit-line-clamp: 4`; a headline longer than that clips rather than stretching
+one card taller than its neighbours.
+
+### Where the three posts came from
+
+Two were already in `POSTS` as complete prose. The work done was:
+
+- **Added the missing third post**, "The Calendar Moved. The Work Didn't." The
+  index copy said "Three pieces" while only two existed.
+- **Added the six figures**, which the source HTML had and `POSTS` had no way to hold.
+- The source files' `/book` CTA **does not exist** and would have 404'd — the
+  articles use the site's real cal.com booking instead.
+- Post 01's source `<meta description>` was corrupt: it spliced in a sentence from
+  post 02 ("Uber runs tens of thousands of agent sessions a day"). The standfirst
+  was correct and is what the `excerpt` uses.
+- **Post 02 has no figures** where the other two have three each. It reads thinner.
+  Worth commissioning one if you want the set even.
+
+---
+
 ## Known weaknesses / caveats
 
 1. **Landing page is one big HTML file + a 2000-line engine** — granular edits are
@@ -311,7 +405,14 @@ that logging IP/user-agent is personal data with its own basis and retention que
    sells "Cookie & consent — banner rules, tracker checks". See "Cookie consent".
 10. **`components/` is half-dead** — one live file (the cookie banner) in a folder
     that is otherwise unused _and_ still listed in tsconfig's `exclude`.
-11. **`/logos/*.svg` all 404** — the connector marquee requests ~19 local logo files
+11. **Blog figures can't be translated** — the SVG charts have their text baked in
+    as positioned `<text>` nodes, so any Arabic version covers prose only. Both the
+    article and card CSS force `direction: ltr` on figures under RTL.
+12. **Blog posts are English only** — `POSTS` has no per-language field at all. The
+    surrounding chrome translates; the articles don't.
+13. **Restyling a figure means editing its SVG** — colours and fonts are baked into
+    each file in `public/figures/`, so they survive a token change but also ignore one.
+14. **`/logos/*.svg` all 404** — the connector marquee requests ~19 local logo files
     (`anthropic`, `meta`, `okta`, `datadog`, …) that aren't in `public/`. Visible in
     the dev server log on every page load. Falls back to glyphs, so nothing looks
     broken, but the requests are wasted.
@@ -323,6 +424,9 @@ that logging IP/user-agent is personal data with its own basis and retention que
 - **Finish cookie consent** — real cookie, gate/lazy-load cal.com, footer "Cookie
   settings" link, `/privacy` page. Steps written out under "Cookie consent".
 - Build `/platform/governance/master` and `/platform/governance/specific` (React).
+- **Blog follow-ups** — link `/blog` from the header nav and footer (it currently has
+  no entry point from the rest of the site); Arabic copy for the three posts; a
+  figure for post 02, which has none; consider `/blog` in `sitemap.xml`.
 - Add real full-color connector logos.
 - Arabic translations for the new sections (if wanted).
 - Delete the dead folders.
@@ -370,3 +474,5 @@ implementing, keep the `.mchip`/`.mlogo` CSS (single centered image scales on ho
 5. Run **dev OR build/start** — not both. Push to `main` → site deploys itself.
 6. **Don't delete `components/`** — it holds the live cookie banner now. The rest of
    its contents are still dead; the folder is not.
+7. **The blog is `/resources`, and a new post is one object in `POSTS`.** Don't
+   build a second blog somewhere else.

@@ -1,0 +1,26 @@
+<svg class="fig" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 580" font-family="Archivo, system-ui, -apple-system, sans-serif">
+<rect width="1600" height="580" fill="#edf3fb"/>
+<text x="96" y="86" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="14" letter-spacing="3" fill="#103f86">AUGUST 2026 &#8594; 2 DECEMBER 2027</text>
+<text x="94" y="140" font-size="42" font-weight="600" letter-spacing="-0.8" fill="#03152f">Sixteen months, mostly spoken for</text>
+<rect x="140" y="270" width="185" height="74" fill="#558bbd" opacity="0.22"/>
+<line x1="140" y1="270" x2="140" y2="344" stroke="#558bbd" stroke-width="2"/>
+<text x="232" y="382" text-anchor="middle" font-size="17" font-weight="500" fill="#03152f">Classify systems and</text>
+<text x="232" y="404" text-anchor="middle" font-size="17" font-weight="500" fill="#03152f">map lineage</text>
+<rect x="325" y="270" width="290" height="74" fill="#558bbd" opacity="0.22"/>
+<line x1="325" y1="270" x2="325" y2="344" stroke="#558bbd" stroke-width="2"/>
+<text x="470" y="382" text-anchor="middle" font-size="17" font-weight="500" fill="#03152f">Build the technical file</text>
+<text x="470" y="404" text-anchor="middle" font-size="17" font-weight="500" fill="#03152f">and QMS</text>
+<rect x="615" y="270" width="528" height="74" fill="#afc8e3" opacity="0.22"/>
+<line x1="615" y1="270" x2="615" y2="344" stroke="#afc8e3" stroke-width="2"/>
+<text x="879" y="382" text-anchor="middle" font-size="17" font-weight="500" fill="#03152f">Accumulate post-market</text>
+<text x="879" y="404" text-anchor="middle" font-size="17" font-weight="500" fill="#03152f">evidence</text>
+<rect x="1143" y="270" width="317" height="74" fill="#b5651d" opacity="0.22"/>
+<line x1="1143" y1="270" x2="1143" y2="344" stroke="#b5651d" stroke-width="2"/>
+<text x="1302" y="382" text-anchor="middle" font-size="17" font-weight="500" fill="#03152f">Conformity assessment once</text>
+<text x="1302" y="404" text-anchor="middle" font-size="17" font-weight="500" fill="#03152f">standards settle</text>
+<line x1="140" y1="248" x2="1460" y2="248" stroke="#c6d7ed"/>
+<text x="140" y="236" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" fill="#103f86">TODAY</text>
+<text x="1460" y="236" text-anchor="end" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" fill="#b5651d">ANNEX III HIGH-RISK APPLIES</text>
+<text x="96" y="484" font-size="19" fill="#103f86">Illustrative sequencing, not a legal timetable. The point is the third block: evidence of monitoring</text>
+<text x="96" y="512" font-size="19" fill="#103f86">accrues in real time, and cannot be produced retrospectively in the final quarter.</text>
+</svg>

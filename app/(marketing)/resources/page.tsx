@@ -212,13 +212,45 @@ export default function ResourcesPage() {
         .res-card-hit { display: flex; flex-direction: column; flex: 1;
           color: inherit; text-decoration: none; }
         /* ratio, not a fixed height, so it stays proportional through the
-           breakpoints. 21:9 keeps the banner a wide strip rather than a block
-           that drives the card's height */
-        .res-card-banner { position: relative; aspect-ratio: 21 / 9;
+           breakpoints. 16:9 rather than the old 21:9 strip — the title sits in
+           here now and a wide strip gives it nowhere to wrap. */
+        .res-card-banner { position: relative; aspect-ratio: 16 / 9;
           background: linear-gradient(135deg, #a9c7e8 0%, #4d86c9 30%, var(--g700) 62%, var(--g900) 100%);
           background-size: 180% 180%; background-position: 0% 50%;
           animation: bannerDrift 7s ease-in-out infinite;
+          overflow: hidden;
+          display: flex; align-items: center; justify-content: center;
+          /* tight padding on purpose: the headline should run nearly the full
+             width of the thumbnail rather than sit in a narrow column */
+          padding: 18px 16px; text-align: center; }
+        /* Scrim. The gradient starts pale at the top-left, where white type on its
+           own does not hold up — this darkens the whole banner just enough to keep
+           the headline legible across it. Sits under both the sheen and the text. */
+        .res-card-banner::before { content: ""; position: absolute; inset: 0;
+          background: linear-gradient(160deg, rgba(3,24,56,.34) 0%, rgba(3,24,56,.10) 55%, rgba(3,24,56,.24) 100%); }
+        /* z-index lifts it over the scrim and .res-card-banner::after, the sheen.
+           Set in bold Archivo rather than the display serif: at this size, over a
+           moving gradient, the serif's thin strokes disappear. */
+        /* Two classes deep on purpose. The .res-card p rule (0,1,1) sets the
+           excerpt's dark navy and 15px, and it OUTRANKS a single
+           .res-card-banner-t (0,1,0) — which painted this headline dark-on-dark
+           and shrank it. Don't flatten this selector. */
+        .res-card-banner .res-card-banner-t { position: relative; z-index: 2; margin: 0; width: 100%;
+          font-family: var(--font-body); font-weight: 700; letter-spacing: -.02em;
+          font-size: clamp(20px, 2.1vw, 29px); line-height: 1.22; color: #ffffff;
+          text-shadow: 0 1px 2px rgba(3,24,56,.5), 0 2px 20px rgba(3,24,56,.55);
+          /* balance stops one orphaned word on the last line at these widths */
+          text-wrap: balance;
+          /* long headlines are common here; clamp rather than let one overflow
+             the gradient or stretch the card out of line with its neighbours */
+          display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
           overflow: hidden; }
+        [dir="rtl"] .res-card-banner .res-card-banner-t {
+          font-family: 'IBM Plex Sans Arabic', var(--font-body); font-weight: 700; }
+        .res-card-banner svg.motif { position: absolute; z-index: 1; right: -22px; bottom: -22px;
+          width: 150px; height: 150px; opacity: .16; stroke: #fff; fill: none;
+          stroke-width: 1.4; }
+        [dir="rtl"] .res-card-banner svg.motif { right: auto; left: -22px; transform: scaleX(-1); }
         @media (prefers-reduced-motion: reduce) {
           .res-card-banner, .res-card-banner::after { animation: none; }
         }
@@ -449,8 +481,18 @@ export default function ResourcesPage() {
                   part of it navigates. "Read more" is a span, not a second link:
                   one card, one destination, one tab stop. */}
               <Link className="res-card-hit" href={`/resources/${post.slug}`}>
-                {/* artwork only: the headline sits below, so it isn't repeated here */}
-                <div className="res-card-banner" aria-hidden="true" />
+                {/* Thumbnail: the same gradient-plus-motif treatment the article
+                    page uses for its banner, so card and article match. The title
+                    is repeated here as artwork — aria-hidden, because the real
+                    heading is the <h4> below and screen readers should hear it once. */}
+                <div className="res-card-banner" aria-hidden="true">
+                  <svg className="motif" viewBox="0 0 200 200" aria-hidden="true">
+                    <circle cx="150" cy="60" r="46" />
+                    <circle cx="150" cy="60" r="70" />
+                    <path d="M10 190 L70 130 L110 160 L190 60" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <p className="res-card-banner-t">{post.title}</p>
+                </div>
                 <div className="res-card-body">
                   <div className="res-card-top">
                     <span className="res-card-tag">{post.featured ? `Featured · ${post.tag}` : post.tag}</span>

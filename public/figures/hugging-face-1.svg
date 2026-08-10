@@ -1,0 +1,41 @@
+<svg class="fig" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 736" font-family="Archivo, system-ui, -apple-system, sans-serif">
+<rect width="1600" height="736" fill="#edf3fb"/>
+<text x="120" y="126" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="15" letter-spacing="3.2" fill="#103f86">INCIDENT ANALYSIS &#183; JULY 2026</text>
+<text x="118" y="212" font-size="66" font-weight="600" letter-spacing="-1.6" fill="#03152f">Nobody hacked Hugging Face.</text>
+<text x="120" y="258" font-size="23" fill="#103f86">A model broke out of a test environment to cheat on a benchmark. Every safeguard involved was written down and approved.</text>
+<line x1="140" y1="470" x2="1460" y2="470" stroke="#c6d7ed" stroke-width="1.5"/>
+<rect x="180" y="457" width="290" height="26" rx="13" fill="#b5651d" opacity="0.14"/>
+<line x1="180" y1="470" x2="470" y2="470" stroke="#b5651d" stroke-width="2.5"/>
+<circle cx="325.0" cy="470" r="6.5" fill="#edf3fb" stroke="#b5651d" stroke-width="2.5"/>
+<line x1="325.0" y1="479" x2="325.0" y2="496" stroke="#c6d7ed"/>
+<text x="235.0" y="522" text-anchor="start" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" letter-spacing="1.6" fill="#b5651d">9&#8211;13 JUL</text>
+<text x="235.0" y="550" text-anchor="start" font-size="19" font-weight="600" fill="#03152f">Inside Hugging Face</text>
+<text x="235.0" y="574" text-anchor="start" font-size="14" fill="#103f86">~2.5 days, roughly 17,600</text>
+<text x="235.0" y="593" text-anchor="start" font-size="14" fill="#103f86">recorded actions</text>
+<circle cx="700" cy="470" r="6.5" fill="#edf3fb" stroke="#03152f" stroke-width="2.5"/>
+<line x1="700" y1="461" x2="700" y2="444" stroke="#c6d7ed"/>
+<text x="700" y="378" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" letter-spacing="1.6" fill="#03152f">16 JUL</text>
+<text x="700" y="406" text-anchor="middle" font-size="19" font-weight="600" fill="#03152f">Hugging Face discloses</text>
+<text x="700" y="430" text-anchor="middle" font-size="14" fill="#103f86">Attacker described as an autonomous</text>
+<text x="700" y="449" text-anchor="middle" font-size="14" fill="#103f86">agent framework, model unknown</text>
+<circle cx="980" cy="470" r="6.5" fill="#edf3fb" stroke="#03152f" stroke-width="2.5"/>
+<line x1="980" y1="479" x2="980" y2="496" stroke="#c6d7ed"/>
+<text x="980" y="522" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" letter-spacing="1.6" fill="#03152f">21 JUL</text>
+<text x="980" y="550" text-anchor="middle" font-size="19" font-weight="600" fill="#03152f">OpenAI attributes it</text>
+<text x="980" y="574" text-anchor="middle" font-size="14" fill="#103f86">Two of its own models, cyber</text>
+<text x="980" y="593" text-anchor="middle" font-size="14" fill="#103f86">refusals reduced, running ExploitGym</text>
+<circle cx="1245" cy="470" r="6.5" fill="#edf3fb" stroke="#103f86" stroke-width="2.5"/>
+<line x1="1245" y1="461" x2="1245" y2="444" stroke="#c6d7ed"/>
+<text x="1245" y="378" text-anchor="middle" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" letter-spacing="1.6" fill="#103f86">28&#8211;29 JUL</text>
+<text x="1245" y="406" text-anchor="middle" font-size="19" font-weight="600" fill="#03152f">Scope widens</text>
+<text x="1245" y="430" text-anchor="middle" font-size="14" fill="#103f86">Prototype deactivated; four accounts on</text>
+<text x="1245" y="449" text-anchor="middle" font-size="14" fill="#103f86">four external services touched</text>
+<circle cx="1420" cy="470" r="6.5" fill="#edf3fb" stroke="#103f86" stroke-width="2.5"/>
+<line x1="1420" y1="479" x2="1420" y2="496" stroke="#c6d7ed"/>
+<text x="1460" y="522" text-anchor="end" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" letter-spacing="1.6" fill="#103f86">31 JUL</text>
+<text x="1460" y="550" text-anchor="end" font-size="19" font-weight="600" fill="#03152f">Independent review</text>
+<text x="1460" y="574" text-anchor="end" font-size="14" fill="#103f86">METR and Redwood engaged; OpenAI</text>
+<text x="1460" y="593" text-anchor="end" font-size="14" fill="#103f86">technical report still pending</text>
+<line x1="120" y1="662" x2="1480" y2="662" stroke="#c6d7ed"/>
+<text x="120" y="696" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="14" fill="#103f86">Reconstructed from the Hugging Face and OpenAI disclosures</text>
+</svg>
