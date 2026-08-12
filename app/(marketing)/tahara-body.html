@@ -163,9 +163,10 @@
           <span class="rep-dl-t" data-i18n="rep.dl">Security assessment report</span>
           <span class="rep-dl-m"><span data-i18n="rep.pdf">PDF</span> · <span data-i18n="rep.evid">Evidence included</span></span>
           <button class="rep-dl-b" type="button" id="repDl"><span data-i18n="rep.dlb">Download report</span></button>
-          <!-- Stated up front rather than on click: a button that silently does
-               nothing reads as broken, and there is no file to hand over. -->
-          <span class="rep-dl-n" data-i18n="rep.dln">Preview only — no file is generated.</span>
+          <!-- The button does produce a real PDF, but of a scripted run — so the
+               caveat is about the figures, not about the file. aria-live: this
+               same element reports the failure if generation throws. -->
+          <span class="rep-dl-n" id="repDlNote" role="status" aria-live="polite" data-i18n="rep.dln">Illustrative sample — the figures are demonstrative, not a live scan.</span>
         </div>
       </aside>
     </div>

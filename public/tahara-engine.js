@@ -1102,7 +1102,19 @@ window.TaharaI18N = (function(){
     'rep.pdf':     { en:'PDF', ar:'PDF' },
     'rep.evid':    { en:'Evidence included', ar:'تتضمن الأدلة' },
     'rep.dlb':     { en:'Download report', ar:'تنزيل التقرير' },
-    'rep.dln':     { en:'Preview only — no file is generated.', ar:'معاينة فقط — لا يتم إنشاء أي ملف.' },
+    /* The old note said no file was generated. One now is — but the figures in
+       it are still hand-written, so the caveat moves from "no file" to "not a
+       real scan", and the PDF carries the same line in its footer. */
+    'rep.dln':     { en:'Illustrative sample — the figures are demonstrative, not a live scan.',
+                     ar:'نموذج توضيحي — الأرقام لأغراض العرض وليست فحصًا حيًا.' },
+    'rep.dlbusy':  { en:'Preparing PDF…', ar:'جارٍ تجهيز ملف PDF…' },
+    'rep.dlerr':   { en:'Could not generate the PDF. Please try again.',
+                     ar:'تعذّر إنشاء ملف PDF. يُرجى المحاولة مرة أخرى.' },
+    /* PDF document chrome — these appear only inside the generated file. */
+    'rep.pdfkind': { en:'AI attack surface assessment', ar:'تقييم سطح الهجوم للذكاء الاصطناعي' },
+    'rep.pdfgen':  { en:'Generated', ar:'تم الإنشاء' },
+    'rep.pdfpage': { en:'Page', ar:'صفحة' },
+    'rep.pdfof':   { en:'of', ar:'من' },
 
     'hero.title': { en:'Know what your AI did, and <span class="accent">prove it</span>.',
                     ar:'اعرف ما فعله ذكاؤك الاصطناعي، و<span class="accent">أثبت ذلك</span>.' },
@@ -1465,7 +1477,14 @@ window.TaharaI18N = (function(){
                        switches them to Arabic if that's what was saved */
   }
 
-  return { init, apply, get current(){ return current; } };
+  /* Single-string lookup for copy that is set from script rather than carried
+     on a data-i18n element — the report's PDF export is the first caller. */
+  function t(key){
+    const row = I18N[key];
+    return row ? (row[current] || row.en || '') : '';
+  }
+
+  return { init, apply, t, get current(){ return current; } };
 })();
 
 /* ════════════════════════════════════════════════════════════
@@ -1684,11 +1703,16 @@ window.TaharaI18N = (function(){
      stack is assembled the layers become click-to-toggle.
      mode: 'scroll' (follow assembly) | 'show' (timed replay) | 'hidden'
      ───────────────────────────────────────────────────────────── */
-  let assembledOnce = false;
+  /* Reduced motion has no assembly to wait for — the stylesheet shows every
+     slab in place from the start, so the stack is "finished" on arrival. */
+  let assembledOnce = REDUCE;
   const TW_MS = 620;                                   /* hover type-in speed */
   /* after assembly, hovering a layer reveals only its text; hoverLock holds
-     the layer under the cursor, selT0 when its typewriter started. */
-  let selT0 = 0, selHideT = 0;
+     the layer under the cursor, selT0 when its typewriter started.
+     hoverPend is where the pointer is regardless of whether hovering is
+     unlocked yet, so a cursor already resting on a slab when the fifth one
+     lands lights up on that frame instead of waiting to be moved. */
+  let selT0 = 0, selHideT = 0, hoverPend = null;
   /* split each item's title + description into per-character spans so chars
      can fade in without reflowing. Re-run on language change, since the
      h4/p are data-i18n and have their text content replaced. */
@@ -1749,7 +1773,13 @@ window.TaharaI18N = (function(){
       ST.write(i, live.e[i]);
       if (live.e[i] < 0.995) allIn = false;
     }
-    if (allIn) assembledOnce = true;
+    if (allIn && !assembledOnce){
+      assembledOnce = true;
+      /* Hovering was locked out until this frame. If the pointer is already
+         sitting on a slab, apply it now — the cursor has just turned into a
+         pointer under a stationary mouse, and nothing happening reads as dead. */
+      if (hoverPend !== null) setSel(hoverPend);
+    }
 
     /* per-layer text reveal — how many characters are typed out.
        Not hovering (or still assembling): typed in sync with each slab, so
@@ -1894,19 +1924,34 @@ window.TaharaI18N = (function(){
   }
 
   /* ── 6 · hover (or tap) a layer to reveal only its text ──
-     Once assembled, pointing at a layer types out just that layer's text and
-     hides the others; moving to another swaps it; leaving the stack (a short
-     grace period, so moving between a slab and its card doesn't flicker)
-     returns to the resting state where all are shown. */
+     Only once the stack has finished assembling. Before that the layers are
+     still flying in and the section belongs to the scroll: lighting one slab
+     and dimming the other four mid-flight fought the assembly, and because the
+     text reveal was already gated on `assembledOnce` it produced a highlighted
+     box with nothing in the card beside it. The pointer-cursor affordance in
+     landing.css is on .stack-stage.ready for the same reason — this is the
+     behaviour catching up with what the stylesheet already promised.
+
+     After that: pointing at a layer types out just that layer's text and hides
+     the others; moving to another swaps it; leaving the stack (a short grace
+     period, so moving between a slab and its card doesn't flicker) returns to
+     the resting state where all are shown. */
   function setSel(li){
     clearTimeout(selHideT);
+    hoverPend = li;                       /* tracked even while locked out */
+    if (!assembledOnce) return;
     if (hoverLock !== li){ hoverLock = li; selT0 = performance.now(); }
     highlight(hoverLock);
     wake();
   }
   function clearSel(){
     clearTimeout(selHideT);
-    selHideT = setTimeout(() => { hoverLock = null; highlight(-1); wake(); }, 140);
+    selHideT = setTimeout(() => {
+      hoverPend = null;
+      hoverLock = null;
+      highlight(-1);
+      wake();
+    }, 140);
   }
   items.forEach(it => {
     it.addEventListener('mouseenter', () => setSel(+it.dataset.layer));
@@ -2004,6 +2049,8 @@ window.TaharaI18N = (function(){
     const gauge  = document.querySelector('.rep-gauge-fg');
     const noteEl = document.getElementById('surfaceNote');
     const checks = document.getElementById('liveChecks');
+    const dlBtn  = document.getElementById('repDl');
+    const dlNote = document.getElementById('repDlNote');
 
     const RUN_MS = 11000;
     const TRACE_KEEP = 5;                              /* what fits the box without scrolling */
@@ -2304,6 +2351,9 @@ window.TaharaI18N = (function(){
         r.classList.remove('is-done', 'is-live');
         const c = r.querySelector('.live-check-p'); if (c) c.textContent = '';
       });
+      /* Clears a failed-export message, which would otherwise still be sitting
+         under the button the next time the modal is opened. */
+      if (dlNote) dlNote.textContent = t('rep.dln');
       paint(0);
     }
 
@@ -2337,6 +2387,105 @@ window.TaharaI18N = (function(){
       if (!host || !HOST_RE.test(host)){ showErr(true); inp && inp.focus(); return; }
       showErr(false);
       startRun(host);
+    });
+
+    /* ── report → PDF ──────────────────────────────────────────────────
+       The A4 document is laid out and rasterised by the React island in
+       components/ReportPdf.tsx, which owns the two npm packages this file
+       cannot import. Everything below only assembles the payload, and it
+       assembles it from the same two tables screen 3 renders from — so the
+       file and the screen cannot drift apart.
+       ────────────────────────────────────────────────────────────────── */
+    const t = k => (window.TaharaI18N && window.TaharaI18N.t) ? window.TaharaI18N.t(k) : '';
+
+    /* The four headline numbers live in the markup rather than in a table up
+       here, so they are read back off the rendered cards instead of being
+       written down a second time. */
+    function cardsFromDom(){
+      return Array.prototype.map.call(document.querySelectorAll('.rep-cards > li'), li => {
+        const v = li.querySelector('b');
+        const l = li.querySelector('.rep-card-l');
+        const d = li.querySelector('.rep-card-d');
+        return {
+          label: l ? l.textContent : '',
+          value: v ? v.textContent : '',
+          desc:  d ? d.textContent : '',
+          sig:   !!(v && v.classList.contains('is-sig'))
+        };
+      });
+    }
+
+    function payload(){
+      const L    = lang();
+      const host = runTarget || (repTgt && repTgt.textContent) || 'assessment';
+      const now  = new Date();
+      const date = now.toLocaleDateString(L === 'ar' ? 'ar' : 'en-GB',
+                                          { day:'numeric', month:'long', year:'numeric' });
+      const slug = host.replace(/[^a-z0-9.-]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase();
+      return {
+        lang: L,
+        target: host,
+        subtitle: t('rep.sub'),
+        meta: repMeta ? repMeta.textContent : '',
+        risk: RISK,
+        riskTitle: t('rep.risk'),
+        riskDesc: t('rep.riskd'),
+        cards: cardsFromDom(),
+        findingsTitle: t('rep.findings'),
+        findingsCount: FINDINGS.length + ' ' + t('rep.total'),
+        findings: FINDINGS.map(f => ({
+          sev: f.sev, sevLabel: (SEV[f.sev] || SEV.low)[L], tag: f.tag,
+          asset: f.asset, title: f[L][0], desc: f[L][1]
+        })),
+        coverageTitle: t('rep.cov'),
+        coverageCount: COVERAGE.length + ' ' + t('rep.tested'),
+        coverage: COVERAGE.map(c => ({
+          name: c[L], state: c.s, stateLabel: COV_S[c.s][L], fill: c.fill
+        })),
+        recTitle: t('rep.rec'),
+        recBody: t('rep.recb'),
+        brand: 'Tahara AI',
+        docKind: t('rep.pdfkind'),
+        generated: t('rep.pdfgen') + ' ' + date,
+        disclaimer: t('rep.dln'),
+        pageLabel: (n, total) => t('rep.pdfpage') + ' ' + n + ' ' + t('rep.pdfof') + ' ' + total,
+        fileName: 'tahara-assessment-' + (slug || 'report') + '-' +
+                  now.toISOString().slice(0, 10) + '.pdf'
+      };
+    }
+
+    let building = false;
+    dlBtn && dlBtn.addEventListener('click', () => {
+      if (building) return;
+      /* Rasterising eight sheets takes a beat on a slow machine, and a button
+         that looks idle for two seconds gets pressed again. */
+      const label = dlBtn.querySelector('[data-i18n]') || dlBtn;
+      const idle  = t('rep.dlb');
+      building = true;
+      dlBtn.disabled = true;
+      label.textContent = t('rep.dlbusy');
+      if (dlNote) dlNote.textContent = t('rep.dln');
+
+      const done = () => {
+        building = false;
+        dlBtn.disabled = false;
+        label.textContent = idle;
+      };
+
+      Promise.resolve()
+        .then(() => {
+          if (!window.TaharaReportPDF) throw new Error('PDF exporter not mounted');
+          return window.TaharaReportPDF.download(payload());
+        })
+        .then(done)
+        .catch(err => {
+          /* Reported in the note under the button rather than in a dialog: the
+             note is where the eye already is, and a modal over the report would
+             cover the thing being exported. */
+          if (dlNote) dlNote.textContent = t('rep.dlerr');
+          console.error('[tahara] report export failed', err);
+          done();
+        });
     });
   })();
 
@@ -2439,7 +2588,13 @@ window.TaharaI18N = (function(){
       history:'<path d="M3.6 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3.2 3.4v3.2h3.2M12 7.6V12l3 1.8"/>',
       warn:'<path d="M12 3.6 1.9 20.4h20.2z"/><path d="M12 9.6v4.6M12 17.6h.01"/>',
       bang:'<path d="M12 6.5v7M12 17.4h.01"/>',
-      mail:'<rect x="2.8" y="5" width="18.4" height="14" rx="2.2"/><path d="m3.4 6.6 8.6 6 8.6-6"/>'
+      mail:'<rect x="2.8" y="5" width="18.4" height="14" rx="2.2"/><path d="m3.4 6.6 8.6 6 8.6-6"/>',
+      /* the guardrails rows below needed glyphs the set did not carry —
+         reusing 'search' and 'shield' there would have collided with
+         Detectors and the sidebar's own heading icon */
+      eye:'<path d="M2.5 12S6 5.6 12 5.6 21.5 12 21.5 12 18 18.4 12 18.4 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.1"/>',
+      mask:'<rect x="3.5" y="5" width="17" height="14" rx="2.2"/><rect x="6.8" y="9.1" width="10.4" height="2.6" rx="1.3" fill="currentColor" stroke="none"/><path d="M6.8 15.2h6"/>',
+      globe:'<circle cx="12" cy="12" r="9"/><path d="M3.2 12h17.6"/><path d="M12 3c2.6 2.4 4 5.5 4 9s-1.4 6.6-4 9c-2.6-2.4-4-5.5-4-9s1.4-6.6 4-9z"/>'
     };
     const ic = (n,cls) => '<svg class="'+(cls||'d-ic')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
       'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(P[n]||'')+'</svg>';
@@ -2486,7 +2641,13 @@ window.TaharaI18N = (function(){
           { t:'Probe library', ic:'book' },
           { t:'Findings', ic:'alert' },
           { t:'Schedule', ic:'cal' },
-          { t:'Runbooks', ic:'doc', muted:1 } ] },
+          { t:'Runbooks', ic:'doc', muted:1 },
+          /* ── carried over from the platform mega-menu's Adversarial column,
+             so the nav a visitor reads there resolves to something here. Only
+             the rows this sidebar did not already carry under another name:
+             Attack Simulation is Campaigns, OWASP LLM Top 10 is Categories,
+             Red-Team Scheduling is Schedule, Findings Register is Findings. ── */
+          { t:'Continuous Dashboard', ic:'pulse' } ] },
         title:'Adversarial testing',
         figs:[
           { v:2,    k:'Failing',      tone:'bad' },
@@ -2522,7 +2683,17 @@ window.TaharaI18N = (function(){
           { t:'Findings', ic:'alert' },
           { t:'Evidence', ic:'clipboard' },
           { t:'Sign-off queue', ic:'check' },
-          { t:'Audit trail', ic:'history', muted:1 } ] },
+          { t:'Audit trail', ic:'history', muted:1 },
+          /* ── from the mega-menu's Governance column. Evidence Locker and
+             Audit Ledger are the two rows above under shorter names, and the
+             coming-soon pair (Vendor Risk, Access Reviews) is deliberately not
+             here — the sidebar lists what the product does today. ── */
+          { t:'Statement of Applicability', ic:'doc' },
+          { t:'AI Inventory', ic:'box' },
+          { t:'Risk Classification', ic:'warn' },
+          { t:'Agent Constraints', ic:'bot' },
+          { t:'Compliance Reporting', ic:'book' },
+          { t:'Continuous Dashboard', ic:'pulse' } ] },
         title:'Governance',
         figs:[
           { v:61, sufS:'/187', k:'Requirements assessed' },
@@ -2556,7 +2727,14 @@ window.TaharaI18N = (function(){
           { t:'Event stream', ic:'layers' },
           { t:'Policies', ic:'doc' },
           { t:'Retrieval inspection', ic:'db' },
-          { t:'Policy simulation', ic:'flask', muted:1 } ] },
+          { t:'Policy simulation', ic:'flask', muted:1 },
+          /* ── from the mega-menu's PII Guardrails column. Prompt Inspection is
+             the input path, distinct from Retrieval inspection above — the
+             panel's own leak story turns on exactly that difference. Cookie &
+             Consent is coming-soon and left out. ── */
+          { t:'Prompt Inspection', ic:'eye' },
+          { t:'Masking & Redaction', ic:'mask' },
+          { t:'Bilingual Detection', ic:'globe' } ] },
         title:'Guardrails',
         alert:{ lead:'1 leak in the last 24 hours.',
           head:'Personal data reached the model unmasked.',
@@ -2612,7 +2790,10 @@ window.TaharaI18N = (function(){
 
       /* 02 · Adversarial */
       { sideT:'الاختبار العدائي',
-        nav:['الحملات','الفئات','مكتبة الاختبارات','النتائج','الجدولة','كتيبات التشغيل'],
+        /* nav is matched to side.items by position, so every row added to the
+           English sidebar needs its label at the same index here. */
+        nav:['الحملات','الفئات','مكتبة الاختبارات','النتائج','الجدولة','كتيبات التشغيل',
+             'لوحة متابعة مستمرة'],
         title:'الاختبار العدائي',
         figK:['راسب','متدهور','ناجح','الاختبارات · 24 س'],
         rateK:'معدل النجاح',
@@ -2631,7 +2812,9 @@ window.TaharaI18N = (function(){
 
       /* 03 · Govern */
       { sideT:'الحوكمة',
-        nav:['المطابقة','الأطر','النتائج','الأدلة','قائمة الاعتماد','سجل التدقيق'],
+        nav:['المطابقة','الأطر','النتائج','الأدلة','قائمة الاعتماد','سجل التدقيق',
+             'بيان الانطباق','جرد الذكاء الاصطناعي','تصنيف المخاطر','قيود الوكلاء',
+             'تقارير الامتثال','لوحة متابعة مستمرة'],
         title:'الحوكمة',
         figK:['المتطلبات المُقيَّمة','عدم مطابقة جوهري','عدم مطابقة طفيف','المطابقة'],
         confT:'المطابقة حسب الإطار', confBadge:'من المُقيَّم',
@@ -2645,7 +2828,8 @@ window.TaharaI18N = (function(){
 
       /* 04 · Guardrails */
       { sideT:'حواجز الحماية',
-        nav:['مراقبة النشاط','الكواشف','سجل الأحداث','السياسات','فحص الاسترجاع','محاكاة السياسات'],
+        nav:['مراقبة النشاط','الكواشف','سجل الأحداث','السياسات','فحص الاسترجاع','محاكاة السياسات',
+             'فحص الطلبات','الإخفاء والتنقيح','الكشف ثنائي اللغة'],
         title:'حواجز الحماية',
         alertLead:'تسريب واحد خلال 24 ساعة.',
         alertHead:'بيانات شخصية وصلت إلى النموذج دون إخفاء.',
