@@ -1065,9 +1065,13 @@ code,pre{font-family:var(--font-mono)}
 
    Below the video the same thing happened in reverse — this band's 92px,
    #lifecycle's 92px and the pinned block's 48px stacked into a ~230px void
-   before "What we do". 72px here plus the pin's 28px gives the video room to
-   end before the next section starts, without returning to that hole. */
-#platform{padding-top:0;padding-bottom:72px}
+   before "What we do". 72px here plus the pin's 28px gave the video room to
+   end before the next section started, without returning to that hole.
+
+   Now 0: the lifecycle pin centres its content (see .life-pin), which already
+   puts ~175px above the heading. Keeping 72px on top of that would rebuild the
+   void this line was written to remove. */
+#platform{padding-top:0;padding-bottom:0}
 #platform .pvideo{margin-top:0}
 .pv-frame{position:relative;aspect-ratio:16/9;border-radius:20px;overflow:hidden;
   background:linear-gradient(160deg,var(--g900) 0%,var(--g700) 58%,var(--g600) 100%);
@@ -1571,12 +1575,30 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
    so this survives them. */
 #lifecycle{padding-top:0;padding-bottom:8px}
 .life-track{position:relative;height:260vh}
-/* flex-start, not center: centring in a 100vh box put 100-140px of slack above
-   the heading on top of the padding, so the space under the video read as far
-   larger than the space above the statement. Aligned to the top, the gap you
-   see is the gap that is declared. */
+/* Centred, not flex-start. The pin has to stay a full viewport tall — a sticky
+   box shorter than the screen lets the Architecture section slide up into the
+   space beneath it while the cards are still held, so the gap would shrink as
+   you scroll instead of just being smaller. That fixes the pin at 100vh around
+   515px of content, and the 355px difference has to sit somewhere.
+
+   Top-aligned, all 355px landed under the last card — it WAS the gap down to
+   Architecture, and it grew with the window. Centred, it splits: ~175px above
+   the heading and ~175px below the cards, so the seam halves and the block
+   reads as deliberately centred rather than top-heavy.
+
+   The earlier objection to centring was that it made the space under the video
+   look larger than the space above the statement — #platform's 72px bottom
+   padding is dropped below to pay for it. Nothing here changes the pin's
+   height, so the track, the travel and the engine are all untouched.
+
+   The top padding is 24px + the ~90px sticky header, which is painted over the
+   top of this box while it is held. Centring against the full 100vh therefore
+   reads as bottom-heavy — the reader can only see from the header down. Paying
+   the header back optically centres the block in the part of the screen that is
+   actually visible, and it comes straight off the seam: the space under the
+   cards drops from 192px to ~147px. */
 .life-pin{position:sticky;top:0;min-height:100vh;display:flex;flex-direction:column;
-  justify-content:flex-start;padding:28px 0 8px}
+  justify-content:center;padding:114px 0 24px}
 .life-pin .head-row{margin-bottom:34px}
 /* The step-through is the only reason to hold the section. With reduced motion
    nothing advances, so a pin would just be 1.6 screens of dead scrolling.
@@ -1906,11 +1928,14 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
    down to the progress row. Same 1080px as .head so the heading holds one line. */
 .stack-intro{padding:0 0 20px;max-width:1080px}
 .stack-track{height:440vh;position:relative}
-/* Asymmetric on purpose: the panel centres its content between these two, so
-   the smaller top value pulls the Architecture heading up out of the gap the
-   lifecycle cards leave above it. */
-.stack-pin{position:sticky;top:0;height:100vh;min-height:600px;display:flex;align-items:center;
-  padding:16px 0 60px}
+/* Top-aligned, not centred. Centring left 71px above the Architecture eyebrow —
+   empty space on the near side of the seam, stacked on top of whatever the
+   lifecycle pin left below its cards. flex-start spends that on the far side of
+   the panel instead, where it isn't part of the gap, and brings the heading up
+   to the declared 20px. The panel keeps height:100vh, so the 440vh track, the
+   340vh of travel and the assembly progress are all unaffected. */
+.stack-pin{position:sticky;top:0;height:100vh;min-height:600px;display:flex;align-items:flex-start;
+  padding:20px 0 40px}
 .stack-pin > .wrap{width:100%;position:relative}
 /* The panel now carries the heading as well as the progress row and the stack.
    A short viewport can't hold all three at 100vh — the top would be clipped
