@@ -58,6 +58,50 @@ const T = {
   a4_d: { en: 'Inspect prompts and retrieval at runtime, and hold the line where policy says it should hold.',
           ar: 'افحص الموجّهات والاسترجاع أثناء التشغيل، وطبّق الحدود حيث تقتضي السياسة.' },
 
+  /* why — section header + four problem/answer blocks */
+  why_k:  { en: 'Why Tahara AI', ar: 'لماذا Tahara AI' },
+  why_t:  { en: "Outcomes You Can Measure, Not Just Promises You're Told",
+            ar: 'نتائج يمكنك قياسها، لا مجرد وعود تُقال لك' },
+
+  w1_k: { en: "Problem — you can't govern what you can't see",
+          ar: 'المشكلة — لا يمكنك حوكمة ما لا تراه' },
+  w1_t: { en: 'Find Every AI System, Not Just the Ones You Approved',
+          ar: 'اعثر على كل نظام ذكاء اصطناعي، لا على ما اعتمدته فقط' },
+  w1_d: { en: 'AI systems get built in-house, bundled into tools you already pay for, or shipped before anyone signed off. A read-only collector runs inside your own boundary, under your own credentials, and finds every one within a day.',
+          ar: 'تُبنى أنظمة الذكاء الاصطناعي داخليًا، أو تأتي مضمّنة في أدوات تدفع ثمنها بالفعل، أو تُطلق قبل أن يوافق عليها أحد. يعمل جامع بيانات للقراءة فقط داخل نطاقك وببيانات اعتمادك، ويجد كل واحد منها خلال يوم.' },
+
+  w2_k: { en: 'Problem — a document is not proof',
+          ar: 'المشكلة — الوثيقة ليست دليلًا' },
+  w2_t: { en: 'Map Every System to the Law That Actually Applies',
+          ar: 'اربط كل نظام بالقانون الذي ينطبق فعلًا' },
+  w2_d: { en: 'A policy that says the right thing isn’t a system that does it. Every requirement is checked against your live system, and only marked "Conforming" once a named person confirms it on the record — a machine’s observation can raise a finding, never close one.',
+          ar: 'السياسة التي تقول الشيء الصحيح ليست نظامًا يفعله. يُفحص كل متطلب مقابل نظامك الحي، ولا يُوسم بـ«مطابق» إلا بعد أن يؤكده شخص مُسمّى في السجل — يمكن لملاحظة آلية أن تفتح نتيجة، لا أن تغلقها.' },
+
+  w3_k: { en: 'Problem — a yearly pen test misses everything that changed since',
+          ar: 'المشكلة — اختبار اختراق سنوي يفوّت كل ما تغيّر بعده' },
+  w3_t: { en: 'Attack Your Own System Before Someone Else Does',
+          ar: 'هاجم نظامك قبل أن يهاجمه غيرك' },
+  w3_d: { en: 'Most red-teaming happens once, months before launch, against a version of the system that no longer exists by the time it ships. Tahara AI runs the OWASP LLM Top 10 against staging on a recurring schedule, so a regression shows up the next cycle — not next year.',
+          ar: 'يجري معظم اختبار الفريق الأحمر مرة واحدة، قبل الإطلاق بأشهر، على نسخة لم تعد موجودة وقت الإطلاق. يشغّل Tahara AI قائمة OWASP LLM العشرة على بيئة التجهيز وفق جدول متكرر، فيظهر أي تراجع في الدورة التالية — لا في العام التالي.' },
+
+  w4_k: { en: 'Problem — the leak happens before anyone reviews the transcript',
+          ar: 'المشكلة — يقع التسريب قبل أن يراجع أحد النص' },
+  w4_t: { en: 'Catch What Leaks Before It Reaches the Model',
+          ar: 'أمسك ما يتسرّب قبل أن يصل إلى النموذج' },
+  w4_d: { en: 'By the time a privacy review catches a leak, it’s already happened. Guardrails inspect every prompt before it reaches the model — masking, blocking, bilingually in English and Roman Urdu — and log the rare one that gets through.',
+          ar: 'عندما تكتشف مراجعة الخصوصية تسريبًا، يكون قد وقع بالفعل. تفحص حواجز الحماية كل موجّه قبل وصوله إلى النموذج — إخفاءً ومنعًا، بالإنجليزية والأردية بحروف لاتينية — وتسجّل النادر الذي ينفذ.' },
+
+  /* crosswalk */
+  fw_t:    { en: 'Built Around One Framework, Not Twelve Separate Ones',
+             ar: 'مبنيّ حول إطار واحد، لا اثني عشر إطارًا منفصلًا' },
+  fw_req:  { en: 'requirements', ar: 'متطلبًا' },
+  fw_rail: { en: 'Crosswalk rail', ar: 'مسار الربط' },
+  fw_m:    { en: 'The Tahara Master Framework', ar: 'إطار Tahara الرئيسي' },
+  fw_ms:   { en: '112 unique controls · 187 mapped requirements',
+             ar: '112 ضابطًا فريدًا · 187 متطلبًا مرتبطًا' },
+  fw_note: { en: 'A single crosswalk that every supported framework maps onto — built once per control, not once per regulator. Adding a new regional framework extends the map; it doesn’t mean re-asking every question from scratch.',
+             ar: 'مسار ربط واحد ترتبط به كل الأطر المدعومة — يُبنى مرة لكل ضابط، لا مرة لكل جهة تنظيمية. إضافة إطار إقليمي جديد توسّع الخريطة، ولا تعني إعادة طرح كل سؤال من الصفر.' },
+
   /* overview */
   ov_k:      { en: 'Overview', ar: 'نظرة عامة' },
   /* TODO copy */
@@ -86,6 +130,28 @@ const CARDS = [
   ['a2_t', 'a2_d'],
   ['a3_t', 'a3_d'],
   ['a4_t', 'a4_d'],
+] as const;
+
+/* The dashboard panels are stills captured from the landing page's live
+   dashboard (scripts in /public/dash). The dashboard is a singleton bound to
+   #dashTabs/#dashPanel by id, so four live copies would need it extracted into
+   a component first — worth doing, not done here. Regenerate these if the
+   dashboard's data or layout changes. `flip` puts the image first. */
+/* Fixed here rather than read from the dashboard. The counts agree with the
+   `conf` table in tahara-engine.js — 33 + 76 + 41 + 37 = 187, the figure the
+   master bar quotes — so if that table changes, change these too. */
+const FW = [
+  { n: 'EU AI Act', c: 33 },
+  { n: 'ISO/IEC 42001', c: 76 },
+  { n: 'ISO/IEC 23894', c: 41 },
+  { n: 'NIST AI RMF', c: 37 },
+] as const;
+
+const WHY = [
+  { k: 'w1_k', t: 'w1_t', d: 'w1_d', img: 'discover',    flip: false },
+  { k: 'w2_k', t: 'w2_t', d: 'w2_d', img: 'govern',      flip: true  },
+  { k: 'w3_k', t: 'w3_t', d: 'w3_d', img: 'adversarial', flip: false },
+  { k: 'w4_k', t: 'w4_t', d: 'w4_d', img: 'guardrails',  flip: true  },
 ] as const;
 
 export default function AboutPage() {
@@ -142,6 +208,26 @@ export default function AboutPage() {
     document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
   }, [lang]);
 
+  /* Draw the crosswalk connectors when they scroll into view. Firing on mount
+     would spend the animation while the band is still far below the fold. */
+  useEffect(() => {
+    const el = document.getElementById('fwLink');
+    if (!el) return;
+    if (!('IntersectionObserver' in window)) { el.classList.add('in'); return; }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          e.target.classList.add('in');
+          io.unobserve(e.target);        /* draws once, not on every pass */
+        });
+      },
+      { threshold: 0.35 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <>
       <AmbientBg />
@@ -161,6 +247,113 @@ export default function AboutPage() {
           transform:translate(-50%,-50%) scale(1.06)}
         @media(max-width:640px){ .ab-play{width:60px;height:60px}
           .ab-play svg{width:20px;height:20px;margin-left:3px} }
+
+        /* why — wider than .wrap so the dashboard stills stay legible; at
+           .wrap's 1180px each panel would render near half its captured size */
+        .ab-why{padding:78px 0 0}
+        .ab-why-wrap{max-width:1500px;margin:0 auto;padding:0 var(--gutter)}
+        /* no width cap: at 940px the heading wrapped to two lines, and it is
+           short enough to hold one across the section's full width */
+        .ab-why-head{text-align:center;margin:0 auto}
+        .ab-why-k{font-family:var(--font-mono);font-size:11px;font-weight:500;
+          letter-spacing:.18em;text-transform:uppercase;color:var(--g600)}
+        .ab-why-head h2{margin-top:18px;font-size:clamp(25px,3vw,40px);line-height:1.18;
+          letter-spacing:-.015em;color:var(--ink)}
+
+        .ab-row{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);
+          gap:60px;align-items:center;margin-top:84px}
+        /* The widths have to swap with the order. Reordering alone left the
+           panel in the narrow column on flipped rows, so alternate rows showed
+           the dashboard at two different sizes. */
+        .ab-row.is-flip{grid-template-columns:minmax(0,1.18fr) minmax(0,.82fr)}
+        .ab-row.is-flip .ab-row-txt{order:2}
+        .ab-row.is-flip .ab-row-img{order:1}
+        .ab-row-k{display:block;font-family:var(--font-mono);font-size:11px;font-weight:500;
+          letter-spacing:.13em;text-transform:uppercase;color:var(--signal);line-height:1.6}
+        .ab-row-txt h3{margin-top:14px;font-size:clamp(22px,2.3vw,31px);line-height:1.26;
+          letter-spacing:-.01em;color:var(--ink)}
+        .ab-row-txt p{margin-top:18px;font-size:16.5px;line-height:1.72;color:var(--ink-2)}
+        .ab-row-img img{display:block;width:100%;height:auto;border-radius:16px;
+          border:1px solid var(--line);box-shadow:var(--sh-m)}
+
+        @media(max-width:900px){
+          .ab-why{padding:56px 0 0}
+          /* stack, and always put the words above their panel — flipping the
+             order only reads as alternation when the two sit side by side */
+          .ab-row{grid-template-columns:1fr;gap:26px;margin-top:56px}
+          .ab-row.is-flip .ab-row-txt{order:1}
+          .ab-row.is-flip .ab-row-img{order:2}
+        }
+
+        /* crosswalk */
+        .ab-fw{padding:96px 0 0;text-align:center}
+        .ab-fw h2{font-size:clamp(25px,3vw,40px);line-height:1.18;letter-spacing:-.015em;
+          color:var(--ink)}
+        .ab-fw-tops{margin-top:44px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+        .ab-fw-box{background:#fff;border:1px solid var(--line);border-inline-start:3px solid var(--g400);
+          border-radius:10px;padding:14px 10px;display:grid;gap:5px;box-shadow:var(--sh-s)}
+        .ab-fw-box b{font-weight:500;font-size:16px;color:var(--ink);letter-spacing:-.01em}
+        .ab-fw-box span{font-family:var(--font-mono);font-size:11.5px;color:var(--g600)}
+
+        /* connector band — same 4 columns, so each drop sits under its box */
+        .ab-fw-link{position:relative;height:132px;display:grid;
+          grid-template-columns:repeat(4,1fr);gap:24px}
+        /* The lines draw themselves: each is scaled from nothing along its own
+           axis, in the order the eye would follow — the four drops fall, the
+           rail opens outward from the centre, the node lands, the stem runs
+           down to the master bar. */
+        .ab-fw-drop{align-self:start;justify-self:center;width:1px;height:66px;
+          background:var(--line-2);
+          transform:scaleY(0);transform-origin:top;
+          transition:transform .52s var(--e-out) calc(var(--i,0) * .09s)}
+        .ab-fw-link.in .ab-fw-drop{transform:scaleY(1)}
+        /* the rail spans centre-of-first to centre-of-last: with 4 columns and
+           a 24px gap each column is (100% - 72px)/4, so half of that is the
+           inset on each side */
+        .ab-fw-rail{position:absolute;top:66px;height:1px;background:var(--line-2);
+          left:calc((100% - 72px)/8);right:calc((100% - 72px)/8);
+          transform:scaleX(0);transform-origin:center;
+          transition:transform .72s var(--e-out) .4s}
+        .ab-fw-link.in .ab-fw-rail{transform:scaleX(1)}
+        .ab-fw-node{position:absolute;top:62px;left:50%;width:9px;height:9px;
+          margin-left:-4.5px;background:#fff;border:1px solid var(--g400);
+          opacity:0;transform:rotate(45deg) scale(.3);
+          transition:opacity .3s ease 1.02s,transform .42s var(--e-back) 1.02s}
+        .ab-fw-link.in .ab-fw-node{opacity:1;transform:rotate(45deg) scale(1)}
+        .ab-fw-stem{position:absolute;top:66px;left:50%;width:1px;height:66px;
+          background:var(--line-2);
+          transform:scaleY(0);transform-origin:top;
+          transition:transform .5s var(--e-out) 1.18s}
+        .ab-fw-link.in .ab-fw-stem{transform:scaleY(1)}
+
+        /* nothing moves, everything is simply already drawn */
+        @media(prefers-reduced-motion:reduce){
+          .ab-fw-drop,.ab-fw-rail,.ab-fw-node,.ab-fw-stem{transition:none;opacity:1;
+            transform:none}
+          .ab-fw-node{transform:rotate(45deg)}
+        }
+        .ab-fw-raillabel{position:absolute;top:58px;inset-inline-start:0;
+          font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.14em;
+          text-transform:uppercase;color:var(--ink-3)}
+
+        .ab-fw-master{border-radius:12px;padding:18px 22px;display:grid;gap:6px;
+          background:linear-gradient(120deg,var(--g900) 0%,var(--g800) 55%,var(--g700) 100%);
+          box-shadow:0 12px 30px rgba(3,24,56,.24)}
+        .ab-fw-master b{font-weight:600;font-size:17px;color:#fff;letter-spacing:-.01em}
+        .ab-fw-master span{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.1em;
+          text-transform:uppercase;color:rgba(255,255,255,.72)}
+        .ab-fw-note{margin:26px auto 0;max-width:62ch;font-size:14.5px;line-height:1.7;
+          color:var(--ink-2)}
+
+        @media(max-width:820px){
+          .ab-fw{padding:64px 0 0}
+          .ab-fw-card{padding:26px 20px 24px}
+          /* two columns, and the rail no longer describes the layout */
+          .ab-fw-tops{grid-template-columns:repeat(2,1fr);gap:14px}
+          .ab-fw-link{height:44px;display:block}
+          .ab-fw-drop,.ab-fw-rail,.ab-fw-node,.ab-fw-raillabel{display:none}
+          .ab-fw-stem{top:0;height:44px}
+        }
 
         .ab-sec{padding:56px 0 0}
         .ab-sec-head{display:flex;align-items:baseline;gap:16px;padding-bottom:10px;
@@ -262,6 +455,68 @@ export default function AboutPage() {
                 </svg>
               </button>
             </div>
+          </div>
+        </section>
+
+        {/* ── why · four problem/answer blocks against dashboard stills ── */}
+        <section className="ab-why">
+          <div className="ab-why-wrap">
+            <div className="ab-why-head">
+              <span className="ab-why-k">{tr('why_k', lang)}</span>
+              <h2>{tr('why_t', lang)}</h2>
+            </div>
+            {WHY.map((r) => (
+              <div className={'ab-row' + (r.flip ? ' is-flip' : '')} key={r.img}>
+                <div className="ab-row-txt">
+                  <span className="ab-row-k">{tr(r.k, lang)}</span>
+                  <h3>{tr(r.t, lang)}</h3>
+                  <p>{tr(r.d, lang)}</p>
+                </div>
+                <div className="ab-row-img">
+                  {/* decorative: the heading and paragraph beside it already
+                      carry the meaning, so a description here would just
+                      repeat them to a screen reader */}
+                  <img src={`/dash/${r.img}.png`} alt="" width={1440} height={760} loading="lazy" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── crosswalk · many frameworks onto one internal model ── */}
+        <section className="ab-fw">
+          <div className="wrap">
+            <h2>{tr('fw_t', lang)}</h2>
+
+            {/* The connectors are laid out with the same 4-column grid as the
+                boxes, so every drop line stays under its own box at any width
+                instead of being positioned by hand. The lines draw themselves
+                in once the band scrolls into view — see the observer below. */}
+            <div className="ab-fw-tops">
+              {FW.map((f) => (
+                <div className="ab-fw-box" key={f.n}>
+                  <b>{f.n}</b>
+                  <span>{f.c} {tr('fw_req', lang)}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="ab-fw-link" id="fwLink" aria-hidden="true">
+              <span className="ab-fw-raillabel">{tr('fw_rail', lang)}</span>
+              {FW.map((f, i) => (
+                <span className="ab-fw-drop" key={f.n} style={{ ['--i' as string]: i }} />
+              ))}
+              <span className="ab-fw-rail" />
+              <span className="ab-fw-node" />
+              <span className="ab-fw-stem" />
+            </div>
+
+            <div className="ab-fw-master">
+              <b>{tr('fw_m', lang)}</b>
+              <span>{tr('fw_ms', lang)}</span>
+            </div>
+
+            <p className="ab-fw-note">{tr('fw_note', lang)}</p>
           </div>
         </section>
 
