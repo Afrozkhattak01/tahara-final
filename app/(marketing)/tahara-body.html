@@ -64,45 +64,55 @@
   <div class="surface-live" id="surfaceLive" hidden>
     <div class="live-grid">
 
-      <!-- left · dial -->
+      <!-- left · dial. The ring is six arcs, one per checklist stage, so the
+           sweep and the list on the right are visibly the same progress read
+           two ways. Each arc fills across its own sixth of the run. -->
       <div class="live-dial">
         <span class="live-dial-grid" aria-hidden="true"></span>
-        <span class="live-ring live-ring-1" aria-hidden="true"></span>
-        <span class="live-ring live-ring-2" aria-hidden="true"></span>
-        <span class="live-wedge" id="liveWedge" aria-hidden="true"></span>
         <span class="live-orb live-orb-1" aria-hidden="true"></span>
         <span class="live-orb live-orb-2" aria-hidden="true"></span>
         <span class="live-orb live-orb-3" aria-hidden="true"></span>
-        <div class="live-mid">
-          <span class="live-pct"><b id="livePct">0</b><i>%</i></span>
+        <div class="live-dial-mid">
+          <svg class="live-seg" viewBox="0 0 200 200" aria-hidden="true">
+            <g class="live-seg-track" id="liveSegTrack"></g>
+            <g class="live-seg-fill"  id="liveSegFill"></g>
+          </svg>
+          <div class="live-mid">
+            <span class="live-pct"><b id="livePct">0</b></span>
+            <span class="live-pct-l" data-i18n="live.pctlabel">Complete</span>
+          </div>
+        </div>
+        <div class="live-dial-foot">
           <span class="live-stage" id="liveStage">Initializing assessment</span>
           <span class="live-target" id="liveTarget"></span>
         </div>
       </div>
 
-      <!-- right · checklist, bar, trace -->
+      <!-- right · the checklist is now the whole panel. The per-stage
+           percentages and the trace log are gone: the ring carries the
+           number, and the headings carry which stage the run is on. -->
       <div class="live-side">
-        <ul class="live-checks" id="liveChecks">
-          <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k1">Discovering attack surface</span><span class="live-check-p"></span></li>
-          <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k2">Fingerprinting technologies</span><span class="live-check-p"></span></li>
-          <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k3">Enumerating AI assets</span><span class="live-check-p"></span></li>
-          <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k4">Scanning for vulnerabilities</span><span class="live-check-p"></span></li>
-          <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k5">Validating findings</span><span class="live-check-p"></span></li>
-          <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k6">Generating assessment report</span><span class="live-check-p"></span></li>
-        </ul>
-
-        <div class="live-bar" role="progressbar" id="liveBar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
-
-        <div class="live-trace">
-          <div class="live-trace-head">
-            <span data-i18n="live.trace">Live trace</span>
-            <span class="live-trace-dot" aria-hidden="true"></span>
+        <div class="live-card">
+          <div class="live-card-head">
+            <span data-i18n="live.running">Assessment running</span>
+            <span class="live-card-pct" id="livePctB">0%</span>
           </div>
-          <!-- aria-live off: the lines land faster than a screen reader can
-               read them, and the checklist above already carries the state. -->
-          <ul class="live-trace-list" id="liveTrace" aria-hidden="true"></ul>
+          <ul class="live-checks" id="liveChecks">
+            <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k1">Discovering attack surface</span></li>
+            <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k2">Fingerprinting technologies</span></li>
+            <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k3">Enumerating AI assets</span></li>
+            <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k4">Scanning for vulnerabilities</span></li>
+            <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k5">Validating findings</span></li>
+            <li class="live-check"><span class="live-ic" aria-hidden="true"><svg class="live-ic-tick" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.2"/><path d="M4.7 8.2 7 10.5l4.3-4.7"/></svg></span><span class="live-check-t" data-i18n="live.k6">Generating assessment report</span></li>
+          </ul>
+          <div class="live-card-foot">
+            <span class="live-badge"><i aria-hidden="true"></i><span data-i18n="live.badge">Live</span></span>
+            <button class="live-again" type="button" id="liveAgain">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.4 12a8.4 8.4 0 1 1-2.46-5.94"/><path d="M20.8 3.6v5.2h-5.2"/></svg>
+              <span data-i18n="live.again">Run again</span>
+            </button>
+          </div>
         </div>
-
       </div>
     </div>
   </div>

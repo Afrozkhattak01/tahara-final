@@ -1073,6 +1073,11 @@ window.TaharaI18N = (function(){
     'live.trace':     { en:'Live trace', ar:'التتبع المباشر' },
     'live.running':   { en:'Assessment running',  ar:'التقييم قيد التشغيل' },
     'live.complete':  { en:'Assessment complete', ar:'اكتمل التقييم' },
+    /* screen 2 · the ring reads as a share of the run, so the word under the
+       numeral has to be the same quantity — not a count of stages. */
+    'live.pctlabel':  { en:'Complete', ar:'مكتمل' },
+    'live.badge':     { en:'Live', ar:'مباشر' },
+    'live.again':     { en:'Run again', ar:'إعادة التشغيل' },
     /* screen 3 — report chrome. The findings and coverage rows themselves are
        rendered from tables in the modal module, not from here. */
     'rep.kicker':  { en:'Assessment report', ar:'تقرير التقييم' },
@@ -2034,12 +2039,13 @@ window.TaharaI18N = (function(){
        ──────────────────────────────────────────────────────────── */
     const body   = document.getElementById('surfaceBody');
     const live   = document.getElementById('surfaceLive');
-    const wedge  = document.getElementById('liveWedge');
     const pctEl  = document.getElementById('livePct');
+    const pctB   = document.getElementById('livePctB');
     const stgEl  = document.getElementById('liveStage');
     const tgtEl  = document.getElementById('liveTarget');
-    const barEl  = document.getElementById('liveBar');
-    const traceEl= document.getElementById('liveTrace');
+    const segTrk = document.getElementById('liveSegTrack');
+    const segFil = document.getElementById('liveSegFill');
+    const againB = document.getElementById('liveAgain');
     const stateEl= document.getElementById('liveState');
     const report = document.getElementById('surfaceReport');
     const repTgt = document.getElementById('repTarget');
@@ -2053,7 +2059,29 @@ window.TaharaI18N = (function(){
     const dlNote = document.getElementById('repDlNote');
 
     const RUN_MS = 11000;
-    const TRACE_KEEP = 5;                              /* what fits the box without scrolling */
+
+    /* ── the ring · one arc per checklist stage ───────────────────────
+       Six arcs on r=80 in a 200-box. Each owns a sixth of the run and
+       fills across it, so the sweep on the left and the list on the right
+       are the same progress shown twice rather than two separate readings.
+       ───────────────────────────────────────────────────────────────── */
+    const SEG_N = 6, SEG_R = 80, SEG_GAP = 7;
+    const SEG_C = 2 * Math.PI * SEG_R;
+    const SEG_LEN = SEG_C / SEG_N - SEG_GAP;
+    function buildRing(){
+      if (!segTrk || !segFil || segFil.children.length) return;
+      let t = '', f = '';
+      for (let i = 0; i < SEG_N; i++){
+        const rot = 'rotate(' + (-90 + i * (360 / SEG_N)) + ' 100 100)';
+        t += '<circle cx="100" cy="100" r="' + SEG_R + '" transform="' + rot +
+             '" stroke-dasharray="' + SEG_LEN.toFixed(2) + ' ' + (SEG_C - SEG_LEN).toFixed(2) + '"/>';
+        f += '<circle cx="100" cy="100" r="' + SEG_R + '" transform="' + rot +
+             '" stroke-dasharray="0 ' + SEG_C.toFixed(2) + '"/>';
+      }
+      segTrk.innerHTML = t;
+      segFil.innerHTML = f;
+    }
+    buildRing();
 
     /* Stage caption under the dial — `to` is the progress it holds until. */
     const STAGES = [
@@ -2071,24 +2099,6 @@ window.TaharaI18N = (function(){
     /* Six fixed checklist rows, each owning a slice of the run. */
     const CHECK_AT = [[0,20],[20,40],[40,60],[60,76],[76,90],[90,100]];
 
-    /* Trace lines, in scan order, each printed as the run passes `at`. */
-    const TRACE = [
-      { at:  4, k:'dns',    en:'DNS records resolved (4 hosts)',      ar:'تم حل سجلات DNS (٤ مضيفين)' },
-      { at: 12, k:'sub',    en:'Subdomains discovered (12)',          ar:'تم اكتشاف نطاقات فرعية (١٢)' },
-      { at: 21, k:'http',   en:'HTTP services identified (8)',        ar:'تم تحديد خدمات HTTP (٨)' },
-      { at: 29, k:'port',   en:'Open ports: 80, 443',                 ar:'المنافذ المفتوحة: ٨٠، ٤٤٣' },
-      { at: 37, k:'tech',   en:'Detected Nginx 1.24',                 ar:'تم رصد Nginx 1.24' },
-      { at: 45, k:'stack',  en:'Detected FastAPI framework',          ar:'تم رصد إطار FastAPI' },
-      { at: 53, k:'tls',    en:'TLS 1.3 configuration verified',      ar:'تم التحقق من إعدادات TLS 1.3' },
-      { at: 60, k:'agent',  en:'Detected LangChain integration',      ar:'تم رصد تكامل LangChain' },
-      { at: 66, k:'api',    en:'Detected OpenAI API usage',           ar:'تم رصد استخدام واجهة OpenAI' },
-      { at: 71, k:'mcp',    en:'Detected MCP endpoint',               ar:'تم رصد نقطة MCP' },
-      { at: 76, k:'vector', en:'Detected Vector Database',            ar:'تم رصد قاعدة بيانات متجهة' },
-      { at: 81, k:'cache',  en:'Detected Redis service',              ar:'تم رصد خدمة Redis' },
-      { at: 87, k:'cve',    en:'CVE-2025-XXXX matched',               ar:'تمت مطابقة CVE-2025-XXXX' },
-      { at: 93, k:'evid',   en:'Evidence package updated',            ar:'تم تحديث حزمة الأدلة' },
-      { at: 98, k:'rep',    en:'Assessment report initialized',       ar:'تم تهيئة تقرير التقييم' }
-    ];
 
     /* ── screen 3 · report contents ──────────────────────────────
        Hand-written, not measured. If a scan engine is ever wired in, these
@@ -2166,12 +2176,18 @@ window.TaharaI18N = (function(){
 
     function paint(p){
       const whole = Math.round(p);
-      if (wedge) wedge.style.setProperty('--p', p.toFixed(2));
       if (pctEl) pctEl.textContent = String(whole);
-      if (barEl){
-        const fill = barEl.firstElementChild;
-        if (fill) fill.style.width = p + '%';
-        barEl.setAttribute('aria-valuenow', String(whole));
+      if (pctB)  pctB.textContent  = whole + '%';
+      if (segFil){
+        const arcs = segFil.children;
+        for (let i = 0; i < arcs.length; i++){
+          const fr = Math.max(0, Math.min(1, p / 100 * SEG_N - i));
+          arcs[i].setAttribute('stroke-dasharray',
+            (SEG_LEN * fr).toFixed(2) + ' ' + SEG_C.toFixed(2));
+          /* A zero-length dash with a round cap still paints a full dot, so
+             every unstarted segment would sit on the ring as a stray blob. */
+          arcs[i].style.opacity = fr > 0.001 ? '1' : '0';
+        }
       }
       if (stgEl){
         const s = STAGES.find(x => p < x.to) || STAGES[STAGES.length - 1];
@@ -2186,27 +2202,7 @@ window.TaharaI18N = (function(){
           const on   = !done && p >= from;
           rows[i].classList.toggle('is-done', done);
           rows[i].classList.toggle('is-live', on);
-          const cell = rows[i].querySelector('.live-check-p');
-          if (cell){
-            cell.textContent = done ? '100%'
-              : on ? Math.round(((p - from) / (to - from)) * 100) + '%'
-              : '';
-          }
         }
-      }
-      while (printed < TRACE.length && p >= TRACE[printed].at){
-        const row = TRACE[printed++];
-        if (!traceEl) continue;
-        const li = document.createElement('li');
-        /* Reduced motion prints the whole log at once, so elapsed time would
-           read 0.0s on every line — the scripted position stands in for it. */
-        const secs = reduced ? (row.at / 10) : (performance.now() - t0) / 1000;
-        li.innerHTML = '<span class="lt-t"></span><span class="lt-k"></span><span class="lt-m"></span>';
-        li.children[0].textContent = secs.toFixed(1) + 's';
-        li.children[1].textContent = row.k;
-        li.children[2].textContent = row[lang()];
-        traceEl.appendChild(li);
-        while (traceEl.children.length > TRACE_KEEP) traceEl.removeChild(traceEl.firstChild);
       }
     }
 
@@ -2280,7 +2276,8 @@ window.TaharaI18N = (function(){
           label.textContent = lang() === 'ar' ? 'اكتمل التقييم' : 'Assessment complete';
         }
       }
-      const dot = document.querySelector('.live-trace-dot');
+      /* the pulsing dot in the card footer stops with the run */
+      const dot = document.querySelector('.live-badge > i');
       if (dot) dot.style.animation = 'none';
       /* A beat on 100% before the report replaces it — swapping on the same
          frame the dial fills reads as the run having been skipped. */
@@ -2330,7 +2327,8 @@ window.TaharaI18N = (function(){
       if (report) report.hidden = true;
       if (body) body.hidden = false;
       modal.classList.remove('is-live', 'is-report');
-      if (traceEl) traceEl.textContent = '';
+      const bdot = document.querySelector('.live-badge > i');
+      if (bdot) bdot.style.animation = '';
       if (gauge) gauge.style.strokeDashoffset = String(GAUGE_C);
       if (stateEl){
         stateEl.hidden = true;
@@ -2349,7 +2347,6 @@ window.TaharaI18N = (function(){
       }
       if (checks) Array.prototype.forEach.call(checks.children, r => {
         r.classList.remove('is-done', 'is-live');
-        const c = r.querySelector('.live-check-p'); if (c) c.textContent = '';
       });
       /* Clears a failed-export message, which would otherwise still be sitting
          under the button the next time the modal is opened. */
@@ -2386,6 +2383,30 @@ window.TaharaI18N = (function(){
       const host   = hostOf(target);
       if (!host || !HOST_RE.test(host)){ showErr(true); inp && inp.focus(); return; }
       showErr(false);
+      startRun(host);
+    });
+
+    /* "Run again" replays the same scripted run against the same host. It is
+       labelled as an action, so unlike the other buttons on these screens it
+       does the one thing it says — nothing new is fetched either way. */
+    againB && againB.addEventListener('click', () => {
+      const host = runTarget;
+      if (!host) return;
+      if (raf) cancelAnimationFrame(raf);
+      if (handoff) clearTimeout(handoff);
+      raf = 0; handoff = 0;
+      const dot = document.querySelector('.live-badge > i');
+      if (dot) dot.style.animation = '';
+      if (stateEl){
+        stateEl.classList.remove('is-done');
+        const label = stateEl.querySelector('[data-i18n]');
+        if (label){
+          label.setAttribute('data-i18n', 'live.running');
+          label.textContent = lang() === 'ar' ? 'التقييم قيد التشغيل' : 'Assessment running';
+        }
+      }
+      if (report) report.hidden = true;
+      modal.classList.remove('is-report');
       startRun(host);
     });
 
@@ -2594,7 +2615,8 @@ window.TaharaI18N = (function(){
          Detectors and the sidebar's own heading icon */
       eye:'<path d="M2.5 12S6 5.6 12 5.6 21.5 12 21.5 12 18 18.4 12 18.4 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.1"/>',
       mask:'<rect x="3.5" y="5" width="17" height="14" rx="2.2"/><rect x="6.8" y="9.1" width="10.4" height="2.6" rx="1.3" fill="currentColor" stroke="none"/><path d="M6.8 15.2h6"/>',
-      globe:'<circle cx="12" cy="12" r="9"/><path d="M3.2 12h17.6"/><path d="M12 3c2.6 2.4 4 5.5 4 9s-1.4 6.6-4 9c-2.6-2.4-4-5.5-4-9s1.4-6.6 4-9z"/>'
+      globe:'<circle cx="12" cy="12" r="9"/><path d="M3.2 12h17.6"/><path d="M12 3c2.6 2.4 4 5.5 4 9s-1.4 6.6-4 9c-2.6-2.4-4-5.5-4-9s1.4-6.6 4-9z"/>',
+      redo:'<path d="M20.4 12a8.4 8.4 0 1 1-2.46-5.94"/><path d="M20.8 3.6v5.2h-5.2"/>'
     };
     const ic = (n,cls) => '<svg class="'+(cls||'d-ic')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
       'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(P[n]||'')+'</svg>';
@@ -2710,10 +2732,38 @@ window.TaharaI18N = (function(){
           { n:'ISO/IEC 23894', total:41, seg:[4,5,2],  v:'11 / 41 assessed' },
           { n:'NIST AI RMF',   total:37, seg:[3,4,1],  v:'8 / 37 assessed' } ],
         legend:['Conforming','Partial','Nonconforming','Not assessed'],
-        mxT:'Risk matrix', mxBadge:'10 findings plotted',
+        mxT:'Risk matrix', mxSub:'Overlapping findings compound',
+        mxRescan:'Rescan', mxAppetite:'Risk appetite',
+        mxSevAxis:'Severity', mxLikAxis:'Likelihood',
         mxRows:['Catastrophic','Major','Moderate','Minor','Negligible'],
         mxCols:['Rare','Unlikely','Possible','Likely','Almost certain'],
-        mx:[ [0,0,1,1,0], [0,0,1,0,0], [0,2,3,0,0], [0,1,1,0,0], [0,0,0,0,0] ],
+        /* Each finding carries its own position rather than being binned to a
+           cell centre. Clustering is the whole point of this chart — three
+           findings stacked on one centre would draw as a single dot, and the
+           caption underneath would then be describing something invisible.
+           x/y are fractions of the plot area, origin top-left. */
+        mxDots:[
+          { x:.504, y:.107, k:'bad'  },   /* Catastrophic x Possible */
+          { x:.699, y:.102, k:'bad'  },   /* Catastrophic x Likely   */
+          { x:.504, y:.303, k:'warn' },   /* Major x Possible        */
+          { x:.504, y:.419, k:'mid'  },   /* Moderate x Possible     */
+          { x:.250, y:.496, k:'lo'   },   /* Moderate x Unlikely     */
+          { x:.351, y:.496, k:'lo'   },
+          { x:.454, y:.545, k:'lo'   },   /* the three that compound */
+          { x:.554, y:.538, k:'lo'   },
+          { x:.504, y:.700, k:'lo'   },   /* Minor x Possible        */
+          { x:.699, y:.700, k:'mid'  } ], /* Minor x Likely          */
+        /* density patches behind the grid — blurred hard in the SVG filter, so
+           where findings pile up the ground darkens on its own */
+        mxClouds:[
+          { x:.66, y:.15, rx:.30, ry:.20, k:'bad'  },
+          { x:.38, y:.53, rx:.31, ry:.25, k:'cool' },
+          { x:.55, y:.44, rx:.19, ry:.17, k:'cool' } ],
+        /* the risk-appetite threshold, in three arcs. Illustrative: nothing in
+           the data defines a real appetite line, same as every other figure on
+           these screens. */
+        mxBands:['M24 3 Q30 12 34 21', 'M39 29 Q49 36 60 45', 'M70 59 Q79 64 86 68'],
+        mxCap:'The darkest patch is {cell}, {n} findings deep. No single one of them would draw the eye alone.',
         asks:[ 'What is blocking sign-off?',
                'Which requirements are still open?',
                'Show every major nonconformity' ],
@@ -2820,9 +2870,12 @@ window.TaharaI18N = (function(){
         confT:'المطابقة حسب الإطار', confBadge:'من المُقيَّم',
         confV:['18 / 33 مُقيَّم','24 / 76 مُقيَّم','11 / 41 مُقيَّم','8 / 37 مُقيَّم'],
         legend:['مطابق','جزئي','غير مطابق','لم يُقيَّم'],
-        mxT:'مصفوفة المخاطر', mxBadge:'10 نتائج مرسومة',
+        mxT:'مصفوفة المخاطر', mxSub:'النتائج المتداخلة تتراكم',
+        mxRescan:'إعادة الفحص', mxAppetite:'حدّ تقبّل المخاطر',
+        mxSevAxis:'الخطورة', mxLikAxis:'الاحتمالية',
         mxRows:['كارثي','جوهري','متوسط','طفيف','مُهمَل'],
         mxCols:['نادر','مُستبعَد','ممكن','مُرجَّح','شبه مؤكد'],
+        mxCap:'أغمق بقعة هي {cell}، بعمق {n} نتائج. لا تكفي أي منها وحدها للفت الانتباه.',
         asks:['ما الذي يعطّل الاعتماد؟','ما المتطلبات التي ما تزال مفتوحة؟','اعرض كل حالات عدم المطابقة الجوهرية'],
         chip:'محظور' },
 
@@ -2881,7 +2934,11 @@ window.TaharaI18N = (function(){
       if (m.conf){
         o.confT = a.confT; o.confBadge = a.confBadge; o.legend = a.legend;
         o.conf = m.conf.map((c,j)=>Object.assign({}, c, { v:a.confV[j] }));
-        o.mxT = a.mxT; o.mxBadge = a.mxBadge; o.mxRows = a.mxRows; o.mxCols = a.mxCols;
+        o.mxT = a.mxT; o.mxRows = a.mxRows; o.mxCols = a.mxCols;
+        /* dot/cloud/band geometry is language-neutral and stays on the English
+           record; only the words are swapped */
+        o.mxSub = a.mxSub; o.mxRescan = a.mxRescan; o.mxAppetite = a.mxAppetite;
+        o.mxSevAxis = a.mxSevAxis; o.mxLikAxis = a.mxLikAxis; o.mxCap = a.mxCap;
       }
       if (m.alert){
         o.alert = { lead:a.alertLead, head:a.alertHead, d1:a.alertD1, d2:a.alertD2,
@@ -3022,20 +3079,74 @@ window.TaharaI18N = (function(){
           '</div>').join('')+'</div>');
     }
 
-    function renderGov(m){       /* 03 · Govern */
-      /* severity (5 → 1) plus likelihood (1 → 5): a clean diagonal, so the
-         corner nearest "catastrophic × almost certain" reads hottest. */
-      const tone = (r,c) => { const s = (5-r)+(c+1); return s<=5 ? 'lo' : s===6 ? 'md' : 'hi'; };
-      let mx = '<div class="dash-matrix">';
-      m.mx.forEach((row,r)=>{
-        mx += '<span class="dash-mx-rl">'+esc(m.mxRows[r])+'</span>';
-        row.forEach((n,c)=>{
-          mx += '<span class="dash-cell '+tone(r,c)+(n?'':' zero')+'">'+(n||'·')+'</span>';
-        });
-      });
-      mx += '<span></span>'+m.mxCols.map(c=>'<span class="dash-mx-cl">'+esc(c)+'</span>').join('');
-      mx += '</div>';
+    /* Spelled out rather than numeric: "three findings deep" is a sentence,
+       "3 findings deep" is a statistic, and the caption is prose. */
+    const NUMW = {
+      en:['','one','two','three','four','five','six','seven','eight','nine','ten'],
+      ar:['','واحدة','اثنتان','ثلاث','أربع','خمس','ست','سبع','ثماني','تسع','عشر']
+    };
 
+    /* ── risk matrix ──────────────────────────────────────────────────
+       A density plot rather than a table of counts: blurred patches carry
+       where findings gather, individual dots sit at their own coordinates,
+       and the appetite arcs cross the whole field. The 25 cells behind it
+       are kept as .dash-cell so the existing diagonal reveal still drives
+       them — they just draw as gridlines now instead of tinted counters.
+       ───────────────────────────────────────────────────────────────── */
+    function matrixHTML(m){
+      const pc = v => (v*100).toFixed(1);
+      const cloud = c => '<ellipse cx="'+pc(c.x)+'" cy="'+pc(c.y)+'" rx="'+pc(c.rx)+'" ry="'+pc(c.ry)+
+                         '" class="mx-cloud is-'+c.k+'"/>';
+
+      /* Densest cell, derived from the dots that are actually drawn, so the
+         sentence underneath can never describe a patch that is not there. */
+      const bins = {};
+      let best = null;
+      m.mxDots.forEach(d=>{
+        const c = Math.min(4, Math.floor(d.x*5)), r = Math.min(4, Math.floor(d.y*5));
+        const key = r+','+c;
+        bins[key] = (bins[key]||0)+1;
+        if (!best || bins[key] > best.n) best = { r:r, c:c, n:bins[key] };
+      });
+      const L = (lang === 'ar') ? 'ar' : 'en';   /* a string here, not a getter */
+      const cap = best
+        ? esc(m.mxCap)
+            .replace('{cell}', '<b>'+esc(m.mxRows[best.r])+' × '+esc(m.mxCols[best.c])+'</b>')
+            .replace('{n}', NUMW[L][best.n] || best.n)
+        : '';
+
+      let cells = '';
+      for (let i = 0; i < 25; i++) cells += '<span class="dash-cell mx-cell"></span>';
+
+      return '<div class="dash-pane dash-mx-pane">'+
+        '<div class="dash-mx-head">'+
+          '<div><h4>'+esc(m.mxT)+'</h4><p class="dash-mx-sub">'+esc(m.mxSub)+'</p></div>'+
+          '<button class="dash-mx-rescan" type="button">'+ic('redo')+
+            '<span>'+esc(m.mxRescan)+'</span></button>'+
+        '</div>'+
+        '<div class="dash-mx-grid">'+
+          '<span class="dash-mx-ax is-y">'+esc(m.mxSevAxis)+'</span>'+
+          '<div class="dash-mx-rows">'+
+            m.mxRows.map(r=>'<span class="dash-mx-rl">'+esc(r)+'</span>').join('')+'</div>'+
+          '<div class="dash-mx-plot">'+
+            '<svg class="dash-mx-field" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'+
+              '<defs><filter id="mxBlur" x="-40%" y="-40%" width="180%" height="180%">'+
+                '<feGaussianBlur stdDeviation="6.5"/></filter></defs>'+
+              '<g filter="url(#mxBlur)">'+m.mxClouds.map(cloud).join('')+'</g>'+
+              m.mxBands.map(d=>'<path d="'+d+'" class="mx-band"/>').join('')+
+            '</svg>'+
+            '<div class="dash-mx-cells">'+cells+'</div>'+
+            '<span class="dash-mx-appetite">'+esc(m.mxAppetite)+'</span>'+
+            m.mxDots.map(d=>'<span class="dash-mx-dot is-'+d.k+'" style="--x:'+pc(d.x)+'%;--y:'+pc(d.y)+'%"></span>').join('')+
+          '</div>'+
+          '<div class="dash-mx-cols">'+
+            m.mxCols.map(c=>'<span class="dash-mx-cl">'+esc(c)+'</span>').join('')+'</div>'+
+          '<span class="dash-mx-ax is-x">'+esc(m.mxLikAxis)+'</span>'+
+        '</div>'+
+        '<p class="dash-mx-cap">'+cap+'</p></div>';
+    }
+
+    function renderGov(m){       /* 03 · Govern */
       return shell(m,
         '<div class="dash-figs">'+m.figs.map(figHTML).join('')+'</div>'+
         '<div class="dash-gov2">'+
@@ -3052,13 +3163,10 @@ window.TaharaI18N = (function(){
             '<div class="dash-legend">'+m.legend.map((l,i)=>
               '<span><i class="s'+i+'"></i>'+esc(l)+'</span>').join('')+'</div>'+
           '</div>'+
-          '<div class="dash-pane">'+
-            '<div class="dash-pane-head"><h4>'+esc(m.mxT)+'</h4>'+
-              '<span class="dash-badge">'+esc(m.mxBadge)+'</span></div>'+
-            mx+
-          '</div>'+
+          matrixHTML(m)+
         '</div>');
     }
+
 
     function renderGrd(m){       /* 04 · Guardrails */
       const a = m.alert;

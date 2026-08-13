@@ -311,40 +311,76 @@ code,pre{font-family:var(--font-mono)}
 
 /* ── left · dial ── */
 .live-dial{position:relative;overflow:hidden;border-radius:18px;min-height:420px;
-  display:grid;place-items:center;
+  display:grid;grid-template-rows:1fr auto;align-items:center;padding:26px 22px 24px;
   background:linear-gradient(158deg,var(--g900) 0%,var(--g800) 52%,#0a3a7d 100%)}
 .live-dial-grid{position:absolute;inset:0;opacity:.5;
   background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
                    linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
   background-size:38px 38px}
-.live-ring{position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.1)}
-.live-ring-1{width:74%;aspect-ratio:1}
-.live-ring-2{width:52%;aspect-ratio:1}
-/* The wedge is the progress read-out: a conic sweep clipped to a circle, so it
-   fills like a pie rather than a bar. --p is written by the engine. */
-.live-wedge{position:absolute;width:74%;aspect-ratio:1;border-radius:50%;
-  background:conic-gradient(from -90deg,rgba(255,255,255,.15) calc(var(--p,0) * 1%),transparent 0)}
 .live-orb{position:absolute;border-radius:50%;background:rgba(255,255,255,.34);
   animation:live-float 7s var(--e-io) infinite}
 .live-orb-1{width:11px;height:11px;top:26%;left:18%}
 .live-orb-2{width:13px;height:13px;top:16%;right:22%;animation-delay:-2.4s}
 .live-orb-3{width:15px;height:15px;bottom:22%;left:26%;animation-delay:-4.8s}
 @keyframes live-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
-.live-mid{position:relative;display:grid;justify-items:center;gap:2px;text-align:center}
+
+/* ── the segmented ring ──
+   Six arcs, one per checklist stage, each filling across its own sixth of
+   the run. The engine writes stroke-dasharray on the fill group; the track
+   group underneath is fixed. Rounded caps and a short gap keep the six
+   readable as six rather than one broken circle. */
+.live-dial-mid{position:relative;display:grid;place-items:center;justify-self:center;
+  width:min(300px,74%);aspect-ratio:1}
+.live-seg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.live-seg circle{fill:none;stroke-width:11;stroke-linecap:round}
+.live-seg-track circle{stroke:rgba(255,255,255,.15)}
+.live-seg-fill circle{stroke:var(--g400);transition:stroke-dasharray .18s linear}
+@media(prefers-reduced-motion:reduce){ .live-seg-fill circle{transition:none} }
+
+.live-mid{position:relative;display:grid;justify-items:center;gap:4px;text-align:center}
 .live-pct{display:flex;align-items:flex-start;color:#fff;line-height:1}
-.live-pct b{font-family:var(--font-body);font-weight:600;font-size:clamp(52px,7vw,76px);
+.live-pct b{font-family:var(--font-body);font-weight:600;font-size:clamp(46px,6.4vw,68px);
   letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.live-pct i{font-style:normal;font-size:22px;font-weight:500;margin-top:6px;
-  color:rgba(255,255,255,.72)}
-.live-stage{margin-top:12px;font-size:16px;color:rgba(255,255,255,.9)}
-.live-target{margin-top:18px;max-width:100%;overflow:hidden;text-overflow:ellipsis;
+.live-pct-l{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.55)}
+
+.live-dial-foot{position:relative;display:grid;justify-items:center;gap:12px;
+  margin-top:20px;min-width:0;max-width:100%}
+.live-stage{font-size:15px;color:rgba(255,255,255,.9);text-align:center}
+.live-target{max-width:100%;overflow:hidden;text-overflow:ellipsis;
   white-space:nowrap;border:1px solid rgba(255,255,255,.24);border-radius:10px;
   padding:8px 16px;font-family:var(--font-mono);font-size:13px;color:rgba(255,255,255,.86)}
 
-/* ── right · checklist ── */
+/* ── right · checklist card ──
+   The stage list is the whole panel now. The per-stage percentages and the
+   trace log are gone: the ring carries the number, the headings carry which
+   stage the run has reached. */
 .live-side{display:flex;flex-direction:column;min-width:0}
-.live-checks{display:grid;gap:14px}
-.live-check{display:grid;grid-template-columns:18px 1fr auto;gap:14px;align-items:center;
+.live-card{flex:1;display:flex;flex-direction:column;min-height:0;
+  border:1px solid var(--line);border-radius:16px;background:var(--paper);
+  box-shadow:var(--sh-s)}
+.live-card-head{flex:none;display:flex;align-items:baseline;justify-content:space-between;
+  gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);
+  font-size:15px;font-weight:500;color:var(--ink)}
+.live-card-pct{font-family:var(--font-mono);font-size:13px;font-weight:500;
+  color:var(--g600);font-variant-numeric:tabular-nums}
+.live-card-foot{flex:none;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:14px 16px 14px 20px;border-top:1px solid var(--line)}
+.live-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);
+  font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-3)}
+.live-badge > i{width:6px;height:6px;border-radius:50%;background:var(--g400);
+  animation:live-pulse 1.6s ease-in-out infinite}
+.live-again{display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  font-family:var(--font-body);font-size:13.5px;font-weight:500;color:var(--g700);
+  background:var(--bg-2);border:1px solid var(--line);border-radius:11px;
+  padding:9px 15px;transition:background .2s,border-color .2s,color .2s}
+.live-again:hover{background:#fff;border-color:var(--g400);color:var(--g900)}
+.live-again svg{width:14px;height:14px}
+
+.live-checks{flex:1;min-height:0;display:grid;align-content:center;gap:18px;
+  padding:18px 20px}
+.live-check{display:grid;grid-template-columns:18px 1fr;gap:14px;align-items:center;
   font-size:15px;color:var(--ink-3);transition:color .3s ease}
 .live-check.is-live,.live-check.is-done{color:var(--ink)}
 .live-ic{position:relative;width:18px;height:18px;display:grid;place-items:center}
@@ -363,31 +399,7 @@ code,pre{font-family:var(--font-mono)}
 .live-ic-tick path{fill:none;stroke:#fff;stroke-width:1.9;
   stroke-linecap:round;stroke-linejoin:round}
 @keyframes live-spin{to{transform:rotate(360deg)}}
-.live-check-p{font-family:var(--font-mono);font-size:12.5px;color:var(--ink-3);
-  font-variant-numeric:tabular-nums}
-
-.live-bar{margin:20px 0 18px;height:3px;border-radius:2px;background:var(--line);
-  overflow:hidden}
-.live-bar > i{display:block;height:100%;width:0;border-radius:2px;background:var(--g700)}
-
-/* ── right · live trace ── */
-.live-trace{flex:1;min-height:0;display:flex;flex-direction:column;
-  border:1px solid var(--line);border-radius:14px;background:var(--bg-2);overflow:hidden}
-.live-trace-head{flex:none;display:flex;align-items:center;justify-content:space-between;
-  padding:11px 16px;border-bottom:1px solid var(--line);
-  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink-3)}
-.live-trace-dot{width:6px;height:6px;border-radius:50%;background:var(--g400);
-  animation:live-pulse 1.6s ease-in-out infinite}
 @keyframes live-pulse{0%,100%{opacity:.3}50%{opacity:1}}
-.live-trace-list{flex:1;min-height:132px;padding:10px 16px;display:flex;
-  flex-direction:column;justify-content:flex-end;gap:7px;overflow:hidden}
-.live-trace-list li{display:grid;grid-template-columns:38px 54px 1fr;gap:12px;
-  font-family:var(--font-mono);font-size:12.5px;line-height:1.4;color:var(--ink-2);
-  animation:live-in .32s var(--e-out) both}
-.live-trace-list .lt-t{color:var(--ink-3);font-variant-numeric:tabular-nums}
-.live-trace-list .lt-k{color:var(--g600)}
-@keyframes live-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* ── footer state chip ── */
 .live-state{flex:none;display:inline-flex;align-items:center;gap:9px;white-space:nowrap;
@@ -400,9 +412,9 @@ code,pre{font-family:var(--font-mono)}
 .live-state.is-done{color:var(--g700)}
 
 @media(prefers-reduced-motion:reduce){
-  .live-orb,.live-trace-dot,.live-state > i{animation:none}
+  .live-orb,.live-badge > i,.live-state > i{animation:none}
   .live-check.is-live .live-ic::before{animation:none}
-  .live-trace-list li{animation:none}
+
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -574,7 +586,7 @@ code,pre{font-family:var(--font-mono)}
   .surface-modal h3{font-size:22px}
   .surface-field{flex-wrap:wrap}
   .surface-run{width:100%;justify-content:center}
-  .live-trace-list li{grid-template-columns:34px 46px 1fr;gap:9px;font-size:11.5px}
+
   .rep-main{padding:26px 22px 22px}
   .rep-side{padding:26px 22px 24px}
   .rep-target{font-size:21px}
@@ -882,6 +894,79 @@ code,pre{font-family:var(--font-mono)}
 .dash-cell.md{background:var(--d-warn-f);border-color:rgba(181,101,29,.18)}
 .dash-cell.hi{background:var(--d-bad-f);border-color:rgba(192,57,43,.2)}
 .dash-cell.zero{color:var(--d-ink-3);font-size:13px}
+
+/* ══════════ Govern · risk matrix ══════════
+   A density plot, not a table of counts. Three layers stacked in one box:
+   blurred patches for where findings gather, the 25 gridline cells, then the
+   findings themselves as dots at their own coordinates. The cells are still
+   .dash-cell so the diagonal reveal in the render step drives them unchanged —
+   they simply draw as rules now rather than tinted counters. */
+.dash-mx-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.dash-mx-head h4{font-size:14px;font-weight:600;letter-spacing:-.01em;color:var(--d-ink)}
+.dash-mx-sub{margin-top:2px;font-size:11px;line-height:1.35;color:var(--d-ink-3)}
+.dash-mx-rescan{display:inline-flex;align-items:center;gap:5px;flex:none;
+  font-family:var(--font-body);font-size:11px;font-weight:500;color:var(--d-good);
+  background:var(--d-good-f);border:1px solid rgba(18,133,90,.22);border-radius:8px;
+  padding:5px 9px;cursor:pointer;transition:background .2s,border-color .2s}
+.dash-mx-rescan:hover{background:rgba(18,133,90,.16);border-color:rgba(18,133,90,.36)}
+.dash-mx-rescan .d-ic{width:11px;height:11px}
+
+/* Forced LTR: the columns run rare -> almost certain and the dots are placed
+   from the left, so mirroring the grid in Arabic would put every finding in
+   the wrong cell. Arabic labels still shape RTL within themselves. */
+.dash-mx-grid{direction:ltr;display:grid;grid-template-columns:auto auto minmax(0,1fr);
+  grid-template-rows:minmax(0,1fr) auto auto;margin-top:12px;flex:1;min-height:0}
+.dash-mx-ax{font-family:var(--font-mono);font-size:7px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--d-ink-3);display:flex;align-items:center;
+  justify-content:center}
+.dash-mx-ax.is-y{grid-area:1/1;writing-mode:vertical-rl;transform:rotate(180deg);padding-right:3px}
+.dash-mx-ax.is-x{grid-area:3/3;padding-top:5px}
+
+.dash-mx-rows{grid-area:1/2;display:grid;grid-template-rows:repeat(5,1fr)}
+/* the original mono labels — they were sized for this pane and still fit */
+.dash-mx-rl{display:flex;align-items:center;justify-content:flex-end;
+  padding-right:7px;padding-inline-end:7px;white-space:nowrap}
+
+.dash-mx-plot{grid-area:1/3;position:relative;overflow:hidden;background:#fff;
+  border:1px solid var(--d-line);border-radius:4px}
+.dash-mx-field{position:absolute;inset:0;width:100%;height:100%}
+.mx-cloud{opacity:.5}
+.mx-cloud.is-bad{fill:var(--d-bad)}
+.mx-cloud.is-cool{fill:var(--d-accent)}
+/* non-scaling-stroke: the viewBox is stretched to the plot with
+   preserveAspectRatio=none, which would otherwise smear the arcs unevenly */
+.mx-band{fill:none;stroke:var(--d-bad);stroke-width:1.4;opacity:.8;
+  stroke-linecap:round;vector-effect:non-scaling-stroke}
+
+.dash-mx-cells{position:absolute;inset:0;display:grid;
+  grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr)}
+/* transform:none — 25 cells scaling from .9 would tear the gridlines apart
+   mid-reveal. The opacity fade is what carries the sweep. */
+.dash-cell.mx-cell{min-height:0;border:none;border-radius:0;background:none;transform:none;
+  border-right:1px solid var(--d-line-2);border-bottom:1px solid var(--d-line-2)}
+.dash-cell.mx-cell:nth-child(5n){border-right:none}
+.dash-cell.mx-cell:nth-child(n+21){border-bottom:none}
+
+.dash-mx-appetite{position:absolute;top:7px;left:7px;font-family:var(--font-mono);
+  font-size:6.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--d-warn);background:#fff;border:1px solid rgba(181,101,29,.4);
+  border-radius:999px;padding:2px 6px}
+
+.dash-mx-dot{position:absolute;left:var(--x);top:var(--y);width:9px;height:9px;
+  margin:-4.5px 0 0 -4.5px;border-radius:50%;background:#fff;
+  border:2px solid var(--d-accent);box-shadow:0 1px 2px rgba(17,24,39,.18)}
+/* the loud ones invert: filled body, white core */
+.dash-mx-dot.is-bad,.dash-mx-dot.is-warn,.dash-mx-dot.is-mid{
+  box-shadow:inset 0 0 0 2px #fff,0 1px 2px rgba(17,24,39,.25)}
+.dash-mx-dot.is-bad{border-color:var(--d-bad);background:var(--d-bad)}
+.dash-mx-dot.is-warn{border-color:var(--d-warn);background:var(--d-warn)}
+.dash-mx-dot.is-mid{border-color:var(--d-accent-2);background:var(--d-accent-2)}
+
+.dash-mx-cols{grid-area:2/3;display:grid;grid-template-columns:repeat(5,1fr);padding-top:6px}
+/* .dash-mx-cl keeps its original mono styling; only the centring is new */
+.dash-mx-cl{text-align:center;justify-content:center}
+.dash-mx-cap{margin-top:10px;font-size:11px;line-height:1.5;color:var(--d-ink-2)}
+.dash-mx-cap b{color:var(--d-ink);font-weight:600}
 
 /* ══════════ Guardrails · alert, filters, event log ══════════ */
 .dash-alert{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px;
