@@ -14,6 +14,7 @@ const T = {
   nav_architecture:{ en: 'Architecture', ar: 'البنية' },
   nav_resources:   { en: 'Resources',    ar: 'الموارد' },
   nav_faq:         { en: 'FAQ',          ar: 'الأسئلة الشائعة' },
+  nav_about:       { en: 'About us',     ar: 'من نحن' },
   cta_demo:        { en: 'Request a demo', ar: 'اطلب عرضًا توضيحيًا' },
   // platform menu demo panel — the columns come from tahara-mega.js
   mega_demo_k:     { en: 'Guided demo', ar: 'عرض توضيحي موجَّه' },
@@ -363,6 +364,7 @@ export default function ResourcesPage() {
             <a href="/#stack">{tr('nav_architecture', lang)}</a>
             <a href="/resources" className="on">{tr('nav_resources', lang)}</a>
             <a href="/#faq">{tr('nav_faq', lang)}</a>
+            <a href="/about">{tr('nav_about', lang)}</a>
           </div>
           <div className="nav-right">
             <button className="btn btn-solid" data-cal-link="tahara-ai-xpf7u0/product-demo">

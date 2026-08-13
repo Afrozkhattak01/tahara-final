@@ -121,7 +121,7 @@ window.TAHARA_DATA = (function(){
       ['FAQ', '#faq'], ['Documentation', '#']
     ]],
     ['Company', [
-      ['About', '#'], ['Careers', '#'], ['Contact', '#'], ['Privacy', '#']
+      ['About', '/about'], ['Careers', '#'], ['Contact', '#'], ['Privacy', '#']
     ]]
   ];
 
@@ -1020,6 +1020,7 @@ window.TaharaI18N = (function(){
     'nav.architecture':{ en:'Architecture', ar:'البنية' },
     'nav.resources':  { en:'Resources', ar:'الموارد' },
     'nav.faq':        { en:'FAQ', ar:'الأسئلة الشائعة' },
+    'nav.about':      { en:'About us', ar:'من نحن' },
 
     'res.tc.t': { en:'Trust center', ar:'مركز الثقة' },
     'res.tc.d': { en:'Our own posture, public', ar:'وضعنا الأمني الخاص، بشكل علني' },
@@ -1370,7 +1371,7 @@ window.TaharaI18N = (function(){
       ['الأسئلة الشائعة', '#faq'], ['التوثيق', '#']
     ]],
     ['الشركة', [
-      ['حول الشركة', '#'], ['الوظائف', '#'], ['التواصل', '#'], ['الخصوصية', '#']
+      ['حول الشركة', '/about'], ['الوظائف', '#'], ['التواصل', '#'], ['الخصوصية', '#']
     ]]
   ];
 
