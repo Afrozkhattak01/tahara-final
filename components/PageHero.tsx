@@ -17,7 +17,8 @@
  */
 
 type Props = {
-  badge: string;
+  /** status pill above the headline; omit to render none */
+  badge?: string;
   title: string;
   lead: string;
   cta: string;
@@ -62,13 +63,20 @@ export default function PageHero({ badge, title, lead, cta, calLink }: Props) {
            it. No max-width — .wrap's 1180px is what breaks the line, which is
            what puts "Your Company" on its own row rather than a 16ch cap
            forcing three. */
-        /* Slightly wider than .wrap so "…Running In" holds on the first line
-           rather than dropping "In" to the second. Capped against the viewport
-           so it can never push the page sideways on a narrow screen. */
-        .ph-hero h1{margin:32px auto 0;font-weight:700;
-          width:min(1240px,calc(100vw - 48px));
-          font-size:clamp(34px,5.2vw,64px);line-height:1.12;letter-spacing:-.02em;
-          color:var(--ink)}
+        /* Weight 400 and a size in step with the rest of the site: every other
+           heading here is Libre Caslon Text at 400, and a bold 64px hero read
+           as a different site. Width is capped against the viewport so it can
+           never push the page sideways. */
+        /* Sized so the headline holds one line on a desktop viewport. It still
+           wraps below roughly 1100px — forcing nowrap there would either
+           overflow the page or shrink the type past reading size. */
+        /* No width of its own: it fills .wrap, the same container every other
+           section uses, so its edges line up with the video panel below rather
+           than overhanging it. The size is then set by what fits one line
+           inside that width. */
+        .ph-hero h1{margin:28px auto 0;font-weight:400;width:auto;max-width:100%;
+          font-size:clamp(28px,3.05vw,43px);line-height:1.18;letter-spacing:-.015em;
+          text-wrap:balance;color:var(--ink)}
         .ph-hero p{margin:28px auto 0;max-width:min(100%,640px);
           font-size:clamp(15.5px,1.4vw,19px);line-height:1.62;color:var(--ink-2)}
         .ph-cta{margin-top:38px}
@@ -86,7 +94,7 @@ export default function PageHero({ badge, title, lead, cta, calLink }: Props) {
         }
       `}</style>
       <div className="wrap">
-        <span className="ph-badge"><i aria-hidden="true"></i>{badge}</span>
+        {badge ? <span className="ph-badge"><i aria-hidden="true"></i>{badge}</span> : null}
         <h1>{title}</h1>
         <p>{lead}</p>
         {cta ? (

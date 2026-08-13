@@ -147,6 +147,21 @@ export default function AboutPage() {
       <AmbientBg />
       <style suppressHydrationWarning>{`
 
+        /* video — the frame comes from landing.css (.pv-frame); only the play
+           control differs, translucent rather than the landing page's solid
+           white disc */
+        .ab-video{padding:4px 0 0}
+        .ab-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+          width:80px;height:80px;border-radius:50%;cursor:pointer;
+          background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.42);
+          display:grid;place-items:center;color:#fff;
+          transition:background .25s ease,transform .3s var(--e-out)}
+        .ab-play svg{width:26px;height:26px;margin-left:4px}
+        .ab-play:hover{background:rgba(255,255,255,.2);
+          transform:translate(-50%,-50%) scale(1.06)}
+        @media(max-width:640px){ .ab-play{width:60px;height:60px}
+          .ab-play svg{width:20px;height:20px;margin-left:3px} }
+
         .ab-sec{padding:56px 0 0}
         .ab-sec-head{display:flex;align-items:baseline;gap:16px;padding-bottom:10px;
           border-bottom:1px solid var(--line)}
@@ -228,12 +243,28 @@ export default function AboutPage() {
 
       <main>
         <PageHero
-          badge={tr('badge', lang)}
           title={tr('title', lang)}
           lead={tr('lead', lang)}
           cta={tr('cta', lang)}
           calLink="tahara-ai-xpf7u0/product-demo"
         />
+
+        {/* Video. .pv-frame is the landing page's own panel — same gradient,
+            inner grid, radius and shadow — so this needs no new frame styling.
+            The play control is deliberately inert, matching the landing page:
+            there is no video wired to it yet. */}
+        <section className="ab-video">
+          <div className="wrap">
+            <div className="pv-frame">
+              <button className="ab-play" type="button" aria-label="Play video">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M8 5.4v13.2L19 12z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
         <div className="wrap">
           <section className="ab-sec">
             <div className="ab-sec-head"><span>{tr('wwd_k', lang)}</span></div>
