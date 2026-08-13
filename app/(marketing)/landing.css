@@ -317,23 +317,19 @@ code,pre{font-family:var(--font-mono)}
   background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
                    linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
   background-size:38px 38px}
-.live-orb{position:absolute;border-radius:50%;background:rgba(255,255,255,.34);
-  animation:live-float 7s var(--e-io) infinite}
-.live-orb-1{width:11px;height:11px;top:26%;left:18%}
-.live-orb-2{width:13px;height:13px;top:16%;right:22%;animation-delay:-2.4s}
-.live-orb-3{width:15px;height:15px;bottom:22%;left:26%;animation-delay:-4.8s}
-@keyframes live-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
-
 /* ── the segmented ring ──
    Six arcs, one per checklist stage, each filling across its own sixth of
    the run. The engine writes stroke-dasharray on the fill group; the track
-   group underneath is fixed. Rounded caps and a short gap keep the six
-   readable as six rather than one broken circle. */
+   group underneath is fixed.
+   Butt caps, not round: a round cap adds half the stroke width past each end
+   of the arc, so at full length neighbouring segments grew into one another
+   and the ring closed up into a single band. Flat ends plus a wide gap keep
+   the six readable as six even at 100%. */
 .live-dial-mid{position:relative;display:grid;place-items:center;justify-self:center;
   width:min(300px,74%);aspect-ratio:1}
 .live-seg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-.live-seg circle{fill:none;stroke-width:11;stroke-linecap:round}
-.live-seg-track circle{stroke:rgba(255,255,255,.15)}
+.live-seg circle{fill:none;stroke-width:16;stroke-linecap:butt}
+.live-seg-track circle{stroke:rgba(255,255,255,.13)}
 .live-seg-fill circle{stroke:var(--g400);transition:stroke-dasharray .18s linear}
 @media(prefers-reduced-motion:reduce){ .live-seg-fill circle{transition:none} }
 
@@ -412,7 +408,7 @@ code,pre{font-family:var(--font-mono)}
 .live-state.is-done{color:var(--g700)}
 
 @media(prefers-reduced-motion:reduce){
-  .live-orb,.live-badge > i,.live-state > i{animation:none}
+  .live-badge > i,.live-state > i{animation:none}
   .live-check.is-live .live-ic::before{animation:none}
 
 }

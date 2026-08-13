@@ -1061,9 +1061,6 @@ window.TaharaI18N = (function(){
                         ar:'أدخل نطاقًا صالحًا، مثل your-company.ai' },
     'surface.note':   { en:'Read-only external assessment. No credentials required. No production traffic modified.',
                         ar:'تقييم خارجي للقراءة فقط. لا يتطلب بيانات اعتماد. لا يُعدَّل أي من حركة الإنتاج.' },
-    /* screen 2 — the footer swaps to this while the scripted run plays */
-    'surface.preview':{ en:'Illustrative preview. Nothing is sent from your browser.',
-                        ar:'معاينة توضيحية. لا يُرسَل شيء من متصفحك.' },
     'live.k1':        { en:'Discovering attack surface',   ar:'اكتشاف سطح الهجوم' },
     'live.k2':        { en:'Fingerprinting technologies',  ar:'تحديد بصمات التقنيات' },
     'live.k3':        { en:'Enumerating AI assets',        ar:'حصر أصول الذكاء الاصطناعي' },
@@ -2065,7 +2062,7 @@ window.TaharaI18N = (function(){
        fills across it, so the sweep on the left and the list on the right
        are the same progress shown twice rather than two separate readings.
        ───────────────────────────────────────────────────────────────── */
-    const SEG_N = 6, SEG_R = 80, SEG_GAP = 7;
+    const SEG_N = 6, SEG_R = 80, SEG_GAP = 17;   /* gap in user units, see the CSS note */
     const SEG_C = 2 * Math.PI * SEG_R;
     const SEG_LEN = SEG_C / SEG_N - SEG_GAP;
     function buildRing(){
@@ -2303,12 +2300,11 @@ window.TaharaI18N = (function(){
       modal.classList.add('is-live');
       if (tgtEl) tgtEl.textContent = target;
       if (noteEl){
-        /* The run is scripted, so the footer has to say so — the screen-1
-           wording would be a claim about a scan that is not happening. */
-        noteEl.setAttribute('data-i18n', 'surface.preview');
-        noteEl.textContent = lang() === 'ar'
-          ? 'معاينة توضيحية. لا يُرسَل شيء من متصفحك.'
-          : 'Illustrative preview. Nothing is sent from your browser.';
+        /* Blanked for the run rather than swapped. The screen-1 wording is a
+           claim about a scan that is not happening, so it cannot simply stay;
+           the footer keeps its state chip on the right and nothing else. */
+        noteEl.removeAttribute('data-i18n');
+        noteEl.textContent = '';
       }
       if (stateEl) stateEl.hidden = false;
       if (reduced){ printed = 0; t0 = performance.now(); finish(target); return; }
