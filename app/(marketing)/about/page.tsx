@@ -102,6 +102,31 @@ const T = {
   fw_note: { en: 'A single crosswalk that every supported framework maps onto — built once per control, not once per regulator. Adding a new regional framework extends the map; it doesn’t mean re-asking every question from scratch.',
              ar: 'مسار ربط واحد ترتبط به كل الأطر المدعومة — يُبنى مرة لكل ضابط، لا مرة لكل جهة تنظيمية. إضافة إطار إقليمي جديد توسّع الخريطة، ولا تعني إعادة طرح كل سؤال من الصفر.' },
 
+  /* key features */
+  kf_k:  { en: 'Key features', ar: 'الميزات الرئيسية' },
+  kf_t:  { en: 'What Actually Makes Tahara AI Different',
+           ar: 'ما الذي يجعل Tahara AI مختلفًا فعلًا' },
+  kf_cta:{ en: 'Request Early Access', ar: 'اطلب وصولًا مبكرًا' },
+
+  k1_t: { en: 'Applicability Engine', ar: 'محرك الانطباق' },
+  k1_d: { en: 'Figures out exactly which laws and standards apply to a specific system — not a generic checklist.',
+          ar: 'يحدّد بدقة أي القوانين والمعايير تنطبق على نظام بعينه — لا قائمة تحقق عامة.' },
+  k2_t: { en: 'Discovery Collector', ar: 'جامع الاكتشاف' },
+  k2_d: { en: 'Read-only, runs inside your boundary, never holds your credentials, has no inbound path back in.',
+          ar: 'للقراءة فقط، يعمل داخل نطاقك، ولا يحتفظ ببيانات اعتمادك، وليس له مسار دخول إليك.' },
+  k3_t: { en: 'Claim vs. Reality Triangulation', ar: 'مطابقة الادعاء بالواقع' },
+  k3_d: { en: 'Compares what a person said, what the policy states, and what the live system shows — the mismatch is the finding.',
+          ar: 'يقارن ما قاله الشخص، وما تنصّ عليه السياسة، وما يُظهره النظام الحي — والتعارض هو النتيجة.' },
+  k4_t: { en: 'Continuous Attack Simulation', ar: 'محاكاة هجوم مستمرة' },
+  k4_d: { en: 'The OWASP LLM Top 10, run on a recurring schedule against staging — not a once-a-year pen test.',
+          ar: 'قائمة OWASP LLM العشرة، تُشغَّل وفق جدول متكرر على بيئة التجهيز — لا اختبار اختراق سنوي.' },
+  k5_t: { en: 'Bilingual PII Guardrails', ar: 'حواجز حماية ثنائية اللغة' },
+  k5_d: { en: 'Prompt inspection and masking in English and Roman Urdu, before anything reaches the model.',
+          ar: 'فحص الموجّهات وإخفاؤها بالإنجليزية والأردية بحروف لاتينية، قبل أن يصل أي شيء إلى النموذج.' },
+  k6_t: { en: 'Evidence Locker & Audit Ledger', ar: 'خزانة الأدلة وسجل التدقيق' },
+  k6_d: { en: 'Every piece of proof stored and dated, in a hash-chained record that can’t be edited after the fact.',
+          ar: 'كل دليل مخزَّن ومؤرَّخ، في سجل مترابط بالبصمات لا يمكن تعديله لاحقًا.' },
+
   /* overview */
   ov_k:      { en: 'Overview', ar: 'نظرة عامة' },
   /* TODO copy */
@@ -145,6 +170,18 @@ const FW = [
   { n: 'ISO/IEC 42001', c: 76 },
   { n: 'ISO/IEC 23894', c: 41 },
   { n: 'NIST AI RMF', c: 37 },
+] as const;
+
+/* Icons are drawn here in the same 24-box stroke style as the rest of the
+   site rather than pulled from an icon set, so they inherit currentColor and
+   need no dependency. */
+const KF = [
+  { t: 'k1_t', d: 'k1_d', ic: <><path d="M4 6h11M4 11h7M4 16h5" /><circle cx="16.5" cy="15.5" r="3.6" /><path d="m19.4 18.4 2.2 2.2" /></> },
+  { t: 'k2_t', d: 'k2_d', ic: <><path d="M12 3 5 6v6c0 4.5 3 7.6 7 9 4-1.4 7-4.5 7-9V6z" /><path d="m9 12 2 2 4-4" /></> },
+  { t: 'k3_t', d: 'k3_d', ic: <><circle cx="6" cy="5.5" r="2.4" /><circle cx="18" cy="5.5" r="2.4" /><circle cx="12" cy="19" r="2.4" /><path d="M8.4 5.5h7.2M6.9 7.7 11 16.7M17.1 7.7 13 16.7" /></> },
+  { t: 'k4_t', d: 'k4_d', ic: <><path d="M12 3 5 6v6c0 4.5 3 7.6 7 9 4-1.4 7-4.5 7-9V6z" /><path d="M12 8.5v4M12 16.2h.01" /></> },
+  { t: 'k5_t', d: 'k5_d', ic: <><rect x="3" y="5.5" width="18" height="13" rx="2.2" /><path d="M7 10.5h4M7 14h7M15.5 10.5h1.5" /></> },
+  { t: 'k6_t', d: 'k6_d', ic: <><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" /><path d="M14 3v5h5M9 13h6M9 17h4" /></> },
 ] as const;
 
 const WHY = [
@@ -355,6 +392,54 @@ export default function AboutPage() {
           .ab-fw-stem{top:0;height:44px}
         }
 
+        /* key features */
+        .ab-kf{padding:96px 0 0}
+        .ab-kf-head{display:flex;align-items:flex-end;justify-content:space-between;
+          gap:28px;flex-wrap:wrap}
+        .ab-kf-badge{display:inline-block;background:var(--g900);color:#fff;border-radius:7px;
+          padding:7px 14px;font-family:var(--font-mono);font-size:11px;font-weight:500;
+          letter-spacing:.16em;text-transform:uppercase}
+        .ab-kf-head h2{margin-top:20px;font-size:clamp(25px,3vw,40px);line-height:1.18;
+          letter-spacing:-.015em;color:var(--ink)}
+        .ab-kf-cta{display:inline-flex;align-items:center;gap:10px;flex:none;cursor:pointer;
+          background:var(--g900);color:#fff;border:none;border-radius:10px;padding:14px 22px;
+          font-family:var(--font-body);font-size:14.5px;font-weight:600;letter-spacing:-.01em;
+          transition:background .25s ease,box-shadow .3s ease}
+        .ab-kf-cta:hover{background:var(--g800);box-shadow:0 10px 26px rgba(3,24,56,.3)}
+        .ab-kf-arw{transition:transform .3s var(--e-out)}
+        .ab-kf-cta:hover .ab-kf-arw{transform:translateX(3px)}
+        [dir="rtl"] .ab-kf-arw{transform:scaleX(-1)}
+        [dir="rtl"] .ab-kf-cta:hover .ab-kf-arw{transform:scaleX(-1) translateX(3px)}
+
+        /* one hairline between cells, none on the outer edges — the container
+           border already draws those */
+        .ab-kf-grid{margin-top:34px;display:grid;grid-template-columns:repeat(3,1fr);
+          border:1px solid var(--line);border-radius:16px;overflow:hidden}
+        .ab-kf-cell{padding:30px 30px 34px;
+          border-top:1px solid var(--line);border-inline-start:1px solid var(--line)}
+        .ab-kf-cell:nth-child(-n+3){border-top:none}
+        .ab-kf-cell:nth-child(3n+1){border-inline-start:none}
+        .ab-kf-ic{width:26px;height:26px;color:var(--g700)}
+        .ab-kf-cell b{display:block;margin-top:20px;font-weight:600;font-size:17px;
+          letter-spacing:-.01em;color:var(--ink)}
+        .ab-kf-cell p{margin-top:10px;font-size:15px;line-height:1.65;color:var(--ink-2)}
+
+        @media(max-width:900px){
+          .ab-kf{padding:64px 0 0}
+          .ab-kf-grid{grid-template-columns:repeat(2,1fr)}
+          .ab-kf-cell:nth-child(-n+3){border-top:1px solid var(--line)}
+          .ab-kf-cell:nth-child(3n+1){border-inline-start:1px solid var(--line)}
+          .ab-kf-cell:nth-child(-n+2){border-top:none}
+          .ab-kf-cell:nth-child(2n+1){border-inline-start:none}
+        }
+        @media(max-width:600px){
+          .ab-kf-grid{grid-template-columns:1fr}
+          .ab-kf-cell{padding:24px 22px 26px;border-inline-start:none !important}
+          .ab-kf-cell:first-child{border-top:none}
+          .ab-kf-cell:nth-child(n+2){border-top:1px solid var(--line)}
+          .ab-kf-cta{width:100%;justify-content:center}
+        }
+
         .ab-sec{padding:56px 0 0}
         .ab-sec-head{display:flex;align-items:baseline;gap:16px;padding-bottom:10px;
           border-bottom:1px solid var(--line)}
@@ -517,6 +602,37 @@ export default function AboutPage() {
             </div>
 
             <p className="ab-fw-note">{tr('fw_note', lang)}</p>
+          </div>
+        </section>
+
+        {/* ── key features ── */}
+        <section className="ab-kf">
+          <div className="wrap">
+            <div className="ab-kf-head">
+              <div>
+                <span className="ab-kf-badge">{tr('kf_k', lang)}</span>
+                <h2>{tr('kf_t', lang)}</h2>
+              </div>
+              {/* Inert for now — no destination decided. It looks like a
+                  control, so it should be wired or removed before launch. */}
+              <button className="ab-kf-cta" type="button">
+                <span>{tr('kf_cta', lang)}</span>
+                <span className="ab-kf-arw" aria-hidden="true">→</span>
+              </button>
+            </div>
+
+            <div className="ab-kf-grid">
+              {KF.map((f) => (
+                <div className="ab-kf-cell" key={f.t}>
+                  <svg className="ab-kf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    {f.ic}
+                  </svg>
+                  <b>{tr(f.t, lang)}</b>
+                  <p>{tr(f.d, lang)}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
