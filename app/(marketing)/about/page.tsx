@@ -16,8 +16,6 @@ import PageHero from '../../../components/PageHero';
  * says nothing true about the company. It is deliberately obvious rather than
  * plausible — invented founding dates, headcounts or offices would read as
  * fact and ship as fact. Replace both the en and the ar side of each.
- * The four "what we do" cards are the exception: they describe the product
- * areas this site already documents, so they are safe as they stand.
  * ─────────────────────────────────────────────────────────────────────────
  */
 
@@ -38,69 +36,48 @@ const T = {
   cta:   { en: 'Get a Demo', ar: 'احصل على عرض توضيحي' },
   title:     { en: 'Govern Every AI System Running In Your Company',
                ar: 'احكم كل نظام ذكاء اصطناعي يعمل في شركتك' },
-  lead:      { en: 'Tahara AI discovers every AI system in your environment, checks it against the frameworks that actually apply, and produces the evidence to prove it — continuously, not once a year.',
-               ar: 'يكتشف Tahara AI كل نظام ذكاء اصطناعي في بيئتك، ويفحصه وفق الأطر التي تنطبق فعليًا، وينتج الأدلة التي تثبت ذلك — بشكل مستمر، لا مرة واحدة في السنة.' },
+  lead:      { en: 'Tahara AI discovers every AI system in your environment, checks it against the frameworks that actually apply, and produces the evidence to prove it, continuously rather than once a year.',
+               ar: 'يكتشف Tahara AI كل نظام ذكاء اصطناعي في بيئتك، ويفحصه وفق الأطر التي تنطبق فعليًا، وينتج الأدلة التي تثبت ذلك، بشكل مستمر، لا مرة واحدة في السنة.' },
 
-  /* what we do — describes the product areas this site already documents */
-  wwd_k:     { en: 'What we do', ar: 'ما الذي نقوم به' },
-  wwd_lead:  { en: 'Assurance across the life of an AI system, from what you have deployed to what it does in production.',
-               ar: 'ضمان يمتد على طول دورة حياة نظام الذكاء الاصطناعي، من ما هو منشور لديك إلى ما يفعله في الإنتاج.' },
-  a1_t: { en: 'Assess',  ar: 'التقييم' },
-  a1_d: { en: 'Discover the AI surface you already run — models, agents, APIs and the data they reach.',
-          ar: 'اكتشف سطح الذكاء الاصطناعي القائم لديك — النماذج والوكلاء وواجهات البرمجة والبيانات التي تصل إليها.' },
-  a2_t: { en: 'Govern',  ar: 'الحوكمة' },
-  a2_d: { en: 'Map what you run to the frameworks that bind you, and keep the evidence dated and ready.',
-          ar: 'اربط ما تشغّله بالأطر المُلزِمة لك، واحتفظ بالأدلة مؤرَّخة وجاهزة.' },
-  a3_t: { en: 'Test',    ar: 'الاختبار' },
-  a3_d: { en: 'Probe the system the way an attacker would, on a schedule rather than once a year.',
-          ar: 'اختبر النظام بالطريقة التي يسلكها المهاجم، وفق جدول منتظم لا مرة واحدة سنويًا.' },
-  a4_t: { en: 'Monitor', ar: 'المراقبة' },
-  a4_d: { en: 'Inspect prompts and retrieval at runtime, and hold the line where policy says it should hold.',
-          ar: 'افحص الموجّهات والاسترجاع أثناء التشغيل، وطبّق الحدود حيث تقتضي السياسة.' },
 
   /* why — section header + four problem/answer blocks */
   why_k:  { en: 'Why Tahara AI', ar: 'لماذا Tahara AI' },
   why_t:  { en: "Outcomes You Can Measure, Not Just Promises You're Told",
             ar: 'نتائج يمكنك قياسها، لا مجرد وعود تُقال لك' },
 
-  w1_k: { en: "Problem — you can't govern what you can't see",
-          ar: 'المشكلة — لا يمكنك حوكمة ما لا تراه' },
+  w1_k: { en: "Problem: you can't govern what you can't see",
+          ar: 'المشكلة: لا يمكنك حوكمة ما لا تراه' },
   w1_t: { en: 'Find Every AI System, Not Just the Ones You Approved',
           ar: 'اعثر على كل نظام ذكاء اصطناعي، لا على ما اعتمدته فقط' },
   w1_d: { en: 'AI systems get built in-house, bundled into tools you already pay for, or shipped before anyone signed off. A read-only collector runs inside your own boundary, under your own credentials, and finds every one within a day.',
           ar: 'تُبنى أنظمة الذكاء الاصطناعي داخليًا، أو تأتي مضمّنة في أدوات تدفع ثمنها بالفعل، أو تُطلق قبل أن يوافق عليها أحد. يعمل جامع بيانات للقراءة فقط داخل نطاقك وببيانات اعتمادك، ويجد كل واحد منها خلال يوم.' },
 
-  w2_k: { en: 'Problem — a document is not proof',
-          ar: 'المشكلة — الوثيقة ليست دليلًا' },
+  w2_k: { en: 'Problem: a document is not proof',
+          ar: 'المشكلة: الوثيقة ليست دليلًا' },
   w2_t: { en: 'Map Every System to the Law That Actually Applies',
           ar: 'اربط كل نظام بالقانون الذي ينطبق فعلًا' },
-  w2_d: { en: 'A policy that says the right thing isn’t a system that does it. Every requirement is checked against your live system, and only marked "Conforming" once a named person confirms it on the record — a machine’s observation can raise a finding, never close one.',
-          ar: 'السياسة التي تقول الشيء الصحيح ليست نظامًا يفعله. يُفحص كل متطلب مقابل نظامك الحي، ولا يُوسم بـ«مطابق» إلا بعد أن يؤكده شخص مُسمّى في السجل — يمكن لملاحظة آلية أن تفتح نتيجة، لا أن تغلقها.' },
+  w2_d: { en: 'A policy that says the right thing isn’t a system that does it. Every requirement is checked against your live system, and only marked "Conforming" once a named person confirms it on the record. A machine’s observation can raise a finding, never close one.',
+          ar: 'السياسة التي تقول الشيء الصحيح ليست نظامًا يفعله. يُفحص كل متطلب مقابل نظامك الحي، ولا يُوسم بـ«مطابق» إلا بعد أن يؤكده شخص مُسمّى في السجل، يمكن لملاحظة آلية أن تفتح نتيجة، لا أن تغلقها.' },
 
-  w3_k: { en: 'Problem — a yearly pen test misses everything that changed since',
-          ar: 'المشكلة — اختبار اختراق سنوي يفوّت كل ما تغيّر بعده' },
+  w3_k: { en: 'Problem: a yearly pen test misses everything that changed since',
+          ar: 'المشكلة: اختبار اختراق سنوي يفوّت كل ما تغيّر بعده' },
   w3_t: { en: 'Attack Your Own System Before Someone Else Does',
           ar: 'هاجم نظامك قبل أن يهاجمه غيرك' },
-  w3_d: { en: 'Most red-teaming happens once, months before launch, against a version of the system that no longer exists by the time it ships. Tahara AI runs the OWASP LLM Top 10 against staging on a recurring schedule, so a regression shows up the next cycle — not next year.',
-          ar: 'يجري معظم اختبار الفريق الأحمر مرة واحدة، قبل الإطلاق بأشهر، على نسخة لم تعد موجودة وقت الإطلاق. يشغّل Tahara AI قائمة OWASP LLM العشرة على بيئة التجهيز وفق جدول متكرر، فيظهر أي تراجع في الدورة التالية — لا في العام التالي.' },
+  w3_d: { en: 'Most red-teaming happens once, months before launch, against a version of the system that no longer exists by the time it ships. Tahara AI runs the OWASP LLM Top 10 against staging on a recurring schedule, so a regression shows up the next cycle, not next year.',
+          ar: 'يجري معظم اختبار الفريق الأحمر مرة واحدة، قبل الإطلاق بأشهر، على نسخة لم تعد موجودة وقت الإطلاق. يشغّل Tahara AI قائمة OWASP LLM العشرة على بيئة التجهيز وفق جدول متكرر، فيظهر أي تراجع في الدورة التالية، لا في العام التالي.' },
 
-  w4_k: { en: 'Problem — the leak happens before anyone reviews the transcript',
-          ar: 'المشكلة — يقع التسريب قبل أن يراجع أحد النص' },
+  w4_k: { en: 'Problem: the leak happens before anyone reviews the transcript',
+          ar: 'المشكلة: يقع التسريب قبل أن يراجع أحد النص' },
   w4_t: { en: 'Catch What Leaks Before It Reaches the Model',
           ar: 'أمسك ما يتسرّب قبل أن يصل إلى النموذج' },
-  w4_d: { en: 'By the time a privacy review catches a leak, it’s already happened. Guardrails inspect every prompt before it reaches the model — masking, blocking, bilingually in English and Roman Urdu — and log the rare one that gets through.',
-          ar: 'عندما تكتشف مراجعة الخصوصية تسريبًا، يكون قد وقع بالفعل. تفحص حواجز الحماية كل موجّه قبل وصوله إلى النموذج — إخفاءً ومنعًا، بالإنجليزية والأردية بحروف لاتينية — وتسجّل النادر الذي ينفذ.' },
+  w4_d: { en: 'By the time a privacy review catches a leak, it’s already happened. Guardrails inspect every prompt before it reaches the model, masking and blocking, bilingually in English and Roman Urdu, and logging the rare one that gets through.',
+          ar: 'عندما تكتشف مراجعة الخصوصية تسريبًا، يكون قد وقع بالفعل. تفحص حواجز الحماية كل موجّه قبل وصوله إلى النموذج، إخفاءً ومنعًا، بالإنجليزية والأردية بحروف لاتينية، وتسجّل النادر الذي ينفذ.' },
 
   /* crosswalk */
   fw_t:    { en: 'Built Around One Framework, Not Twelve Separate Ones',
              ar: 'مبنيّ حول إطار واحد، لا اثني عشر إطارًا منفصلًا' },
   fw_req:  { en: 'requirements', ar: 'متطلبًا' },
-  fw_rail: { en: 'Crosswalk rail', ar: 'مسار الربط' },
   fw_m:    { en: 'The Tahara Master Framework', ar: 'إطار Tahara الرئيسي' },
-  fw_ms:   { en: '112 unique controls · 187 mapped requirements',
-             ar: '112 ضابطًا فريدًا · 187 متطلبًا مرتبطًا' },
-  fw_note: { en: 'A single crosswalk that every supported framework maps onto — built once per control, not once per regulator. Adding a new regional framework extends the map; it doesn’t mean re-asking every question from scratch.',
-             ar: 'مسار ربط واحد ترتبط به كل الأطر المدعومة — يُبنى مرة لكل ضابط، لا مرة لكل جهة تنظيمية. إضافة إطار إقليمي جديد توسّع الخريطة، ولا تعني إعادة طرح كل سؤال من الصفر.' },
 
   /* key features */
   kf_k:  { en: 'Key features', ar: 'الميزات الرئيسية' },
@@ -109,17 +86,17 @@ const T = {
   kf_cta:{ en: 'Request Early Access', ar: 'اطلب وصولًا مبكرًا' },
 
   k1_t: { en: 'Applicability Engine', ar: 'محرك الانطباق' },
-  k1_d: { en: 'Figures out exactly which laws and standards apply to a specific system — not a generic checklist.',
-          ar: 'يحدّد بدقة أي القوانين والمعايير تنطبق على نظام بعينه — لا قائمة تحقق عامة.' },
+  k1_d: { en: 'Figures out exactly which laws and standards apply to a specific system, not a generic checklist.',
+          ar: 'يحدّد بدقة أي القوانين والمعايير تنطبق على نظام بعينه، لا قائمة تحقق عامة.' },
   k2_t: { en: 'Discovery Collector', ar: 'جامع الاكتشاف' },
   k2_d: { en: 'Read-only, runs inside your boundary, never holds your credentials, has no inbound path back in.',
           ar: 'للقراءة فقط، يعمل داخل نطاقك، ولا يحتفظ ببيانات اعتمادك، وليس له مسار دخول إليك.' },
   k3_t: { en: 'Claim vs. Reality Triangulation', ar: 'مطابقة الادعاء بالواقع' },
-  k3_d: { en: 'Compares what a person said, what the policy states, and what the live system shows — the mismatch is the finding.',
-          ar: 'يقارن ما قاله الشخص، وما تنصّ عليه السياسة، وما يُظهره النظام الحي — والتعارض هو النتيجة.' },
+  k3_d: { en: 'Compares what a person said, what the policy states, and what the live system shows. The mismatch is the finding.',
+          ar: 'يقارن ما قاله الشخص، وما تنصّ عليه السياسة، وما يُظهره النظام الحي، والتعارض هو النتيجة.' },
   k4_t: { en: 'Continuous Attack Simulation', ar: 'محاكاة هجوم مستمرة' },
-  k4_d: { en: 'The OWASP LLM Top 10, run on a recurring schedule against staging — not a once-a-year pen test.',
-          ar: 'قائمة OWASP LLM العشرة، تُشغَّل وفق جدول متكرر على بيئة التجهيز — لا اختبار اختراق سنوي.' },
+  k4_d: { en: 'The OWASP LLM Top 10, run on a recurring schedule against staging, not a once-a-year pen test.',
+          ar: 'قائمة OWASP LLM العشرة، تُشغَّل وفق جدول متكرر على بيئة التجهيز، لا اختبار اختراق سنوي.' },
   k5_t: { en: 'Bilingual PII Guardrails', ar: 'حواجز حماية ثنائية اللغة' },
   k5_d: { en: 'Prompt inspection and masking in English and Roman Urdu, before anything reaches the model.',
           ar: 'فحص الموجّهات وإخفاؤها بالإنجليزية والأردية بحروف لاتينية، قبل أن يصل أي شيء إلى النموذج.' },
@@ -127,19 +104,52 @@ const T = {
   k6_d: { en: 'Every piece of proof stored and dated, in a hash-chained record that can’t be edited after the fact.',
           ar: 'كل دليل مخزَّن ومؤرَّخ، في سجل مترابط بالبصمات لا يمكن تعديله لاحقًا.' },
 
-  /* overview */
-  ov_k:      { en: 'Overview', ar: 'نظرة عامة' },
-  /* TODO copy */
-  ov_body1:  { en: 'Add your overview here. This block is for the longer story — what the company does, how it started, and what it is building toward.',
-               ar: 'أضف نظرتك العامة هنا. هذه الفقرة مخصّصة للسرد الأطول — ما تقوم به الشركة، وكيف بدأت، وما الذي تبنيه.' },
-  /* TODO copy */
-  ov_body2:  { en: 'Add a second paragraph here if you need one, or delete this block.',
-               ar: 'أضف فقرة ثانية هنا إذا احتجت إليها، أو احذف هذه الكتلة.' },
+  /* the idea */
+  id_k:   { en: 'The idea this product is built on', ar: 'الفكرة التي بُني عليها هذا المنتج' },
+  id_t1:  { en: 'Compliance is not a photograph. It is a ',
+            ar: 'الامتثال ليس صورة فوتوغرافية. إنه ' },
+  id_t2:  { en: 'live signal.', ar: 'إشارة حيّة.' },
+
+  id_ck:  { en: 'Every layer', ar: 'كل طبقة' },
+  id_cd:  { en: 'Discovery, governance, adversarial testing, and guardrails run as one cycle against the same evidence trail.',
+            ar: 'الاكتشاف والحوكمة والاختبار العدائي وحواجز الحماية تعمل كدورة واحدة على مسار الأدلة نفسه.' },
+  id_ct:  { en: 'Assurance Across Every Layer of the Stack',
+            ar: 'ضمان يمتد عبر كل طبقة من طبقات المنظومة' },
+  id_cta: { en: 'See how it fits together', ar: 'شاهد كيف يتكامل الأمر' },
+
+  t1_t: { en: 'See Every System', ar: 'شاهد كل نظام' },
+  t1_d: { en: 'Discover every AI system in your environment, including the ones nobody remembered to log.',
+          ar: 'اكتشف كل نظام ذكاء اصطناعي في بيئتك، بما فيها ما لم يتذكّر أحد تسجيله.' },
+  t2_t: { en: 'Check It Daily', ar: 'افحصه يوميًا' },
+  t2_d: { en: 'The full cycle re-runs automatically, so a change is caught within a day, not a year.',
+          ar: 'تُعاد الدورة كاملة تلقائيًا، فيُرصد أي تغيير خلال يوم، لا خلال عام.' },
+  t3_t: { en: 'Prove It to Anyone', ar: 'أثبته لأي جهة' },
+  t3_d: { en: 'One evidence trail, the same record for your team, an auditor, or a regulator.',
+          ar: 'مسار أدلة واحد، والسجل نفسه لفريقك أو لمدقّق أو لجهة تنظيمية.' },
+  t4_t: { en: 'Never Guess', ar: 'لا تخمّن أبدًا' },
+  t4_d: { en: 'A machine’s observation can flag a problem. Only a person can close one.',
+          ar: 'يمكن لملاحظة آلية أن تُبلّغ عن مشكلة. ولا يمكن إغلاقها إلا بشخص.' },
+
+  /* built to fit */
+  ft_k: { en: 'Built to fit', ar: 'مبنيّ ليناسبك' },
+  ft_t: { en: 'Continuous AI Assurance for Early Teams',
+          ar: 'ضمان مستمر للذكاء الاصطناعي للفرق المبكرة' },
+
+  f1_t: { en: 'Pilot Program', ar: 'برنامج تجريبي' },
+  f1_d: { en: 'Tahara AI is being built and tested with a small number of real AI teams, starting with a single framework and a mainstream cloud deployment.',
+          ar: 'يُبنى Tahara AI ويُختبر مع عدد صغير من فرق الذكاء الاصطناعي الحقيقية، بدءًا بإطار واحد ونشر سحابي شائع.' },
+  f1_c: { en: 'Apply for the pilot', ar: 'تقدّم للبرنامج التجريبي' },
+  f2_t: { en: 'Hands-On Onboarding', ar: 'تهيئة عملية مباشرة' },
+  f2_d: { en: 'Early teams work directly with the people building the engine, not a support queue, through setup, first assessment, and beyond.',
+          ar: 'تعمل الفرق المبكرة مباشرة مع من يبنون المحرك، لا مع طابور دعم، خلال الإعداد وأول تقييم وما بعده.' },
+  f2_c: { en: 'Talk to the team', ar: 'تحدّث إلى الفريق' },
+  f3_t: { en: 'Built With, Not Just For', ar: 'مبنيّ معك، لا لك فقط' },
+  f3_d: { en: 'Pilot feedback shapes what gets built next. This is a product still being defined in partnership with its first real users.',
+          ar: 'تشكّل ملاحظات البرنامج التجريبي ما يُبنى تاليًا. هذا منتج لا يزال يُحدَّد بالشراكة مع أوائل مستخدميه.' },
+  f3_c: { en: 'Share what you need', ar: 'أخبرنا بما تحتاجه' },
+
 
   /* closing */
-  cta_title: { en: 'Put your AI under control.', ar: 'ضع الذكاء الاصطناعي لديك تحت السيطرة.' },
-  cta_body:  { en: 'Thirty minutes on your own estate: what we would find, and what we would block.',
-               ar: 'ثلاثون دقيقة على بيئتك الخاصة: ما الذي سنكتشفه، وما الذي سنمنعه.' },
 
   footer_tagline:   { en: 'Assurance for AI systems.', ar: 'ضمان لأنظمة الذكاء الاصطناعي.' },
   footer_copyright: { en: '© 2026 Tahara AI', ar: '© 2026 Tahara AI' },
@@ -149,13 +159,6 @@ const T = {
 function tr(key: keyof typeof T, lang: Lang) {
   return T[key][lang];
 }
-
-const CARDS = [
-  ['a1_t', 'a1_d'],
-  ['a2_t', 'a2_d'],
-  ['a3_t', 'a3_d'],
-  ['a4_t', 'a4_d'],
-] as const;
 
 /* The dashboard panels are stills captured from the landing page's live
    dashboard (scripts in /public/dash). The dashboard is a singleton bound to
@@ -182,6 +185,23 @@ const KF = [
   { t: 'k4_t', d: 'k4_d', ic: <><path d="M12 3 5 6v6c0 4.5 3 7.6 7 9 4-1.4 7-4.5 7-9V6z" /><path d="M12 8.5v4M12 16.2h.01" /></> },
   { t: 'k5_t', d: 'k5_d', ic: <><rect x="3" y="5.5" width="18" height="13" rx="2.2" /><path d="M7 10.5h4M7 14h7M15.5 10.5h1.5" /></> },
   { t: 'k6_t', d: 'k6_d', ic: <><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" /><path d="M14 3v5h5M9 13h6M9 17h4" /></> },
+] as const;
+
+/* Four tiles docking onto the core. `side` decides which way the rail draws
+   and which way the tile travels; the index drives the stagger. */
+const TILES = [
+  { n: '01', t: 't1_t', d: 't1_d', side: 'l', row: 1 },
+  { n: '02', t: 't2_t', d: 't2_d', side: 'l', row: 2 },
+  { n: '03', t: 't3_t', d: 't3_d', side: 'r', row: 1 },
+  { n: '04', t: 't4_t', d: 't4_d', side: 'r', row: 2 },
+] as const;
+
+/* All three links open the same demo booking — the only real destination the
+   site has today. Point them somewhere specific when those places exist. */
+const FIT = [
+  { n: '01', t: 'f1_t', d: 'f1_d', c: 'f1_c' },
+  { n: '02', t: 'f2_t', d: 'f2_d', c: 'f2_c' },
+  { n: '03', t: 'f3_t', d: 'f3_d', c: 'f3_c' },
 ] as const;
 
 const WHY = [
@@ -248,9 +268,14 @@ export default function AboutPage() {
   /* Draw the crosswalk connectors when they scroll into view. Firing on mount
      would spend the animation while the band is still far below the fold. */
   useEffect(() => {
-    const el = document.getElementById('fwLink');
-    if (!el) return;
-    if (!('IntersectionObserver' in window)) { el.classList.add('in'); return; }
+    const els = ['fwLink', 'ideaGrid']
+      .map((id) => document.getElementById(id))
+      .filter(Boolean) as HTMLElement[];
+    if (!els.length) return;
+    if (!('IntersectionObserver' in window)) {
+      els.forEach((el) => el.classList.add('in'));
+      return;
+    }
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -259,9 +284,9 @@ export default function AboutPage() {
           io.unobserve(e.target);        /* draws once, not on every pass */
         });
       },
-      { threshold: 0.35 }
+      { threshold: 0.25 }
     );
-    io.observe(el);
+    els.forEach((el) => io.observe(el));
     return () => io.disconnect();
   }, []);
 
@@ -269,6 +294,14 @@ export default function AboutPage() {
     <>
       <AmbientBg />
       <style suppressHydrationWarning>{`
+        /* footer — the same compact spacing /resources uses, so the two
+           pages end identically rather than one sitting taller */
+        footer { padding: 32px 0 18px !important; margin-top: 56px !important; }
+        .foot-grid { gap: 24px !important; padding-bottom: 22px !important; }
+        .foot-brand p { margin-top: 8px !important; }
+        footer h5 { margin-bottom: 10px !important; }
+        footer li { margin-bottom: 6px !important; }
+        .foot-bottom { padding-top: 14px !important; }
 
         /* video — the frame comes from landing.css (.pv-frame); only the play
            control differs, translucent rather than the landing page's solid
@@ -352,11 +385,6 @@ export default function AboutPage() {
           transform:scaleX(0);transform-origin:center;
           transition:transform .72s var(--e-out) .4s}
         .ab-fw-link.in .ab-fw-rail{transform:scaleX(1)}
-        .ab-fw-node{position:absolute;top:62px;left:50%;width:9px;height:9px;
-          margin-left:-4.5px;background:#fff;border:1px solid var(--g400);
-          opacity:0;transform:rotate(45deg) scale(.3);
-          transition:opacity .3s ease 1.02s,transform .42s var(--e-back) 1.02s}
-        .ab-fw-link.in .ab-fw-node{opacity:1;transform:rotate(45deg) scale(1)}
         .ab-fw-stem{position:absolute;top:66px;left:50%;width:1px;height:66px;
           background:var(--line-2);
           transform:scaleY(0);transform-origin:top;
@@ -365,22 +393,14 @@ export default function AboutPage() {
 
         /* nothing moves, everything is simply already drawn */
         @media(prefers-reduced-motion:reduce){
-          .ab-fw-drop,.ab-fw-rail,.ab-fw-node,.ab-fw-stem{transition:none;opacity:1;
+          .ab-fw-drop,.ab-fw-rail,.ab-fw-stem{transition:none;opacity:1;
             transform:none}
-          .ab-fw-node{transform:rotate(45deg)}
         }
-        .ab-fw-raillabel{position:absolute;top:58px;inset-inline-start:0;
-          font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.14em;
-          text-transform:uppercase;color:var(--ink-3)}
 
-        .ab-fw-master{border-radius:12px;padding:18px 22px;display:grid;gap:6px;
+        .ab-fw-master{border-radius:12px;padding:20px 22px;display:grid;
           background:linear-gradient(120deg,var(--g900) 0%,var(--g800) 55%,var(--g700) 100%);
           box-shadow:0 12px 30px rgba(3,24,56,.24)}
         .ab-fw-master b{font-weight:600;font-size:17px;color:#fff;letter-spacing:-.01em}
-        .ab-fw-master span{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.1em;
-          text-transform:uppercase;color:rgba(255,255,255,.72)}
-        .ab-fw-note{margin:26px auto 0;max-width:62ch;font-size:14.5px;line-height:1.7;
-          color:var(--ink-2)}
 
         @media(max-width:820px){
           .ab-fw{padding:64px 0 0}
@@ -388,7 +408,7 @@ export default function AboutPage() {
           /* two columns, and the rail no longer describes the layout */
           .ab-fw-tops{grid-template-columns:repeat(2,1fr);gap:14px}
           .ab-fw-link{height:44px;display:block}
-          .ab-fw-drop,.ab-fw-rail,.ab-fw-node,.ab-fw-raillabel{display:none}
+          .ab-fw-drop,.ab-fw-rail{display:none}
           .ab-fw-stem{top:0;height:44px}
         }
 
@@ -440,34 +460,127 @@ export default function AboutPage() {
           .ab-kf-cta{width:100%;justify-content:center}
         }
 
-        .ab-sec{padding:56px 0 0}
-        .ab-sec-head{display:flex;align-items:baseline;gap:16px;padding-bottom:10px;
-          border-bottom:1px solid var(--line)}
-        .ab-sec-head span{font-family:var(--font-mono);font-size:11px;font-weight:500;
-          letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
-        .ab-sec-lead{margin-top:22px;font-size:17px;line-height:1.7;color:var(--ink-2);max-width:70ch}
+        /* ── the idea ── */
+        .ab-idea{padding:96px 0 0;text-align:center}
+        .ab-idea-k{font-family:var(--font-mono);font-size:11px;font-weight:500;
+          letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3)}
+        .ab-idea h2{margin-top:18px;font-size:clamp(23px,2.7vw,34px);line-height:1.24;
+          letter-spacing:-.015em;color:var(--ink)}
+        .ab-idea h2 em{font-style:italic;color:var(--g600)}
 
-        .ab-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:30px}
-        .ab-card{border:1px solid var(--line);border-radius:16px;background:var(--paper);
-          padding:22px 20px 24px;box-shadow:var(--sh-s)}
-        .ab-card b{display:block;font-family:var(--font-display);font-weight:400;font-size:19px;
+        /* Five columns: tile · rail · core · rail · tile. The rail columns are
+           real grid tracks, so each rail always spans exactly the gap between
+           its tile and the core at any width. */
+        .ab-idea-grid{margin-top:52px;display:grid;
+          grid-template-columns:1fr 108px minmax(0,1.3fr) 108px 1fr;
+          grid-template-rows:1fr 1fr;border:1px solid var(--line);text-align:start;
+          /* the tiles rest at translateX(+-26px) until they dock, which pushes the
+             left one past the viewport edge and widens the document; clip it so
+             they slide in from behind the frame instead */
+          overflow:hidden;
+          background-image:linear-gradient(rgba(17,64,134,.05) 1px,transparent 1px),
+                           linear-gradient(90deg,rgba(17,64,134,.05) 1px,transparent 1px);
+          background-size:54px 54px}
+
+        .ab-tile{background:var(--paper);border:1px solid var(--line);padding:26px 26px 30px;
+          display:flex;flex-direction:column;justify-content:center;
+          opacity:0;transition:opacity .5s ease,transform .6s var(--e-out)}
+        .ab-tile.is-l{grid-column:1;transform:translateX(-26px)}
+        .ab-tile.is-r{grid-column:5;transform:translateX(26px)}
+        .ab-tile.r1{grid-row:1} .ab-tile.r2{grid-row:2}
+        .ab-tile-n{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;
+          color:var(--ink-3)}
+        .ab-tile b{margin-top:12px;font-weight:600;font-size:16.5px;letter-spacing:-.01em;
           color:var(--ink)}
-        .ab-card p{margin-top:9px;font-size:14px;line-height:1.6;color:var(--ink-2)}
+        .ab-tile p{margin-top:9px;font-size:14.5px;line-height:1.6;color:var(--ink-2)}
 
-        .ab-prose{margin-top:24px;max-width:70ch}
-        .ab-prose p{font-size:16.5px;line-height:1.75;color:var(--ink-2)}
-        .ab-prose p + p{margin-top:16px}
+        .ab-rail{position:relative;display:grid;place-items:center}
+        .ab-rail.is-l{grid-column:2} .ab-rail.is-r{grid-column:4}
+        .ab-rail.r1{grid-row:1} .ab-rail.r2{grid-row:2}
+        .ab-rail-line{width:100%;height:1px;background:var(--line-2);
+          transform:scaleX(0);transition:transform .45s var(--e-out)}
+        /* the rail draws from the tile's slot toward the core */
+        .ab-rail.is-l .ab-rail-line{transform-origin:left}
+        .ab-rail.is-r .ab-rail-line{transform-origin:right}
+        .ab-rail-dock{position:absolute;width:7px;height:7px;border-radius:50%;
+          background:var(--g600);opacity:0;transform:scale(.3)}
+        .ab-rail.is-l .ab-rail-dock{left:-3.5px}
+        .ab-rail.is-r .ab-rail-dock{right:-3.5px}
 
-        .ab-cta{margin:76px 0 90px;border:1px solid var(--line);border-radius:22px;
-          background:var(--paper);padding:46px 44px;display:flex;align-items:center;
-          justify-content:space-between;gap:30px;flex-wrap:wrap;box-shadow:var(--sh-m)}
-        .ab-cta h2{font-size:clamp(24px,3vw,34px)}
-        .ab-cta p{margin-top:10px;font-size:15.5px;line-height:1.6;color:var(--ink-2);max-width:52ch}
+        /* dock along the rail: rail draws, tile slides in along it, dock flashes */
+        .ab-idea-grid.in .ab-rail-line{transform:scaleX(1);
+          transition-delay:calc(var(--i,0) * .16s)}
+        .ab-idea-grid.in .ab-tile{opacity:1;transform:translateX(0);
+          transition-delay:calc(var(--i,0) * .16s + .34s)}
+        .ab-idea-grid.in .ab-rail-dock{animation:ab-dock .55s var(--e-back)
+          calc(var(--i,0) * .16s + .72s) forwards}
+        @keyframes ab-dock{
+          0%{opacity:0;transform:scale(.3);box-shadow:0 0 0 0 rgba(17,64,134,.35)}
+          45%{opacity:1;transform:scale(1.5);box-shadow:0 0 0 7px rgba(17,64,134,0)}
+          100%{opacity:1;transform:scale(1);box-shadow:0 0 0 0 rgba(17,64,134,0)}
+        }
 
-        @media(max-width:900px){ .ab-cards{grid-template-columns:repeat(2,1fr)} }
-        @media(max-width:560px){
-          .ab-cards{grid-template-columns:1fr}
-          .ab-cta{padding:32px 24px}
+        .ab-core{grid-column:3;grid-row:1 / span 2;padding:44px 38px;text-align:center;
+          display:flex;flex-direction:column;align-items:center;justify-content:center}
+        .ab-core-k{font-family:var(--font-mono);font-size:10.5px;font-weight:500;
+          letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3)}
+        .ab-core h3{margin-top:16px;font-size:clamp(24px,2.5vw,34px);line-height:1.2;
+          letter-spacing:-.015em;color:var(--ink)}
+        .ab-core p{margin-top:16px;max-width:42ch;font-size:15px;line-height:1.65;
+          color:var(--ink-2)}
+        .ab-core-cta{margin-top:26px;display:inline-flex;align-items:center;gap:10px;
+          background:var(--g800);color:#fff;border-radius:10px;padding:13px 22px;
+          font-size:14.5px;font-weight:600;letter-spacing:-.01em;
+          transition:background .25s ease,box-shadow .3s ease}
+        .ab-core-cta:hover{background:var(--g900);box-shadow:0 10px 26px rgba(3,24,56,.3)}
+
+        @media(prefers-reduced-motion:reduce){
+          .ab-tile{opacity:1;transform:none;transition:none}
+          .ab-rail-line{transform:scaleX(1);transition:none}
+          .ab-rail-dock{opacity:1;transform:scale(1);animation:none}
+        }
+        @media(max-width:900px){
+          .ab-idea{padding:64px 0 0}
+          /* the rails describe a left/right relationship that stacking removes */
+          .ab-idea-grid{grid-template-columns:1fr;grid-template-rows:none;margin-top:36px}
+          .ab-tile,.ab-core{grid-column:1 !important}
+          .ab-tile.is-l,.ab-tile.is-r{transform:translateY(18px)}
+          .ab-idea-grid.in .ab-tile{transform:translateY(0)}
+          .ab-tile.r1,.ab-tile.r2{grid-row:auto}
+          .ab-core{grid-row:auto;order:-1;padding:32px 24px}
+          .ab-rail{display:none}
+        }
+
+        /* built to fit */
+        .ab-fit{padding:96px 0 0;text-align:center}
+        .ab-fit-k{font-family:var(--font-mono);font-size:11px;font-weight:500;
+          letter-spacing:.18em;text-transform:uppercase;color:var(--g600)}
+        .ab-fit h2{margin-top:18px;font-size:clamp(25px,3vw,40px);line-height:1.18;
+          letter-spacing:-.015em;color:var(--ink)}
+        .ab-fit-grid{margin-top:42px;text-align:start;display:grid;
+          grid-template-columns:repeat(3,1fr);gap:20px}
+        /* three standalone cards rather than cells in one frame */
+        .ab-fit-cell{padding:28px 26px 30px;border:1px solid var(--line);border-radius:16px;
+          background:var(--paper);box-shadow:var(--sh-s);
+          display:flex;flex-direction:column;align-items:flex-start}
+        .ab-fit-n{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;
+          color:var(--ink-3)}
+        .ab-fit-cell b{margin-top:14px;font-weight:600;font-size:17px;letter-spacing:-.01em;
+          color:var(--ink)}
+        .ab-fit-cell p{margin-top:11px;font-size:15px;line-height:1.65;color:var(--ink-2)}
+        /* mt:auto pins every link to the cell floor, so the three line up even
+           when their paragraphs run to different depths */
+        .ab-fit-cta{margin-top:auto;padding-top:20px;display:inline-flex;align-items:center;
+          gap:9px;cursor:pointer;background:none;border:none;
+          font-family:var(--font-body);font-size:14.5px;font-weight:600;color:var(--g700);
+          transition:color .2s ease}
+        .ab-fit-cta:hover{color:var(--g900)}
+        .ab-fit-cta:hover .ab-kf-arw{transform:translateX(3px)}
+        [dir="rtl"] .ab-fit-cta:hover .ab-kf-arw{transform:scaleX(-1) translateX(3px)}
+
+        @media(max-width:900px){
+          .ab-fit{padding:64px 0 0}
+          .ab-fit-grid{grid-template-columns:1fr;gap:16px}
         }
       `}</style>
 
@@ -569,7 +682,7 @@ export default function AboutPage() {
         </section>
 
         {/* ── crosswalk · many frameworks onto one internal model ── */}
-        <section className="ab-fw">
+        <section className="ab-fw" id="crosswalk">
           <div className="wrap">
             <h2>{tr('fw_t', lang)}</h2>
 
@@ -587,21 +700,16 @@ export default function AboutPage() {
             </div>
 
             <div className="ab-fw-link" id="fwLink" aria-hidden="true">
-              <span className="ab-fw-raillabel">{tr('fw_rail', lang)}</span>
               {FW.map((f, i) => (
                 <span className="ab-fw-drop" key={f.n} style={{ ['--i' as string]: i }} />
               ))}
               <span className="ab-fw-rail" />
-              <span className="ab-fw-node" />
               <span className="ab-fw-stem" />
             </div>
 
             <div className="ab-fw-master">
               <b>{tr('fw_m', lang)}</b>
-              <span>{tr('fw_ms', lang)}</span>
             </div>
-
-            <p className="ab-fw-note">{tr('fw_note', lang)}</p>
           </div>
         </section>
 
@@ -636,38 +744,67 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <div className="wrap">
-          <section className="ab-sec">
-            <div className="ab-sec-head"><span>{tr('wwd_k', lang)}</span></div>
-            <p className="ab-sec-lead">{tr('wwd_lead', lang)}</p>
-            <div className="ab-cards">
-              {CARDS.map(([t, d]) => (
-                <div className="ab-card" key={t}>
-                  <b>{tr(t, lang)}</b>
-                  <p>{tr(d, lang)}</p>
+        {/* ── the idea · four tiles docking onto a core ── */}
+        <section className="ab-idea">
+          <div className="wrap">
+            <span className="ab-idea-k">{tr('id_k', lang)}</span>
+            <h2>{tr('id_t1', lang)}<em>{tr('id_t2', lang)}</em></h2>
+
+            <div className="ab-idea-grid" id="ideaGrid">
+              {TILES.map((t, i) => (
+                <div className={`ab-tile is-${t.side} r${t.row}`} key={t.n}
+                     style={{ ['--i' as string]: i }}>
+                  <span className="ab-tile-n">{t.n}</span>
+                  <b>{tr(t.t, lang)}</b>
+                  <p>{tr(t.d, lang)}</p>
+                </div>
+              ))}
+
+              {/* the rails each tile docks along */}
+              {TILES.map((t, i) => (
+                <div className={`ab-rail is-${t.side} r${t.row}`} key={'r' + t.n}
+                     style={{ ['--i' as string]: i }} aria-hidden="true">
+                  <span className="ab-rail-line" />
+                  <span className="ab-rail-dock" />
+                </div>
+              ))}
+
+              <div className="ab-core">
+                <span className="ab-core-k">{tr('id_ck', lang)}</span>
+                <h3>{tr('id_ct', lang)}</h3>
+                <p>{tr('id_cd', lang)}</p>
+                {/* points at the crosswalk diagram above — the section that
+                    literally shows how the pieces fit together */}
+                <a className="ab-core-cta" href="#crosswalk">
+                  <span>{tr('id_cta', lang)}</span>
+                  <span className="ab-kf-arw" aria-hidden="true">→</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── built to fit ── */}
+        <section className="ab-fit">
+          <div className="wrap">
+            <span className="ab-fit-k">{tr('ft_k', lang)}</span>
+            <h2>{tr('ft_t', lang)}</h2>
+            <div className="ab-fit-grid">
+              {FIT.map((f) => (
+                <div className="ab-fit-cell" key={f.n}>
+                  <span className="ab-fit-n">{f.n}</span>
+                  <b>{tr(f.t, lang)}</b>
+                  <p>{tr(f.d, lang)}</p>
+                  <button className="ab-fit-cta" type="button"
+                          data-cal-link="tahara-ai-xpf7u0/product-demo">
+                    <span>{tr(f.c, lang)}</span>
+                    <span className="ab-kf-arw" aria-hidden="true">→</span>
+                  </button>
                 </div>
               ))}
             </div>
-          </section>
-
-          <section className="ab-sec">
-            <div className="ab-sec-head"><span>{tr('ov_k', lang)}</span></div>
-            <div className="ab-prose">
-              <p>{tr('ov_body1', lang)}</p>
-              <p>{tr('ov_body2', lang)}</p>
-            </div>
-          </section>
-
-          <section className="ab-cta">
-            <div>
-              <h2>{tr('cta_title', lang)}</h2>
-              <p>{tr('cta_body', lang)}</p>
-            </div>
-            <button className="btn btn-solid" data-cal-link="tahara-ai-xpf7u0/product-demo">
-              <span>{tr('cta_demo', lang)}</span>
-            </button>
-          </section>
-        </div>
+          </div>
+        </section>
       </main>
 
       {/* ══════════ footer ══════════ */}
