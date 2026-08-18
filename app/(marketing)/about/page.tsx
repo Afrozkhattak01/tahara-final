@@ -131,25 +131,6 @@ const T = {
   t4_d: { en: 'A machine’s observation can flag a problem. Only a person can close one.',
           ar: 'يمكن لملاحظة آلية أن تُبلّغ عن مشكلة. ولا يمكن إغلاقها إلا بشخص.' },
 
-  /* built to fit */
-  ft_k: { en: 'Built to fit', ar: 'مبنيّ ليناسبك' },
-  ft_t: { en: 'Continuous AI Assurance for Early Teams',
-          ar: 'ضمان مستمر للذكاء الاصطناعي للفرق المبكرة' },
-
-  f1_t: { en: 'Pilot Program', ar: 'برنامج تجريبي' },
-  f1_d: { en: 'Tahara AI is being built and tested with a small number of real AI teams, starting with a single framework and a mainstream cloud deployment.',
-          ar: 'يُبنى Tahara AI ويُختبر مع عدد صغير من فرق الذكاء الاصطناعي الحقيقية، بدءًا بإطار واحد ونشر سحابي شائع.' },
-  f1_c: { en: 'Apply for the pilot', ar: 'تقدّم للبرنامج التجريبي' },
-  f2_t: { en: 'Hands-On Onboarding', ar: 'تهيئة عملية مباشرة' },
-  f2_d: { en: 'Early teams work directly with the people building the engine, not a support queue, through setup, first assessment, and beyond.',
-          ar: 'تعمل الفرق المبكرة مباشرة مع من يبنون المحرك، لا مع طابور دعم، خلال الإعداد وأول تقييم وما بعده.' },
-  f2_c: { en: 'Talk to the team', ar: 'تحدّث إلى الفريق' },
-  f3_t: { en: 'Built With, Not Just For', ar: 'مبنيّ معك، لا لك فقط' },
-  f3_d: { en: 'Pilot feedback shapes what gets built next. This is a product still being defined in partnership with its first real users.',
-          ar: 'تشكّل ملاحظات البرنامج التجريبي ما يُبنى تاليًا. هذا منتج لا يزال يُحدَّد بالشراكة مع أوائل مستخدميه.' },
-  f3_c: { en: 'Share what you need', ar: 'أخبرنا بما تحتاجه' },
-
-
   /* closing */
 
   footer_tagline:   { en: 'Assurance for AI systems.', ar: 'ضمان لأنظمة الذكاء الاصطناعي.' },
@@ -181,14 +162,74 @@ const FW = [
 
 /* Icons are drawn here in the same 24-box stroke style as the rest of the
    site rather than pulled from an icon set, so they inherit currentColor and
-   need no dependency. */
+   need no dependency. `pathLength={100}` puts every stroke on the same
+   0–100 dash scale so the draw-in stagger below animates them uniformly
+   regardless of each icon's actual path length.
+
+   Each one is a distinct pictogram of what the feature does — k1 and k6
+   share the same "file with a folded corner" base (applicability reads a
+   system, evidence stores the record of it) but diverge from there, and
+   k2/k4 no longer reuse the same shield outline (they used to — a radar
+   sweep for discovery, a shield-with-target for the attack simulation). */
+/* Icons are Lucide (ISC-licensed) at 24×24, so they read as a coherent,
+   professionally-drawn set rather than one-off sketches. Every drawable
+   element carries pathLength={100} so the scroll-in draw normalises the
+   same way across strokes of very different real lengths. */
 const KF = [
-  { t: 'k1_t', d: 'k1_d', ic: <><path d="M4 6h11M4 11h7M4 16h5" /><circle cx="16.5" cy="15.5" r="3.6" /><path d="m19.4 18.4 2.2 2.2" /></> },
-  { t: 'k2_t', d: 'k2_d', ic: <><path d="M12 3 5 6v6c0 4.5 3 7.6 7 9 4-1.4 7-4.5 7-9V6z" /><path d="m9 12 2 2 4-4" /></> },
-  { t: 'k3_t', d: 'k3_d', ic: <><circle cx="6" cy="5.5" r="2.4" /><circle cx="18" cy="5.5" r="2.4" /><circle cx="12" cy="19" r="2.4" /><path d="M8.4 5.5h7.2M6.9 7.7 11 16.7M17.1 7.7 13 16.7" /></> },
-  { t: 'k4_t', d: 'k4_d', ic: <><path d="M12 3 5 6v6c0 4.5 3 7.6 7 9 4-1.4 7-4.5 7-9V6z" /><path d="M12 8.5v4M12 16.2h.01" /></> },
-  { t: 'k5_t', d: 'k5_d', ic: <><rect x="3" y="5.5" width="18" height="13" rx="2.2" /><path d="M7 10.5h4M7 14h7M15.5 10.5h1.5" /></> },
-  { t: 'k6_t', d: 'k6_d', ic: <><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" /><path d="M14 3v5h5M9 13h6M9 17h4" /></> },
+  /* Applicability Engine — file-search: read a specific system, find the match */
+  { t: 'k1_t', d: 'k1_d', ic: <>
+      <path d="M14 2v4a2 2 0 0 0 2 2h4" pathLength={100} />
+      <path d="M4.268 21a2 2 0 0 0 1.727 1H18a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3" pathLength={100} />
+      <path d="m9 18-1.5-1.5" pathLength={100} />
+      <circle cx="5" cy="14" r="3" pathLength={100} />
+    </> },
+  /* Discovery Collector — radar: sweep the environment for what's out there */
+  { t: 'k2_t', d: 'k2_d', ic: <>
+      <path d="M19.07 4.93A10 10 0 0 0 6.99 3.34" pathLength={100} />
+      <path d="M4 6h.01" pathLength={100} />
+      <path d="M2.29 9.62A10 10 0 1 0 21.31 8.35" pathLength={100} />
+      <path d="M16.24 7.76A6 6 0 1 0 8.23 16.67" pathLength={100} />
+      <path d="M12 18h.01" pathLength={100} />
+      <path d="M17.99 11.66A6 6 0 0 1 15.77 16.67" pathLength={100} />
+      <circle cx="12" cy="12" r="2" pathLength={100} />
+      <path d="m13.41 10.59 5.66-5.66" pathLength={100} />
+    </> },
+  /* Claim vs. Reality Triangulation — waypoints: three sources, one path */
+  { t: 'k3_t', d: 'k3_d', ic: <>
+      <circle cx="12" cy="4.5" r="2.5" pathLength={100} />
+      <path d="m10.2 6.3-3.9 3.9" pathLength={100} />
+      <circle cx="4.5" cy="12" r="2.5" pathLength={100} />
+      <path d="M7 12h10" pathLength={100} />
+      <circle cx="19.5" cy="12" r="2.5" pathLength={100} />
+      <path d="m13.8 17.7 3.9-3.9" pathLength={100} />
+      <circle cx="12" cy="19.5" r="2.5" pathLength={100} />
+    </> },
+  /* Continuous Attack Simulation — bug: red-team the system on a schedule */
+  { t: 'k4_t', d: 'k4_d', ic: <>
+      <path d="m8 2 1.88 1.88" pathLength={100} />
+      <path d="M14.12 3.88 16 2" pathLength={100} />
+      <path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1" pathLength={100} />
+      <path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6" pathLength={100} />
+      <path d="M12 20v-9" pathLength={100} />
+      <path d="M6.53 9C4.6 8.8 3 7.1 3 5" pathLength={100} />
+      <path d="M6 13H2" pathLength={100} />
+      <path d="M3 21c0-2.1 1.7-3.9 3.8-4" pathLength={100} />
+      <path d="M20.97 5c0 2.1-1.6 3.8-3.5 4" pathLength={100} />
+      <path d="M22 13h-4" pathLength={100} />
+      <path d="M17.2 17c2.1.1 3.8 1.9 3.8 4" pathLength={100} />
+    </> },
+  /* Bilingual PII Guardrails — shield-check: every prompt validated before it passes */
+  { t: 'k5_t', d: 'k5_d', ic: <>
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" pathLength={100} />
+      <path d="m9 12 2 2 4-4" pathLength={100} />
+    </> },
+  /* Evidence Locker & Audit Ledger — file-lock: a dated record sealed after the fact */
+  { t: 'k6_t', d: 'k6_d', ic: <>
+      <path d="M13 2.5H6.6A1.6 1.6 0 0 0 5 4.1v15.8A1.6 1.6 0 0 0 6.6 21.5h10.8a1.6 1.6 0 0 0 1.6-1.6V8.2z" pathLength={100} />
+      <path d="M13 2.5v4.1a1.5 1.5 0 0 0 1.5 1.5H19" pathLength={100} />
+      <rect x="8.9" y="13.4" width="6.2" height="4.8" rx="1.1" pathLength={100} />
+      <path d="M10.4 13.4v-1.35a1.6 1.6 0 0 1 3.2 0v1.35" pathLength={100} />
+    </> },
 ] as const;
 
 /* Four tiles docking onto the core. `side` decides which way the rail draws
@@ -198,14 +239,6 @@ const TILES = [
   { n: '02', t: 't2_t', d: 't2_d', side: 'l', row: 2 },
   { n: '03', t: 't3_t', d: 't3_d', side: 'r', row: 1 },
   { n: '04', t: 't4_t', d: 't4_d', side: 'r', row: 2 },
-] as const;
-
-/* All three links open the same demo booking — the only real destination the
-   site has today. Point them somewhere specific when those places exist. */
-const FIT = [
-  { n: '01', t: 'f1_t', d: 'f1_d', c: 'f1_c' },
-  { n: '02', t: 'f2_t', d: 'f2_d', c: 'f2_c' },
-  { n: '03', t: 'f3_t', d: 'f3_d', c: 'f3_c' },
 ] as const;
 
 const WHY = [
@@ -269,8 +302,9 @@ export default function AboutPage() {
     document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
   }, [lang]);
 
-  /* Draw the crosswalk connectors when they scroll into view. Firing on mount
-     would spend the animation while the band is still far below the fold. */
+  /* Draw the crosswalk connectors and the key-features icon stagger when
+     they scroll into view. Firing on mount would spend the animation while
+     the band is still far below the fold. */
   useEffect(() => {
     const els = ['fwLink', 'ideaGrid']
       .map((id) => document.getElementById(id))
@@ -293,6 +327,102 @@ export default function AboutPage() {
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
   }, []);
+
+  /* Key-feature cards reveal individually rather than as one grid: gating
+     the icon draw-in on the whole grid becoming visible meant row 2 often
+     fired (and finished) off-screen while row 1 was still mid-animation, so
+     the two rows never looked like they matched. Each card now gets its own
+     .in class the moment it personally scrolls into view, with a short
+     3-step stagger that repeats per row (see --i on each cell, set to the
+     card's position within its row rather than its position in the grid). */
+  useEffect(() => {
+    const cells = Array.from(document.querySelectorAll<HTMLElement>('.ab-kf-cell'));
+    if (!cells.length) return;
+    if (!('IntersectionObserver' in window)) {
+      cells.forEach((el) => el.classList.add('in'));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        });
+      },
+      { threshold: 0.35 }
+    );
+    cells.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [lang]);
+
+  /* Key-feature cards: click/tap fires a ripple from the pointer, a small
+     pop + shadow flash on the card, and toggles a single selected card
+     (re-tapping the selected one clears it). Mirrors the interaction from
+     the reference mock, rebuilt as plain DOM handlers since the effect is
+     imperative rather than state-driven. */
+  useEffect(() => {
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('.ab-kf-cell'));
+    if (!cards.length) return;
+
+    function fireRipple(card: HTMLElement, x: number | null, y: number | null) {
+      const clip = (card.querySelector('.ab-kf-clip') as HTMLElement) || card;
+      const rect = card.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height) * 1.9;
+      const ripple = document.createElement('span');
+      ripple.className = 'ab-kf-ripple';
+      const originX = (x != null ? x - rect.left : rect.width / 2) - size / 2;
+      const originY = (y != null ? y - rect.top : rect.height / 2) - size / 2;
+      ripple.style.width = size + 'px';
+      ripple.style.height = size + 'px';
+      ripple.style.left = originX + 'px';
+      ripple.style.top = originY + 'px';
+      clip.appendChild(ripple);
+      requestAnimationFrame(() => ripple.classList.add('animate'));
+      ripple.addEventListener('animationend', () => ripple.remove());
+    }
+
+    function activate(card: HTMLElement, x: number | null, y: number | null) {
+      fireRipple(card, x, y);
+
+      card.classList.remove('kf-pop', 'kf-flash');
+      void card.offsetWidth; // restart animations
+      card.classList.add('kf-pop', 'kf-flash');
+
+      const wasSelected = card.classList.contains('is-selected');
+      cards.forEach((c) => {
+        c.classList.remove('is-selected');
+        c.setAttribute('aria-pressed', 'false');
+      });
+      if (!wasSelected) {
+        card.classList.add('is-selected');
+        card.setAttribute('aria-pressed', 'true');
+      }
+    }
+
+    const cleanups: Array<() => void> = [];
+    cards.forEach((card) => {
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-pressed', 'false');
+
+      const onClick = (e: MouseEvent) => activate(card, e.clientX, e.clientY);
+      const onKeydown = (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          activate(card, null, null);
+        }
+      };
+      card.addEventListener('click', onClick);
+      card.addEventListener('keydown', onKeydown);
+      cleanups.push(() => {
+        card.removeEventListener('click', onClick);
+        card.removeEventListener('keydown', onKeydown);
+      });
+    });
+
+    return () => cleanups.forEach((off) => off());
+  }, [lang]);
 
   return (
     <>
@@ -369,9 +499,43 @@ export default function AboutPage() {
           color:var(--ink)}
         .ab-fw-tops{margin-top:44px;display:grid;grid-template-columns:repeat(5,1fr);gap:20px}
         .ab-fw-box{background:#fff;border:1px solid var(--line);border-radius:12px;
-          padding:22px 14px;display:grid;gap:6px;box-shadow:var(--sh-s)}
+          padding:22px 14px;display:grid;gap:6px;box-shadow:var(--sh-s);
+          position:relative;isolation:isolate;
+          transition:border-color .25s ease,box-shadow .25s ease,transform .25s ease}
         .ab-fw-box b{font-weight:600;font-size:15px;color:var(--ink);letter-spacing:-.005em}
         .ab-fw-box span{font-family:var(--font-mono);font-size:11px;color:var(--g600);line-height:1.5}
+        .ab-fw-box:hover{border-color:var(--line-2);box-shadow:var(--sh-m);transform:translateY(-4px)}
+
+        /* thin rotating gradient ring on each framework card, same treatment
+           as the master bar below but subtler — every card runs at a slightly
+           different speed/direction so the row doesn't pulse in unison, and
+           it pauses under the cursor rather than fighting the hover lift */
+        @property --fwc-angle{
+          syntax:'<angle>';
+          inherits:false;
+          initial-value:0deg;
+        }
+        .ab-fw-box::before{
+          content:'';
+          position:absolute;inset:0;border-radius:12px;padding:1px;
+          background:conic-gradient(from var(--fwc-angle,0deg),
+            transparent 0deg,
+            rgba(17,64,134,.5) 35deg,
+            transparent 90deg,
+            transparent 360deg);
+          -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          -webkit-mask-composite:xor;
+          mask-composite:exclude;
+          animation:ab-fwc-ring-rotate 11s linear infinite;
+          pointer-events:none;
+        }
+        .ab-fw-tops .ab-fw-box:nth-child(1)::before{animation-duration:11s}
+        .ab-fw-tops .ab-fw-box:nth-child(2)::before{animation-duration:12.5s;animation-direction:reverse}
+        .ab-fw-tops .ab-fw-box:nth-child(3)::before{animation-duration:13.5s}
+        .ab-fw-tops .ab-fw-box:nth-child(4)::before{animation-duration:12s;animation-direction:reverse}
+        .ab-fw-tops .ab-fw-box:nth-child(5)::before{animation-duration:14s}
+        .ab-fw-box:hover::before{animation-play-state:paused}
+        @keyframes ab-fwc-ring-rotate{ to{ --fwc-angle:360deg } }
 
         .ab-fw-link{position:relative;height:150px}
         .ab-fw-svg{width:100%;height:100%;overflow:visible}
@@ -382,12 +546,54 @@ export default function AboutPage() {
 
         @media(prefers-reduced-motion:reduce){
           .ab-fw-seg{transition:none;stroke-dashoffset:0}
+          .ab-fw-box::before{animation:none}
         }
 
         .ab-fw-master{border-radius:12px;padding:20px 22px;display:grid;
-          background:linear-gradient(120deg,var(--g900) 0%,var(--g800) 55%,var(--g700) 100%);
-          box-shadow:0 12px 30px rgba(3,24,56,.24)}
-        .ab-fw-master b{font-weight:600;font-size:17px;color:#fff;letter-spacing:-.01em}
+          background:linear-gradient(120deg,var(--g900) 0%,var(--g800) 35%,var(--g700) 60%,var(--g800) 85%,var(--g900) 100%);
+          background-size:300% 300%;
+          animation:ab-fw-gradient-drift 14s ease infinite;
+          position:relative;overflow:hidden;isolation:isolate;
+          box-shadow:0 12px 30px rgba(3,24,56,.24);
+          transition:box-shadow .3s ease}
+        .ab-fw-master b{font-weight:600;font-size:17px;color:#fff;letter-spacing:-.01em;
+          position:relative;z-index:1}
+        @keyframes ab-fw-gradient-drift{
+          0%{background-position:0% 50%}
+          50%{background-position:100% 50%}
+          100%{background-position:0% 50%}
+        }
+
+        /* thin rotating gradient ring on the master bar — restrained, no glow/halo */
+        @property --fw-angle{
+          syntax:'<angle>';
+          inherits:false;
+          initial-value:0deg;
+        }
+        .ab-fw-master::before{
+          content:'';
+          position:absolute;inset:0;border-radius:12px;padding:1px;
+          background:conic-gradient(from var(--fw-angle),
+            transparent 0deg,
+            rgba(140,180,230,.55) 40deg,
+            transparent 90deg,
+            transparent 220deg,
+            rgba(59,110,165,.45) 280deg,
+            transparent 330deg,
+            transparent 360deg);
+          -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          -webkit-mask-composite:xor;
+          mask-composite:exclude;
+          animation:ab-fw-ring-rotate 8s linear infinite;
+          pointer-events:none;
+        }
+        @keyframes ab-fw-ring-rotate{ to{ --fw-angle:360deg } }
+        .ab-fw-master:hover{box-shadow:0 18px 36px rgba(3,24,56,.32)}
+
+        @media(prefers-reduced-motion:reduce){
+          .ab-fw-master{animation:none}
+          .ab-fw-master::before{animation:none}
+        }
 
         @media(max-width:820px){
           .ab-fw{padding:64px 0 0}
@@ -418,13 +624,127 @@ export default function AboutPage() {
         .ab-kf-grid{margin-top:34px;display:grid;grid-template-columns:repeat(3,1fr);
           border:1px solid var(--line);border-radius:16px;overflow:hidden}
         .ab-kf-cell{padding:30px 30px 34px;
-          border-top:1px solid var(--line);border-inline-start:1px solid var(--line)}
+          border-top:1px solid var(--line);border-inline-start:1px solid var(--line);
+          position:relative;isolation:isolate;cursor:pointer;-webkit-tap-highlight-color:transparent;
+          transition:box-shadow .3s ease,transform .3s ease,background .3s ease}
+        .ab-kf-cell > *{position:relative;z-index:1}
         .ab-kf-cell:nth-child(-n+3){border-top:none}
         .ab-kf-cell:nth-child(3n+1){border-inline-start:none}
-        .ab-kf-ic{width:26px;height:26px;color:var(--g700)}
+        .ab-kf-cell:focus{outline:none}
+        .ab-kf-cell:focus-visible{box-shadow:0 0 0 2px rgba(3,24,56,.35),var(--sh-m)}
+
+        /* clip layer the click ripple is confined to, and the border outline
+           that reveals on hover/select. Two mirrored paths both draw from the
+           top-centre outward, so the reveal is left-right symmetric and looks
+           the same on every card no matter how tall its row is. */
+        .ab-kf-clip{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+        .ab-kf-border{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+        .ab-kf-border path{
+          fill:none;stroke:var(--g900);stroke-width:1.6;vector-effect:non-scaling-stroke;
+          stroke-linecap:round;stroke-linejoin:round;
+          stroke-dasharray:100;stroke-dashoffset:100;opacity:0;
+          transition:stroke-dashoffset .5s var(--e-out),stroke .35s ease,opacity .28s ease}
+        .ab-kf-cell:hover .ab-kf-border path,
+        .ab-kf-cell.is-selected .ab-kf-border path{stroke-dashoffset:0;opacity:1}
+        .ab-kf-cell.is-selected .ab-kf-border path{stroke:var(--signal)}
+
+        .ab-kf-icwrap{position:relative;width:26px;height:26px}
+        .ab-kf-icwrap::after{
+          content:'';position:absolute;inset:-11px;border-radius:50%;
+          background:radial-gradient(circle, rgba(3,24,56,.16), transparent 70%);
+          opacity:0;transform:scale(.6);pointer-events:none;
+          transition:opacity .4s ease,transform .4s var(--e-out)}
+        .ab-kf-ic{width:100%;height:100%;color:var(--line-2);
+          transition:color .4s ease,transform .4s var(--e-out)}
+
+        /* Hover and select run one identical motion, so every card lifts,
+           glows and animates its icon exactly the same way. Select just
+           persists that state and swaps the accent to the signal colour. */
+        .ab-kf-cell:hover,
+        .ab-kf-cell.is-selected{
+          background:var(--paper);box-shadow:var(--sh-m);transform:translateY(-4px)}
+        .ab-kf-cell:hover .ab-kf-ic,
+        .ab-kf-cell.is-selected .ab-kf-ic{transform:scale(1.1)}
+        /* the ab-kf-grid prefix outranks the resting .in .ab-kf-ic colour rule
+           below, so a selected card's icon reliably takes the signal accent. */
+        .ab-kf-grid .ab-kf-cell.is-selected .ab-kf-ic{color:var(--signal)}
+        .ab-kf-cell:hover .ab-kf-icwrap::after,
+        .ab-kf-cell.is-selected .ab-kf-icwrap::after{opacity:1;transform:scale(1)}
+
         .ab-kf-cell b{display:block;margin-top:20px;font-weight:600;font-size:17px;
           letter-spacing:-.01em;color:var(--ink)}
         .ab-kf-cell p{margin-top:10px;font-size:15px;line-height:1.65;color:var(--ink-2)}
+
+        /* staggered icon draw-in. Each card gets its own .in class the
+           moment IT scrolls into view (see the effect above) rather than
+           the whole grid firing at once, so row 2 doesn't inherit a delay
+           from row 1 or finish animating off-screen before you reach it.
+           --i is each card's position within its own row (0/1/2, set
+           inline), so both rows run the identical three-step rhythm. */
+        .ab-kf-ic path,.ab-kf-ic circle,.ab-kf-ic rect{
+          stroke-dasharray:100;stroke-dashoffset:100;
+          transition:stroke-dashoffset .7s var(--e-out)}
+        .ab-kf-cell.in .ab-kf-ic path,
+        .ab-kf-cell.in .ab-kf-ic circle,
+        .ab-kf-cell.in .ab-kf-ic rect{
+          stroke-dashoffset:0;
+          transition-delay:calc(var(--i,0) * .1s + .15s)}
+        /* The colour ink-in and glow pulse run as one-shot animations rather
+           than delayed transitions. A transition-delay would otherwise linger
+           on the resting element and get inherited by the hover/leave
+           transitions, making the hover lag by a different amount on each card
+           (each card has its own --i). Animations keep the intro staggered but
+           leave the resting state clean, so hover is instant and identical
+           everywhere. The backwards fill holds the pre-state through the delay
+           and lets the normal cascade take over once it ends, so nothing is
+           frozen on top of the hover state. */
+        .ab-kf-cell.in .ab-kf-ic{
+          color:var(--g700);
+          animation:ab-kf-ink .55s ease calc(var(--i,0) * .1s + .7s) backwards}
+        .ab-kf-cell.in .ab-kf-icwrap::after{
+          animation:ab-kf-glow-fade 1.1s ease-out calc(var(--i,0) * .1s + .75s) backwards}
+        @keyframes ab-kf-ink{
+          from{color:var(--line-2)}
+          to{color:var(--g700)}
+        }
+        @keyframes ab-kf-glow-fade{
+          0%{opacity:0;transform:scale(.6)}
+          35%{opacity:1;transform:scale(1.05)}
+          100%{opacity:0;transform:scale(1.2)}
+        }
+
+        /* click: ripple from the pointer, a small pop, a shadow flash */
+        .ab-kf-ripple{
+          position:absolute;border-radius:50%;
+          background:radial-gradient(circle, rgba(3,24,56,.16) 0%, rgba(3,24,56,.06) 45%, rgba(3,24,56,0) 72%);
+          transform:scale(0);opacity:.9;pointer-events:none;z-index:0}
+        .ab-kf-ripple.animate{animation:ab-kf-ripple-expand .65s cubic-bezier(.22,.61,.36,1) forwards}
+        @keyframes ab-kf-ripple-expand{ to{ transform:scale(1); opacity:0 } }
+        @keyframes ab-kf-pop{
+          0%{transform:scale(1) rotate(0deg)}
+          28%{transform:scale(.93) rotate(-.6deg)}
+          58%{transform:scale(1.045) rotate(.4deg)}
+          80%{transform:scale(.985) rotate(-.15deg)}
+          100%{transform:scale(1) rotate(0deg)}
+        }
+        .ab-kf-cell.kf-pop{animation:ab-kf-pop .6s cubic-bezier(.34,1.56,.64,1)}
+        @keyframes ab-kf-flash{
+          0%{box-shadow:0 8px 18px rgba(3,24,56,.08), 0 0 0 0 rgba(17,64,134,.35)}
+          35%{box-shadow:0 24px 44px rgba(3,24,56,.28), 0 0 0 5px rgba(17,64,134,.18)}
+          100%{box-shadow:0 16px 32px rgba(3,24,56,.16), 0 0 0 0 rgba(17,64,134,0)}
+        }
+        .ab-kf-cell.kf-flash{animation:ab-kf-flash .7s cubic-bezier(.22,.61,.36,1)}
+
+        @media(prefers-reduced-motion:reduce){
+          .ab-kf-ic path,.ab-kf-ic circle,.ab-kf-ic rect{transition:none;stroke-dashoffset:0}
+          .ab-kf-ic{transition:none;color:var(--g700)}
+          .ab-kf-cell.in .ab-kf-ic,.ab-kf-cell.in .ab-kf-icwrap::after{animation:none}
+          .ab-kf-border path{transition:opacity .2s ease}
+          .ab-kf-cell:hover .ab-kf-border path,
+          .ab-kf-cell.is-selected .ab-kf-border path{stroke-dashoffset:0}
+          .ab-kf-cell.kf-pop,.ab-kf-cell.kf-flash{animation:none}
+          .ab-kf-ripple{display:none}
+        }
 
         @media(max-width:900px){
           .ab-kf{padding:64px 0 0}
@@ -532,38 +852,6 @@ export default function AboutPage() {
           .ab-core{grid-row:auto;order:-1;padding:32px 24px}
           .ab-rail{display:none}
         }
-
-        /* built to fit */
-        .ab-fit{padding:96px 0 0;text-align:center}
-        .ab-fit-k{font-family:var(--font-mono);font-size:11px;font-weight:500;
-          letter-spacing:.18em;text-transform:uppercase;color:var(--g600)}
-        .ab-fit h2{margin-top:18px;font-size:clamp(25px,3vw,40px);line-height:1.18;
-          letter-spacing:-.015em;color:var(--ink)}
-        .ab-fit-grid{margin-top:42px;text-align:start;display:grid;
-          grid-template-columns:repeat(3,1fr);gap:20px}
-        /* three standalone cards rather than cells in one frame */
-        .ab-fit-cell{padding:28px 26px 30px;border:1px solid var(--line);border-radius:16px;
-          background:var(--paper);box-shadow:var(--sh-s);
-          display:flex;flex-direction:column;align-items:flex-start}
-        .ab-fit-n{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;
-          color:var(--ink-3)}
-        .ab-fit-cell b{margin-top:14px;font-weight:600;font-size:17px;letter-spacing:-.01em;
-          color:var(--ink)}
-        .ab-fit-cell p{margin-top:11px;font-size:15px;line-height:1.65;color:var(--ink-2)}
-        /* mt:auto pins every link to the cell floor, so the three line up even
-           when their paragraphs run to different depths */
-        .ab-fit-cta{margin-top:auto;padding-top:20px;display:inline-flex;align-items:center;
-          gap:9px;cursor:pointer;background:none;border:none;
-          font-family:var(--font-body);font-size:14.5px;font-weight:600;color:var(--g700);
-          transition:color .2s ease}
-        .ab-fit-cta:hover{color:var(--g900)}
-        .ab-fit-cta:hover .ab-kf-arw{transform:translateX(3px)}
-        [dir="rtl"] .ab-fit-cta:hover .ab-kf-arw{transform:scaleX(-1) translateX(3px)}
-
-        @media(max-width:900px){
-          .ab-fit{padding:64px 0 0}
-          .ab-fit-grid{grid-template-columns:1fr;gap:16px}
-        }
       `}</style>
 
       {/* ══════════ navigation ══════════ */}
@@ -670,7 +958,9 @@ export default function AboutPage() {
 
             {/* Five boxes now instead of four — the last one is a summary
                 tile ("50+ More Frameworks") rather than a counted framework,
-                so it renders the fw_more copy line instead of a count. */}
+                so it renders the fw_more copy line instead of a count. Each
+                one carries a slow rotating gradient ring (CSS, keyed off
+                nth-child so the row doesn't pulse in sync) and lifts on hover. */}
             <div className="ab-fw-tops">
               {FW.map((f) => (
                 <div className="ab-fw-box" key={f.n}>
@@ -683,18 +973,20 @@ export default function AboutPage() {
             </div>
 
             {/* Connector is a single SVG that draws itself in three staggered
-                waves once the section scrolls into view: (1) each box drops
-                down, (2) box1+2 and box4+5 merge inward while box3 drops
-                straight, (3) all three converge and stem down into the
-                master bar. Same #fwLink id, so the existing
+                waves once the section scrolls into view. The stagger runs in
+                reverse of the visual order — the stem into the master bar
+                fires first (--i:0), then the two inward merges (--i:1), then
+                the box drops last (--i:2) — so the draw reads as originating
+                at the master bar and climbing up to the five boxes, rather
+                than raining down onto it. Same #fwLink id, so the existing
                 IntersectionObserver above still triggers the .in class. */}
             <div className="ab-fw-link" id="fwLink" aria-hidden="true">
               <svg viewBox="0 0 1000 150" preserveAspectRatio="none" className="ab-fw-svg">
-                <path className="ab-fw-seg" style={{ ['--i' as string]: 0 }} d="M100,0 L100,40" />
-                <path className="ab-fw-seg" style={{ ['--i' as string]: 0 }} d="M300,0 L300,40" />
-                <path className="ab-fw-seg" style={{ ['--i' as string]: 0 }} d="M500,0 L500,40" />
-                <path className="ab-fw-seg" style={{ ['--i' as string]: 0 }} d="M700,0 L700,40" />
-                <path className="ab-fw-seg" style={{ ['--i' as string]: 0 }} d="M900,0 L900,40" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 2 }} d="M100,0 L100,40" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 2 }} d="M300,0 L300,40" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 2 }} d="M500,0 L500,40" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 2 }} d="M700,0 L700,40" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 2 }} d="M900,0 L900,40" />
 
                 <path className="ab-fw-seg" style={{ ['--i' as string]: 1 }} d="M100,40 L100,55 L300,55 L300,40" />
                 <path className="ab-fw-seg" style={{ ['--i' as string]: 1 }} d="M700,40 L700,55 L900,55 L900,40" />
@@ -702,12 +994,14 @@ export default function AboutPage() {
                 <path className="ab-fw-seg" style={{ ['--i' as string]: 1 }} d="M800,55 L800,75" />
                 <path className="ab-fw-seg" style={{ ['--i' as string]: 1 }} d="M500,40 L500,75" />
 
-                <path className="ab-fw-seg" style={{ ['--i' as string]: 2 }} d="M200,75 L200,95 L500,95 L500,75" />
-                <path className="ab-fw-seg" style={{ ['--i' as string]: 2 }} d="M800,75 L800,95 L500,95 L500,75" />
-                <path className="ab-fw-seg" style={{ ['--i' as string]: 3 }} d="M500,95 L500,150" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 0 }} d="M200,75 L200,95 L500,95 L500,75" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 0 }} d="M800,75 L800,95 L500,95 L500,75" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 0 }} d="M500,95 L500,150" />
               </svg>
             </div>
 
+            {/* master bar: slow gradient drift behind the label plus a thin
+                rotating conic-gradient ring along the border */}
             <div className="ab-fw-master">
               <b>{tr('fw_m', lang)}</b>
             </div>
@@ -729,13 +1023,34 @@ export default function AboutPage() {
               </button>
             </div>
 
+            {/* Each cell: a clip layer for the click ripple, an SVG rect that
+                draws the border on hover/select, and an icon that draws in
+                (stroke-dasharray) once that specific card scrolls into view.
+                --i is the card's position within its own row (i % 3), so
+                every row runs the same three-step stagger instead of the
+                bottom row inheriting extra delay from the top row's count.
+                Click handling (ripple/pop/flash/select) is wired
+                imperatively in the effect above. */}
             <div className="ab-kf-grid">
-              {KF.map((f) => (
-                <div className="ab-kf-cell" key={f.t}>
-                  <svg className="ab-kf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                       strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    {f.ic}
+              {KF.map((f, i) => (
+                <div className="ab-kf-cell" key={f.t} style={{ ['--i' as string]: i % 3 }}>
+                  <div className="ab-kf-clip" aria-hidden="true" />
+                  {/* Two mirrored halves, each drawn from the top-centre outward
+                      and down to the bottom-centre. Splitting the perimeter this
+                      way makes the reveal symmetric, so it reads identically on
+                      every card regardless of how tall its row happens to be —
+                      unlike a single rect that starts at one corner and traces
+                      the whole outline at a card-height-dependent pace. */}
+                  <svg className="ab-kf-border" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                    <path pathLength={100} d="M50 0.8 H0.8 V99.2 H50" />
+                    <path pathLength={100} d="M50 0.8 H99.2 V99.2 H50" />
                   </svg>
+                  <div className="ab-kf-icwrap">
+                    <svg className="ab-kf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      {f.ic}
+                    </svg>
+                  </div>
                   <b>{tr(f.t, lang)}</b>
                   <p>{tr(f.d, lang)}</p>
                 </div>
@@ -780,28 +1095,6 @@ export default function AboutPage() {
                   <span className="ab-kf-arw" aria-hidden="true">→</span>
                 </a>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── built to fit ── */}
-        <section className="ab-fit">
-          <div className="wrap">
-            <span className="ab-fit-k">{tr('ft_k', lang)}</span>
-            <h2>{tr('ft_t', lang)}</h2>
-            <div className="ab-fit-grid">
-              {FIT.map((f) => (
-                <div className="ab-fit-cell" key={f.n}>
-                  <span className="ab-fit-n">{f.n}</span>
-                  <b>{tr(f.t, lang)}</b>
-                  <p>{tr(f.d, lang)}</p>
-                  <button className="ab-fit-cta" type="button"
-                          data-cal-link="tahara-ai-xpf7u0/product-demo">
-                    <span>{tr(f.c, lang)}</span>
-                    <span className="ab-kf-arw" aria-hidden="true">→</span>
-                  </button>
-                </div>
-              ))}
             </div>
           </div>
         </section>
