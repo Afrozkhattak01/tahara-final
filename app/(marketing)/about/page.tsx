@@ -77,6 +77,7 @@ const T = {
   fw_t:    { en: 'Built Around One Framework, Not Twelve Separate Ones',
              ar: 'مبنيّ حول إطار واحد، لا اثني عشر إطارًا منفصلًا' },
   fw_req:  { en: 'requirements', ar: 'متطلبًا' },
+  fw_more: { en: 'international & regional AI frameworks', ar: 'أطر ذكاء اصطناعي دولية وإقليمية' },
   fw_m:    { en: 'The Tahara Master Framework', ar: 'إطار Tahara الرئيسي' },
 
   /* key features */
@@ -167,12 +168,15 @@ function tr(key: keyof typeof T, lang: Lang) {
    dashboard's data or layout changes. `flip` puts the image first. */
 /* Fixed here rather than read from the dashboard. The counts agree with the
    `conf` table in tahara-engine.js — 33 + 76 + 41 + 37 = 187, the figure the
-   master bar quotes — so if that table changes, change these too. */
+   master bar quotes — so if that table changes, change these too. The 5th
+   entry is a summary tile rather than a counted framework, so it carries
+   `more: true` instead of a `c` count and renders the fw_more copy line. */
 const FW = [
   { n: 'EU AI Act', c: 33 },
   { n: 'ISO/IEC 42001', c: 76 },
   { n: 'ISO/IEC 23894', c: 41 },
   { n: 'NIST AI RMF', c: 37 },
+  { n: '50+ More Frameworks', more: true },
 ] as const;
 
 /* Icons are drawn here in the same 24-box stroke style as the rest of the
@@ -355,46 +359,29 @@ export default function AboutPage() {
           .ab-row.is-flip .ab-row-img{order:2}
         }
 
-        /* crosswalk */
+        /* crosswalk — 5-box grid with an SVG merging manifold: box1+2 and
+           box4+5 merge inward, box3 drops straight, all three converge into
+           one stem down to the master bar. Draws with stroke-dashoffset in
+           three staggered waves, using the same #fwLink id and the same
+           IntersectionObserver-driven .in class as before. */
         .ab-fw{padding:96px 0 0;text-align:center}
         .ab-fw h2{font-size:clamp(25px,3vw,40px);line-height:1.18;letter-spacing:-.015em;
           color:var(--ink)}
-        .ab-fw-tops{margin-top:44px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
-        .ab-fw-box{background:#fff;border:1px solid var(--line);border-inline-start:3px solid var(--g400);
-          border-radius:10px;padding:14px 10px;display:grid;gap:5px;box-shadow:var(--sh-s)}
-        .ab-fw-box b{font-weight:500;font-size:16px;color:var(--ink);letter-spacing:-.01em}
-        .ab-fw-box span{font-family:var(--font-mono);font-size:11.5px;color:var(--g600)}
+        .ab-fw-tops{margin-top:44px;display:grid;grid-template-columns:repeat(5,1fr);gap:20px}
+        .ab-fw-box{background:#fff;border:1px solid var(--line);border-radius:12px;
+          padding:22px 14px;display:grid;gap:6px;box-shadow:var(--sh-s)}
+        .ab-fw-box b{font-weight:600;font-size:15px;color:var(--ink);letter-spacing:-.005em}
+        .ab-fw-box span{font-family:var(--font-mono);font-size:11px;color:var(--g600);line-height:1.5}
 
-        /* connector band — same 4 columns, so each drop sits under its box */
-        .ab-fw-link{position:relative;height:132px;display:grid;
-          grid-template-columns:repeat(4,1fr);gap:24px}
-        /* The lines draw themselves: each is scaled from nothing along its own
-           axis, in the order the eye would follow — the four drops fall, the
-           rail opens outward from the centre, the node lands, the stem runs
-           down to the master bar. */
-        .ab-fw-drop{align-self:start;justify-self:center;width:1px;height:66px;
-          background:var(--line-2);
-          transform:scaleY(0);transform-origin:top;
-          transition:transform .52s var(--e-out) calc(var(--i,0) * .09s)}
-        .ab-fw-link.in .ab-fw-drop{transform:scaleY(1)}
-        /* the rail spans centre-of-first to centre-of-last: with 4 columns and
-           a 24px gap each column is (100% - 72px)/4, so half of that is the
-           inset on each side */
-        .ab-fw-rail{position:absolute;top:66px;height:1px;background:var(--line-2);
-          left:calc((100% - 72px)/8);right:calc((100% - 72px)/8);
-          transform:scaleX(0);transform-origin:center;
-          transition:transform .72s var(--e-out) .4s}
-        .ab-fw-link.in .ab-fw-rail{transform:scaleX(1)}
-        .ab-fw-stem{position:absolute;top:66px;left:50%;width:1px;height:66px;
-          background:var(--line-2);
-          transform:scaleY(0);transform-origin:top;
-          transition:transform .5s var(--e-out) 1.18s}
-        .ab-fw-link.in .ab-fw-stem{transform:scaleY(1)}
+        .ab-fw-link{position:relative;height:150px}
+        .ab-fw-svg{width:100%;height:100%;overflow:visible}
+        .ab-fw-seg{fill:none;stroke:var(--line-2);stroke-width:1.5;
+          stroke-dasharray:400;stroke-dashoffset:400;
+          transition:stroke-dashoffset .55s var(--e-out) calc(var(--i,0) * .22s)}
+        .ab-fw-link.in .ab-fw-seg{stroke-dashoffset:0}
 
-        /* nothing moves, everything is simply already drawn */
         @media(prefers-reduced-motion:reduce){
-          .ab-fw-drop,.ab-fw-rail,.ab-fw-stem{transition:none;opacity:1;
-            transform:none}
+          .ab-fw-seg{transition:none;stroke-dashoffset:0}
         }
 
         .ab-fw-master{border-radius:12px;padding:20px 22px;display:grid;
@@ -404,22 +391,17 @@ export default function AboutPage() {
 
         @media(max-width:820px){
           .ab-fw{padding:64px 0 0}
-          .ab-fw-card{padding:26px 20px 24px}
-          /* two columns, and the rail no longer describes the layout */
           .ab-fw-tops{grid-template-columns:repeat(2,1fr);gap:14px}
-          .ab-fw-link{height:44px;display:block}
-          .ab-fw-drop,.ab-fw-rail{display:none}
-          .ab-fw-stem{top:0;height:44px}
+          .ab-fw-link{height:44px}
+          .ab-fw-svg{display:none}
         }
 
-        /* key features */
+        /* key features — no badge above the heading, matches the shipped
+           design; heading sits flush at the top of the header row */
         .ab-kf{padding:96px 0 0}
         .ab-kf-head{display:flex;align-items:flex-end;justify-content:space-between;
           gap:28px;flex-wrap:wrap}
-        .ab-kf-badge{display:inline-block;background:var(--g900);color:#fff;border-radius:7px;
-          padding:7px 14px;font-family:var(--font-mono);font-size:11px;font-weight:500;
-          letter-spacing:.16em;text-transform:uppercase}
-        .ab-kf-head h2{margin-top:20px;font-size:clamp(25px,3vw,40px);line-height:1.18;
+        .ab-kf-head h2{margin-top:0;font-size:clamp(25px,3vw,40px);line-height:1.18;
           letter-spacing:-.015em;color:var(--ink)}
         .ab-kf-cta{display:inline-flex;align-items:center;gap:10px;flex:none;cursor:pointer;
           background:var(--g900);color:#fff;border:none;border-radius:10px;padding:14px 22px;
@@ -686,25 +668,44 @@ export default function AboutPage() {
           <div className="wrap">
             <h2>{tr('fw_t', lang)}</h2>
 
-            {/* The connectors are laid out with the same 4-column grid as the
-                boxes, so every drop line stays under its own box at any width
-                instead of being positioned by hand. The lines draw themselves
-                in once the band scrolls into view — see the observer below. */}
+            {/* Five boxes now instead of four — the last one is a summary
+                tile ("50+ More Frameworks") rather than a counted framework,
+                so it renders the fw_more copy line instead of a count. */}
             <div className="ab-fw-tops">
               {FW.map((f) => (
                 <div className="ab-fw-box" key={f.n}>
                   <b>{f.n}</b>
-                  <span>{f.c} {tr('fw_req', lang)}</span>
+                  {'more' in f
+                    ? <span>{tr('fw_more', lang)}</span>
+                    : <span>{f.c} {tr('fw_req', lang)}</span>}
                 </div>
               ))}
             </div>
 
+            {/* Connector is a single SVG that draws itself in three staggered
+                waves once the section scrolls into view: (1) each box drops
+                down, (2) box1+2 and box4+5 merge inward while box3 drops
+                straight, (3) all three converge and stem down into the
+                master bar. Same #fwLink id, so the existing
+                IntersectionObserver above still triggers the .in class. */}
             <div className="ab-fw-link" id="fwLink" aria-hidden="true">
-              {FW.map((f, i) => (
-                <span className="ab-fw-drop" key={f.n} style={{ ['--i' as string]: i }} />
-              ))}
-              <span className="ab-fw-rail" />
-              <span className="ab-fw-stem" />
+              <svg viewBox="0 0 1000 150" preserveAspectRatio="none" className="ab-fw-svg">
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 0 }} d="M100,0 L100,40" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 0 }} d="M300,0 L300,40" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 0 }} d="M500,0 L500,40" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 0 }} d="M700,0 L700,40" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 0 }} d="M900,0 L900,40" />
+
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 1 }} d="M100,40 L100,55 L300,55 L300,40" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 1 }} d="M700,40 L700,55 L900,55 L900,40" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 1 }} d="M200,55 L200,75" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 1 }} d="M800,55 L800,75" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 1 }} d="M500,40 L500,75" />
+
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 2 }} d="M200,75 L200,95 L500,95 L500,75" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 2 }} d="M800,75 L800,95 L500,95 L500,75" />
+                <path className="ab-fw-seg" style={{ ['--i' as string]: 3 }} d="M500,95 L500,150" />
+              </svg>
             </div>
 
             <div className="ab-fw-master">
@@ -718,7 +719,6 @@ export default function AboutPage() {
           <div className="wrap">
             <div className="ab-kf-head">
               <div>
-                <span className="ab-kf-badge">{tr('kf_k', lang)}</span>
                 <h2>{tr('kf_t', lang)}</h2>
               </div>
               {/* Inert for now — no destination decided. It looks like a
