@@ -12,7 +12,7 @@ import PageHero from '../../../components/PageHero';
  * and the language follows the same localStorage key the landing toggle writes.
  *
  * ─────────────────────────────────────────────────────────────────────────
- * PLACEHOLDER COPY: every string below marked /* TODO copy *​/ is filler and
+ * PLACEHOLDER COPY: every string below marked "TODO copy" is filler and
  * says nothing true about the company. It is deliberately obvious rather than
  * plausible — invented founding dates, headcounts or offices would read as
  * fact and ship as fact. Replace both the en and the ar side of each.
@@ -356,38 +356,19 @@ export default function AboutPage() {
     return () => io.disconnect();
   }, [lang]);
 
-  /* Key-feature cards: click/tap fires a ripple from the pointer, a small
-     pop + shadow flash on the card, and toggles a single selected card
-     (re-tapping the selected one clears it). Mirrors the interaction from
-     the reference mock, rebuilt as plain DOM handlers since the effect is
-     imperative rather than state-driven. */
+  /* Key-feature cards: click/tap selects a single card (re-tapping the
+     selected one clears it) with one quiet settle. No ripple, pop or flash —
+     the accent bar, the lift and the icon accent carry the state now.
+     Rebuilt as plain DOM handlers since the effect is imperative rather
+     than state-driven. */
   useEffect(() => {
     const cards = Array.from(document.querySelectorAll<HTMLElement>('.ab-kf-cell'));
     if (!cards.length) return;
 
-    function fireRipple(card: HTMLElement, x: number | null, y: number | null) {
-      const clip = (card.querySelector('.ab-kf-clip') as HTMLElement) || card;
-      const rect = card.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height) * 1.9;
-      const ripple = document.createElement('span');
-      ripple.className = 'ab-kf-ripple';
-      const originX = (x != null ? x - rect.left : rect.width / 2) - size / 2;
-      const originY = (y != null ? y - rect.top : rect.height / 2) - size / 2;
-      ripple.style.width = size + 'px';
-      ripple.style.height = size + 'px';
-      ripple.style.left = originX + 'px';
-      ripple.style.top = originY + 'px';
-      clip.appendChild(ripple);
-      requestAnimationFrame(() => ripple.classList.add('animate'));
-      ripple.addEventListener('animationend', () => ripple.remove());
-    }
-
-    function activate(card: HTMLElement, x: number | null, y: number | null) {
-      fireRipple(card, x, y);
-
-      card.classList.remove('kf-pop', 'kf-flash');
-      void card.offsetWidth; // restart animations
-      card.classList.add('kf-pop', 'kf-flash');
+    function activate(card: HTMLElement) {
+      card.classList.remove('kf-settle');
+      void card.offsetWidth; // restart the settle
+      card.classList.add('kf-settle');
 
       const wasSelected = card.classList.contains('is-selected');
       cards.forEach((c) => {
@@ -406,18 +387,23 @@ export default function AboutPage() {
       card.setAttribute('role', 'button');
       card.setAttribute('aria-pressed', 'false');
 
-      const onClick = (e: MouseEvent) => activate(card, e.clientX, e.clientY);
+      const onClick = () => activate(card);
       const onKeydown = (e: KeyboardEvent) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          activate(card, null, null);
+          activate(card);
         }
+      };
+      const onAnimEnd = (e: AnimationEvent) => {
+        if (e.animationName === 'ab-kf-settle') card.classList.remove('kf-settle');
       };
       card.addEventListener('click', onClick);
       card.addEventListener('keydown', onKeydown);
+      card.addEventListener('animationend', onAnimEnd);
       cleanups.push(() => {
         card.removeEventListener('click', onClick);
         card.removeEventListener('keydown', onKeydown);
+        card.removeEventListener('animationend', onAnimEnd);
       });
     });
 
@@ -602,9 +588,19 @@ export default function AboutPage() {
           .ab-fw-svg{display:none}
         }
 
-        /* key features — no badge above the heading, matches the shipped
-           design; heading sits flush at the top of the header row */
-        .ab-kf{padding:96px 0 0}
+        /* ══════════════════════════════════════════════════════════════════
+           KEY FEATURES — animation reworked for a sleeker read. One entrance
+           motion (rise + icon draw), one hover gesture (a signal hairline
+           draws across the top edge, the card lifts on a soft sheen, the icon
+           scales and takes the accent), and a quiet settle on click. The old
+           ripple/pop/flash and the on-hover border-draw were three competing
+           motions per card and have been removed. Layout, grid hairlines,
+           --i stagger and breakpoints are unchanged.
+           ══════════════════════════════════════════════════════════════════ */
+        /* KF accents run on their own blue, not --signal (which is the orange
+           accent in this theme). --kf-stroke is the resting card border; the
+           icons stay dark blue (--g700) at all times. */
+        .ab-kf{padding:96px 0 0;--kf-stroke:rgba(17,64,134,.4);--kf-accent:rgb(17,64,134)}
         .ab-kf-head{display:flex;align-items:flex-end;justify-content:space-between;
           gap:28px;flex-wrap:wrap}
         .ab-kf-head h2{margin-top:0;font-size:clamp(25px,3vw,40px);line-height:1.18;
@@ -622,52 +618,56 @@ export default function AboutPage() {
         /* one hairline between cells, none on the outer edges — the container
            border already draws those */
         .ab-kf-grid{margin-top:34px;display:grid;grid-template-columns:repeat(3,1fr);
-          border:1px solid var(--line);border-radius:16px;overflow:hidden}
+          border:1px solid var(--kf-stroke);border-radius:16px;overflow:hidden}
+        /* resting transitions stay clean (no lingering entrance delay), so
+           hover fires instantly and identically on every card */
         .ab-kf-cell{padding:30px 30px 34px;
-          border-top:1px solid var(--line);border-inline-start:1px solid var(--line);
+          border-top:1px solid var(--kf-stroke);border-inline-start:1px solid var(--kf-stroke);
           position:relative;isolation:isolate;cursor:pointer;-webkit-tap-highlight-color:transparent;
-          transition:box-shadow .3s ease,transform .3s ease,background .3s ease}
+          background:#fff;opacity:0;
+          transition:transform .42s var(--e-out),box-shadow .42s var(--e-out),
+                     background .42s ease,border-color .42s ease}
         .ab-kf-cell > *{position:relative;z-index:1}
         .ab-kf-cell:nth-child(-n+3){border-top:none}
         .ab-kf-cell:nth-child(3n+1){border-inline-start:none}
         .ab-kf-cell:focus{outline:none}
         .ab-kf-cell:focus-visible{box-shadow:0 0 0 2px rgba(3,24,56,.35),var(--sh-m)}
 
-        /* clip layer the click ripple is confined to, and the border outline
-           that reveals on hover/select. Two mirrored paths both draw from the
-           top-centre outward, so the reveal is left-right symmetric and looks
-           the same on every card no matter how tall its row is. */
-        .ab-kf-clip{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none}
-        .ab-kf-border{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
-        .ab-kf-border path{
-          fill:none;stroke:var(--g900);stroke-width:1.6;vector-effect:non-scaling-stroke;
-          stroke-linecap:round;stroke-linejoin:round;
-          stroke-dasharray:100;stroke-dashoffset:100;opacity:0;
-          transition:stroke-dashoffset .5s var(--e-out),stroke .35s ease,opacity .28s ease}
-        .ab-kf-cell:hover .ab-kf-border path,
-        .ab-kf-cell.is-selected .ab-kf-border path{stroke-dashoffset:0;opacity:1}
-        .ab-kf-cell.is-selected .ab-kf-border path{stroke:var(--signal)}
+        /* the single accent gesture — one blue hairline that draws across
+           the top edge from the inline-start on hover/select */
+        .ab-kf-cell::before{content:'';position:absolute;top:0;inset-inline:0;height:2px;
+          background:linear-gradient(90deg,var(--kf-accent),
+            color-mix(in srgb,var(--kf-accent) 18%,transparent));
+          transform:scaleX(0);transform-origin:left;
+          transition:transform .5s var(--e-out);z-index:3}
+        [dir="rtl"] .ab-kf-cell::before{transform-origin:right}
+        .ab-kf-cell:hover::before,
+        .ab-kf-cell.is-selected::before{transform:scaleX(1)}
 
         .ab-kf-icwrap{position:relative;width:26px;height:26px}
+        /* soft blue-tinted halo behind the icon, blooms with the lift */
         .ab-kf-icwrap::after{
-          content:'';position:absolute;inset:-11px;border-radius:50%;
-          background:radial-gradient(circle, rgba(3,24,56,.16), transparent 70%);
+          content:'';position:absolute;inset:-12px;border-radius:50%;
+          background:radial-gradient(circle,
+            color-mix(in srgb,var(--kf-accent) 16%,transparent),transparent 70%);
           opacity:0;transform:scale(.6);pointer-events:none;
-          transition:opacity .4s ease,transform .4s var(--e-out)}
-        .ab-kf-ic{width:100%;height:100%;color:var(--line-2);
+          transition:opacity .45s ease,transform .45s var(--e-out)}
+        .ab-kf-ic{width:100%;height:100%;color:var(--g700);
           transition:color .4s ease,transform .4s var(--e-out)}
 
-        /* Hover and select run one identical motion, so every card lifts,
-           glows and animates its icon exactly the same way. Select just
-           persists that state and swaps the accent to the signal colour. */
+        /* Hover and select run one identical motion: the card lifts on a soft
+           sheen, the icon scales and takes the signal accent, the halo blooms.
+           Select just persists that state with a fainter signal tint. Same
+           -4px lift the section already used, so nothing new clips against the
+           grid's overflow. */
         .ab-kf-cell:hover,
+        .ab-kf-cell.is-selected{transform:translateY(-4px);box-shadow:var(--sh-m);
+          background:linear-gradient(180deg,#fff 0%,var(--paper) 100%);z-index:2}
         .ab-kf-cell.is-selected{
-          background:var(--paper);box-shadow:var(--sh-m);transform:translateY(-4px)}
+          background:linear-gradient(180deg,#fff 0%,
+            color-mix(in srgb,var(--kf-accent) 6%,#fff) 100%)}
         .ab-kf-cell:hover .ab-kf-ic,
-        .ab-kf-cell.is-selected .ab-kf-ic{transform:scale(1.1)}
-        /* the ab-kf-grid prefix outranks the resting .in .ab-kf-ic colour rule
-           below, so a selected card's icon reliably takes the signal accent. */
-        .ab-kf-grid .ab-kf-cell.is-selected .ab-kf-ic{color:var(--signal)}
+        .ab-kf-cell.is-selected .ab-kf-ic{transform:scale(1.08)}
         .ab-kf-cell:hover .ab-kf-icwrap::after,
         .ab-kf-cell.is-selected .ab-kf-icwrap::after{opacity:1;transform:scale(1)}
 
@@ -675,12 +675,21 @@ export default function AboutPage() {
           letter-spacing:-.01em;color:var(--ink)}
         .ab-kf-cell p{margin-top:10px;font-size:15px;line-height:1.65;color:var(--ink-2)}
 
-        /* staggered icon draw-in. Each card gets its own .in class the
-           moment IT scrolls into view (see the effect above) rather than
-           the whole grid firing at once, so row 2 doesn't inherit a delay
-           from row 1 or finish animating off-screen before you reach it.
-           --i is each card's position within its own row (0/1/2, set
-           inline), so both rows run the identical three-step rhythm. */
+        /* ── entrance ──
+           One motion: each card rises and fades in a per-column stagger, its
+           icon strokes drawing in just behind, then inking from grey to navy.
+           Run as keyframes with a backwards fill so the resting state stays
+           clean and the hover transition never inherits the delay. Each card
+           gets its own .in class the moment it scrolls into view (effect
+           above); --i is its position within its own row (0/1/2), so both
+           rows run the identical three-step rhythm. */
+        @keyframes ab-kf-rise{
+          from{opacity:0;transform:translateY(20px)}
+          to{opacity:1;transform:translateY(0)}
+        }
+        .ab-kf-cell.in{opacity:1;
+          animation:ab-kf-rise .62s var(--e-out) calc(var(--i,0) * .09s) backwards}
+
         .ab-kf-ic path,.ab-kf-ic circle,.ab-kf-ic rect{
           stroke-dasharray:100;stroke-dashoffset:100;
           transition:stroke-dashoffset .7s var(--e-out)}
@@ -688,69 +697,38 @@ export default function AboutPage() {
         .ab-kf-cell.in .ab-kf-ic circle,
         .ab-kf-cell.in .ab-kf-ic rect{
           stroke-dashoffset:0;
-          transition-delay:calc(var(--i,0) * .1s + .15s)}
-        /* The colour ink-in and glow pulse run as one-shot animations rather
-           than delayed transitions. A transition-delay would otherwise linger
-           on the resting element and get inherited by the hover/leave
-           transitions, making the hover lag by a different amount on each card
-           (each card has its own --i). Animations keep the intro staggered but
-           leave the resting state clean, so hover is instant and identical
-           everywhere. The backwards fill holds the pre-state through the delay
-           and lets the normal cascade take over once it ends, so nothing is
-           frozen on top of the hover state. */
+          transition-delay:calc(var(--i,0) * .09s + .18s)}
         .ab-kf-cell.in .ab-kf-ic{
-          color:var(--g700);
-          animation:ab-kf-ink .55s ease calc(var(--i,0) * .1s + .7s) backwards}
-        .ab-kf-cell.in .ab-kf-icwrap::after{
-          animation:ab-kf-glow-fade 1.1s ease-out calc(var(--i,0) * .1s + .75s) backwards}
+          animation:ab-kf-ink .5s ease calc(var(--i,0) * .09s + .62s) backwards}
         @keyframes ab-kf-ink{
           from{color:var(--line-2)}
           to{color:var(--g700)}
         }
-        @keyframes ab-kf-glow-fade{
-          0%{opacity:0;transform:scale(.6)}
-          35%{opacity:1;transform:scale(1.05)}
-          100%{opacity:0;transform:scale(1.2)}
-        }
 
-        /* click: ripple from the pointer, a small pop, a shadow flash */
-        .ab-kf-ripple{
-          position:absolute;border-radius:50%;
-          background:radial-gradient(circle, rgba(3,24,56,.16) 0%, rgba(3,24,56,.06) 45%, rgba(3,24,56,0) 72%);
-          transform:scale(0);opacity:.9;pointer-events:none;z-index:0}
-        .ab-kf-ripple.animate{animation:ab-kf-ripple-expand .65s cubic-bezier(.22,.61,.36,1) forwards}
-        @keyframes ab-kf-ripple-expand{ to{ transform:scale(1); opacity:0 } }
-        @keyframes ab-kf-pop{
-          0%{transform:scale(1) rotate(0deg)}
-          28%{transform:scale(.93) rotate(-.6deg)}
-          58%{transform:scale(1.045) rotate(.4deg)}
-          80%{transform:scale(.985) rotate(-.15deg)}
-          100%{transform:scale(1) rotate(0deg)}
+        /* ── click ── a single quiet settle, no ripple or rotation. The lift
+           is held at -4px through the settle so it reads as a press, not a
+           jump. */
+        @keyframes ab-kf-settle{
+          0%{transform:translateY(-4px) scale(1)}
+          42%{transform:translateY(-4px) scale(.986)}
+          100%{transform:translateY(-4px) scale(1)}
         }
-        .ab-kf-cell.kf-pop{animation:ab-kf-pop .6s cubic-bezier(.34,1.56,.64,1)}
-        @keyframes ab-kf-flash{
-          0%{box-shadow:0 8px 18px rgba(3,24,56,.08), 0 0 0 0 rgba(17,64,134,.35)}
-          35%{box-shadow:0 24px 44px rgba(3,24,56,.28), 0 0 0 5px rgba(17,64,134,.18)}
-          100%{box-shadow:0 16px 32px rgba(3,24,56,.16), 0 0 0 0 rgba(17,64,134,0)}
-        }
-        .ab-kf-cell.kf-flash{animation:ab-kf-flash .7s cubic-bezier(.22,.61,.36,1)}
+        .ab-kf-cell.kf-settle{animation:ab-kf-settle .26s var(--e-out)}
 
         @media(prefers-reduced-motion:reduce){
+          .ab-kf-cell{opacity:1;animation:none !important}
           .ab-kf-ic path,.ab-kf-ic circle,.ab-kf-ic rect{transition:none;stroke-dashoffset:0}
           .ab-kf-ic{transition:none;color:var(--g700)}
-          .ab-kf-cell.in .ab-kf-ic,.ab-kf-cell.in .ab-kf-icwrap::after{animation:none}
-          .ab-kf-border path{transition:opacity .2s ease}
-          .ab-kf-cell:hover .ab-kf-border path,
-          .ab-kf-cell.is-selected .ab-kf-border path{stroke-dashoffset:0}
-          .ab-kf-cell.kf-pop,.ab-kf-cell.kf-flash{animation:none}
-          .ab-kf-ripple{display:none}
+          .ab-kf-cell::before{transition:transform .2s ease}
+          .ab-kf-cell:hover,.ab-kf-cell.is-selected{transform:none}
+          .ab-kf-cell.kf-settle{animation:none}
         }
 
         @media(max-width:900px){
           .ab-kf{padding:64px 0 0}
           .ab-kf-grid{grid-template-columns:repeat(2,1fr)}
-          .ab-kf-cell:nth-child(-n+3){border-top:1px solid var(--line)}
-          .ab-kf-cell:nth-child(3n+1){border-inline-start:1px solid var(--line)}
+          .ab-kf-cell:nth-child(-n+3){border-top:1px solid var(--kf-stroke)}
+          .ab-kf-cell:nth-child(3n+1){border-inline-start:1px solid var(--kf-stroke)}
           .ab-kf-cell:nth-child(-n+2){border-top:none}
           .ab-kf-cell:nth-child(2n+1){border-inline-start:none}
         }
@@ -758,7 +736,7 @@ export default function AboutPage() {
           .ab-kf-grid{grid-template-columns:1fr}
           .ab-kf-cell{padding:24px 22px 26px;border-inline-start:none !important}
           .ab-kf-cell:first-child{border-top:none}
-          .ab-kf-cell:nth-child(n+2){border-top:1px solid var(--line)}
+          .ab-kf-cell:nth-child(n+2){border-top:1px solid var(--kf-stroke)}
           .ab-kf-cta{width:100%;justify-content:center}
         }
 
@@ -1023,28 +1001,17 @@ export default function AboutPage() {
               </button>
             </div>
 
-            {/* Each cell: a clip layer for the click ripple, an SVG rect that
-                draws the border on hover/select, and an icon that draws in
-                (stroke-dasharray) once that specific card scrolls into view.
-                --i is the card's position within its own row (i % 3), so
-                every row runs the same three-step stagger instead of the
-                bottom row inheriting extra delay from the top row's count.
-                Click handling (ripple/pop/flash/select) is wired
-                imperatively in the effect above. */}
+            {/* Each cell: an icon that draws in (stroke-dasharray) once that
+                specific card scrolls into view, a signal hairline that draws
+                across the top edge on hover/select, and a soft lift. --i is
+                the card's position within its own row (i % 3), so every row
+                runs the same three-step stagger instead of the bottom row
+                inheriting extra delay from the top row's count. Click handling
+                (settle + single-select) is wired imperatively in the effect
+                above. */}
             <div className="ab-kf-grid">
               {KF.map((f, i) => (
                 <div className="ab-kf-cell" key={f.t} style={{ ['--i' as string]: i % 3 }}>
-                  <div className="ab-kf-clip" aria-hidden="true" />
-                  {/* Two mirrored halves, each drawn from the top-centre outward
-                      and down to the bottom-centre. Splitting the perimeter this
-                      way makes the reveal symmetric, so it reads identically on
-                      every card regardless of how tall its row happens to be —
-                      unlike a single rect that starts at one corner and traces
-                      the whole outline at a card-height-dependent pace. */}
-                  <svg className="ab-kf-border" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                    <path pathLength={100} d="M50 0.8 H0.8 V99.2 H50" />
-                    <path pathLength={100} d="M50 0.8 H99.2 V99.2 H50" />
-                  </svg>
                   <div className="ab-kf-icwrap">
                     <svg className="ab-kf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                          strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
