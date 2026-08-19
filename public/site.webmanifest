@@ -1,6 +1,8 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "Tahara AI",
+  "short_name": "Tahara",
+  "description": "Discovery, live enforcement and audit-ready evidence for every model, agent and prompt your organisation runs.",
+  "start_url": "/",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -15,7 +17,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "theme_color": "#eaf0f9",
+  "background_color": "#eaf0f9",
   "display": "standalone"
 }

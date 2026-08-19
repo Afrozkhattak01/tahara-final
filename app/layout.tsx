@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import CookieBanner from '@/components/CookieBanner';
+import { SITE_URL } from '@/lib/site';
 
 // Root layout — deliberately minimal. It owns only <html>/<body> and shared
 // defaults. It imports NO global stylesheet, so the landing page's CSS reset
@@ -7,6 +8,10 @@ import CookieBanner from '@/components/CookieBanner';
 // styling: the landing page via app/(marketing)/landing.css, future app pages
 // via their own stylesheets/components.
 export const metadata: Metadata = {
+  // Without metadataBase, Next resolves the og:image below against
+  // http://localhost:3000 in the build output, so LinkedIn/WhatsApp/Slack
+  // previews render blank. Set once here; every route inherits it.
+  metadataBase: new URL(SITE_URL),
   title: { default: 'Tahara AI', template: '%s · Tahara AI' },
   description: 'Tahara AI'
 };

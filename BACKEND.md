@@ -101,11 +101,16 @@ public/
 
 next.config.mjs                  images.remotePatterns → cdn.simpleicons.org
 vercel.json                      pins framework=nextjs
-tsconfig.json                    excludes _legacy, components, content, lib, styles
+tsconfig.json                    excludes only _legacy/
+app/robots.ts / app/sitemap.ts   → /robots.txt and /sitemap.xml
+lib/site.ts                      SITE_URL — single source of truth for the origin
 
-_legacy/ components/ content/ lib/ styles/ scripts/
-                                 DEAD. Unused by the live app, excluded from tsconfig.
-                                 Ignore entirely. Safe to delete.
+_legacy/                         DEAD. Retired code (incl. the abandoned React port
+                                 under react-rewrite/). Excluded from tsconfig.
+                                 Ignore entirely.
+
+components/                      ALL LIVE now: CookieBanner, SiteHeader, PageHero,
+                                 ReportPdf. Nothing dead remains here.
 ```
 
 **Where your work goes:** `app/api/**/route.ts` for every endpoint, plus edits to
