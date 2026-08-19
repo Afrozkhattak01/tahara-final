@@ -15,6 +15,16 @@ const T = {
   nav_resources:   { en: 'Resources',    ar: 'الموارد' },
   nav_faq:         { en: 'FAQ',          ar: 'الأسئلة الشائعة' },
   cta_demo:        { en: 'Request a demo', ar: 'اطلب عرضًا توضيحيًا' },
+
+  /* platform menu demo panel — the columns come from tahara-mega.js */
+  mega_demo_k:     { en: 'Guided demo', ar: 'عرض توضيحي موجَّه' },
+  mega_demo_title: { en: 'See Tahara in action', ar: 'شاهد Tahara في العمل' },
+  mega_demo_desc:  { en: 'A 30-minute walkthrough, tailored to your stack', ar: 'جولة مدتها 30 دقيقة، مصمَّمة خصيصًا لمنظومتكم' },
+  mega_demo_walk:  { en: 'What we walk through', ar: 'ما الذي نستعرضه' },
+  stage_assess:    { en: 'Assess',  ar: 'التقييم' },
+  stage_govern:    { en: 'Govern',  ar: 'الحوكمة' },
+  stage_test:      { en: 'Test',    ar: 'الاختبار' },
+  stage_monitor:   { en: 'Monitor', ar: 'المراقبة' },
   back_link:       { en: 'All posts', ar: 'كل المقالات' },
   written_by:      { en: 'Written by', ar: 'بقلم' },
   author_role:     { en: 'Contributor', ar: 'مساهم' },
@@ -82,6 +92,22 @@ export default function BlogPostPage() {
       if (toggle && navHandler) toggle.removeEventListener('click', navHandler);
     };
   }, []);
+
+  useEffect(() => {
+    const boot = () => (window as any).TaharaMega?.mount(lang);
+    if ((window as any).TaharaMega) { boot(); return; }
+    let s = document.getElementById('tahara-mega') as HTMLScriptElement | null;
+    if (!s) {
+      s = document.createElement('script');
+      s.id = 'tahara-mega';
+      s.src = '/tahara-mega.js';
+      s.async = false;
+      document.body.appendChild(s);
+    }
+    const el = s;
+    el.addEventListener('load', boot);
+    return () => el.removeEventListener('load', boot);
+  }, [lang]);
 
   useEffect(() => {
     document.documentElement.setAttribute('lang', lang === 'ar' ? 'ar' : 'en');
@@ -199,6 +225,52 @@ export default function BlogPostPage() {
         [dir="rtl"] .post-body li { padding-left: 0; padding-right: 4px; }
         [dir="rtl"] .post-body li::before { left: auto; right: -18px; }
         [dir="rtl"] .post-body ul { padding-left: 0; padding-right: 22px; }
+
+        /* ═════════════════════════════════════════════════════
+           Responsive — canonical stops, see styles/tokens.css.
+           This page had none: the rule above sets a flat 48px of padding on
+           each side of .wrap, which on a 360px phone left 264px for the
+           article once the gutter was counted.
+           ═════════════════════════════════════════════════════ */
+
+        /* The measure is what matters in an article, so the column grows only
+           a little on a 27" display — 720 -> 800px is about 75 characters of
+           Inter at 18px, which is the top of the comfortable range. */
+        @media (min-width: 1600px) {
+          main .wrap { padding-left: 64px; padding-right: 64px; }
+          .post-wrap { max-width: 800px; }
+          .post-lede { font-size: 21px; }
+          .post-body p, .post-body li { font-size: 18px; }
+          .post-body h2 { font-size: 30px; }
+          .post-banner { min-height: 360px; }
+        }
+
+        @media (max-width: 1000px) {
+          main .wrap { padding-left: 32px; padding-right: 32px; }
+        }
+
+        @media (max-width: 640px) {
+          /* Hand the article back to the page gutter — the extra inset is a
+             desktop nicety and on a phone it is just lost measure. */
+          main .wrap { padding-left: 0; padding-right: 0; }
+          .post-banner { min-height: 200px; padding: 32px 24px; border-radius: 14px; }
+          .post-banner svg.motif { width: 140px; height: 140px; right: -22px; bottom: -22px; }
+          .post-lede { font-size: 17px; margin-bottom: 30px; }
+          .post-body h2 { font-size: 23px; margin: 40px 0 14px; }
+          .post-body p, .post-body li { font-size: 16px; }
+          .post-byline { gap: 12px; margin: 22px 0 26px; }
+          /* The date is already printed in .post-topline above the headline;
+             repeating it in the byline costs a whole row on a phone. */
+          .post-when { display: none; }
+          .post-fig { margin: 30px 0 32px; }
+        }
+
+        @media (max-width: 420px) {
+          .post-banner { min-height: 170px; padding: 26px 18px; }
+          .post-banner svg.motif { width: 110px; height: 110px; }
+          .post-body ul { padding-left: 18px; }
+          [dir="rtl"] .post-body ul { padding-left: 0; padding-right: 18px; }
+        }
       `}</style>
 
       <header id="siteHeader">
@@ -207,7 +279,15 @@ export default function BlogPostPage() {
             <span className="brand-mark" aria-hidden="true"></span>Tahara AI
           </a>
           <div className="nav-links" id="navLinks">
-            <a href="/#platform" className="has-mega">
+            <a
+              href="/#platform"
+              className="has-mega"
+              id="megaBtn"
+              role="button"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-controls="mega"
+            >
               <span>{tr('nav_platform', lang)}</span>
               <svg className="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
                 <path d="M1.6 3.4 5 6.8l3.4-3.4" />
@@ -230,7 +310,55 @@ export default function BlogPostPage() {
           </div>
           <span className="prog" id="prog" aria-hidden="true"></span>
         </nav>
+
+        {/* Platform mega-menu shell — tahara-mega.js fills and drives it.
+            Inside the header on purpose: .mega is position:absolute at
+            top:100%, so the sticky header has to be its offset parent. */}
+        <div className="mega" id="mega" role="region" aria-label="Platform menu">
+          <div className="mega-card">
+            <div className="mega-inner" id="megaInner">
+              {/* columns injected before this panel */}
+              <div className="mega-demo">
+                <span className="demo-k">{tr('mega_demo_k', lang)}</span>
+                <h4>{tr('mega_demo_title', lang)}</h4>
+                <p>{tr('mega_demo_desc', lang)}</p>
+                <span className="demo-walk-k">{tr('mega_demo_walk', lang)}</span>
+                <ul className="demo-steps">
+                  <li className="demo-step" style={{ ['--si' as string]: 0 } as React.CSSProperties}>
+                    <span className="demo-dot"></span><span>{tr('stage_assess', lang)}</span>
+                    <svg className="demo-si" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                      <circle cx="8.5" cy="8.5" r="5" /><path d="M12.5 12.5 17 17" strokeLinecap="round" />
+                    </svg>
+                  </li>
+                  <li className="demo-step" style={{ ['--si' as string]: 1 } as React.CSSProperties}>
+                    <span className="demo-dot"></span><span>{tr('stage_govern', lang)}</span>
+                    <svg className="demo-si" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                      <path d="M10 2.5 4 5v4.6c0 3.4 2.4 5.8 6 6.4 3.6-.6 6-3 6-6.4V5z" strokeLinejoin="round" />
+                    </svg>
+                  </li>
+                  <li className="demo-step" style={{ ['--si' as string]: 2 } as React.CSSProperties}>
+                    <span className="demo-dot"></span><span>{tr('stage_test', lang)}</span>
+                    <svg className="demo-si" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                      <circle cx="10" cy="10" r="6.5" /><circle cx="10" cy="10" r="2.4" />
+                    </svg>
+                  </li>
+                  <li className="demo-step" style={{ ['--si' as string]: 3 } as React.CSSProperties}>
+                    <span className="demo-dot"></span><span>{tr('stage_monitor', lang)}</span>
+                    <svg className="demo-si" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                      <path d="M2 10h3l2.2-5 3 10 2.2-6 1.4 3H18" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </li>
+                </ul>
+                <a data-cal-link="tahara-ai-xpf7u0/product-demo" className="demo-btn">
+                  <span>{tr('cta_demo', lang)}</span> <span className="arw" aria-hidden="true">→</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </header>
+
+      <div className="mega-scrim" id="megaScrim" aria-hidden="true"></div>
 
       <main style={{ minHeight: '60vh', padding: '120px 0 80px' }}>
         <div className="wrap">

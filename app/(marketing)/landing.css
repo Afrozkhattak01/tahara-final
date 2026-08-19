@@ -2247,8 +2247,6 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
 @media(max-width:1100px){
   .integ-grid{grid-template-columns:repeat(8,1fr)}
 }
-@media(max-width:1100px){
-}
 @media(max-width:1050px){
   .life{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 16px}
   .journey{display:none}
@@ -2452,8 +2450,6 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
    (these rules are appended after the main media blocks, so the
    small-screen versions have to be restated here to win on order)
    ════════════════════════════════════════════════════════════ */
-@media(max-width:1100px){
-}
 @media(max-width:1050px){
   .life{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 16px}
   .journey{display:none}
@@ -2622,3 +2618,73 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
 [dir="rtl"] .dash-side{border-right:none;border-left:1px solid var(--line)}
 /* sparklines are left alone on purpose — a trend line is data, not text */
 
+
+
+/* ════════════════════════════════════════════════════════════
+   LARGE DESKTOP — 27" iMac and up
+
+   Appended last on purpose. This sheet resolves a lot of its conflicts by
+   source order (see the "appended after the main media blocks" note further
+   up), so a min-width block placed mid-file would be overridden by the plain
+   rules below it — .stack-intro and .mega-card both restate their max-width
+   after the responsive section.
+
+   Only ONE new stop is introduced, at 1600, with a second nudge at 2000.
+   Nothing below 1600 is touched, so every existing breakpoint and every
+   decision behind it is left exactly as it was.
+
+   Why these numbers: --maxw goes 1180 -> 1400 (+19%) -> 1560 (+32%). The
+   caps that opted out of the container with a hard px value are moved by the
+   same proportion so the page keeps its ratios instead of having one element
+   stretch while its neighbour stays put. Body copy is deliberately NOT
+   scaled: .lede is capped at 56ch and every card here is spaced in fixed px,
+   so raising the root size would reflow components rather than enlarge them.
+   Headings do scale, because at these widths the clamp() MAXIMUM is what
+   binds — the vw term stopped mattering around 1180 — so a 66px h1 in a
+   1400px column reads as under-set.
+   ════════════════════════════════════════════════════════════ */
+
+@media(min-width:1600px){
+  :root{--maxw:1400px;--gutter:40px}
+
+  /* headings only — see note above */
+  h1{font-size:clamp(38px,5.6vw,76px)}
+  h2{font-size:clamp(28px,3.6vw,50px)}
+  h3{font-size:22px}
+  .lede{font-size:clamp(15.5px,1.35vw,19px)}
+  .hero h1{font-size:clamp(30px,4.4vw,60px)}
+
+  /* more air between bands, in proportion to the extra width */
+  .band{padding:112px 0}
+
+  /* the hard caps that don't read --maxw */
+  .head{max-width:1240px}
+  .stack-intro{max-width:1240px}
+  .mega-card{max-width:1300px}
+  /* both centre themselves inside .wrap, so they strand in the middle of a
+     1400px band unless they move with it */
+  .faq-grid{max-width:1160px}
+  .close-cta{max-width:1170px;padding:88px 40px 92px}
+  /* .wrap-wide is deliberately NOT widened here. It is already 1488px with
+     gutters, so at a 1600px viewport it has only 56px of margin left —
+     growing it would push the hero dashboard to the screen edges rather
+     than give it room. It gets its bump at 2000, where there is room to
+     spend. */
+}
+
+@media(min-width:2000px){
+  :root{--maxw:1560px}
+  h1{font-size:clamp(38px,5.6vw,84px)}
+  h2{font-size:clamp(28px,3.6vw,54px)}
+  .hero h1{font-size:clamp(30px,4.4vw,66px)}
+  .head{max-width:1380px}
+  .stack-intro{max-width:1380px}
+  .mega-card{max-width:1460px}
+  .faq-grid{max-width:1290px}
+  .close-cta{max-width:1300px}
+  /* .aura is capped to the dashboard's width by hand, so it has to move with
+     .wrap-wide or the bloom stops short of the panel it sits behind. At 2000
+     this leaves ~170px of margin either side. */
+  .wrap-wide{max-width:calc(1660px + var(--gutter) * 2)}
+  .aura{width:min(100%,calc(1660px + var(--gutter) * 2))}
+}

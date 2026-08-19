@@ -84,6 +84,23 @@ export default function PageHero({ badge, title, lead, cta, calLink }: Props) {
         .ph-cta .btn{padding:15px 30px;font-size:16.5px;font-weight:600;border-radius:9px}
 
         @media(prefers-reduced-motion:reduce){ .ph-badge > i{animation:none} }
+
+        /* Large desktop — tracks the 1600/2000 stops landing.css introduces
+           for --maxw. Without this the hero headline stays at 43px while the
+           container it sits in grows to 1400px, which reads as a small title
+           adrift in a wide band. The clamp maxima are what bind at these
+           widths; the vw term stopped mattering around 1410px. */
+        @media(min-width:1600px){
+          .ph-hero{padding:128px 0 142px}
+          .ph-hero h1{font-size:clamp(28px,3.05vw,52px)}
+          .ph-hero p{max-width:min(100%,720px);font-size:clamp(15.5px,1.4vw,20px)}
+          .ph-field{background-size:112px 112px}
+        }
+        @media(min-width:2000px){
+          .ph-hero h1{font-size:clamp(28px,3.05vw,58px)}
+          .ph-hero p{max-width:min(100%,780px)}
+        }
+
         @media(max-width:640px){
           .ph-hero{padding:66px 0 78px}
           .ph-hero h1{max-width:none}
