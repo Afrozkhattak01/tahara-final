@@ -45,10 +45,10 @@ Every route that exists today. **Five pages, one of them templated.**
 | URL | Source file | What it is | Render |
 | --- | --- | --- | --- |
 | `/` | `app/(marketing)/page.tsx` → `tahara-body.html` | **The landing page.** Hand-built HTML + a ~2000-line vanilla-JS engine. Not React components — see [§4](#4-architecture--the-two-worlds). | Static |
-| `/about` | `app/(marketing)/about/page.tsx` | About us. Real React. ⚠️ **Copy is deliberate placeholder** — see below. | Static |
-| `/governance` | `app/(marketing)/governance/page.tsx` | **Hero only (128 lines).** `PageHero` + footer, nothing else yet — its own comment says "Sections go below `<main>` as they are decided." The smallest complete page; copy it to start a new one. | Static |
-| `/resources` | `app/(marketing)/resources/page.tsx` | **The blog index** — cards, search box, category pills. | Static |
-| `/resources/<slug>` | `app/(marketing)/resources/[slug]/page.tsx` | A blog article. **3 posts** today, all from `posts.ts`. | Dynamic |
+| `/about` | `about/page.tsx` + `AboutClient.tsx` | About us. Real React. ⚠️ **Copy is deliberate placeholder** — see below. | Static |
+| `/governance` | `governance/page.tsx` + `GovernanceClient.tsx` | **Hero only.** `PageHero` + footer, nothing else yet — its own comment says "Sections go below `<main>` as they are decided." The smallest complete page; copy it to start a new one. | Static |
+| `/resources` | `resources/page.tsx` + `ResourcesClient.tsx` | **The blog index** — cards, search box, category pills. | Static |
+| `/resources/<slug>` | `[slug]/page.tsx` + `PostClient.tsx` | A blog article. **3 posts** today, all from `posts.ts`. | SSG — all 3 prerendered |
 | `/robots.txt` | `app/robots.ts` | Generated. | Static |
 | `/sitemap.xml` | `app/sitemap.ts` | Generated; auto-includes every post in `posts.ts`. | Static |
 
@@ -97,12 +97,24 @@ app/
     AmbientBg.tsx         Shared gradient/grid background so React pages don't sit
                           on bare white next to the landing page's wash
 
-    about/page.tsx        → /about
-    governance/page.tsx   → /governance
+    about/
+      page.tsx            → /about   Server Component: exports metadata only
+      AboutClient.tsx     the actual page ('use client')
+    governance/
+      page.tsx            → /governance   (same two-file shape)
+      GovernanceClient.tsx
     resources/
-      page.tsx            → /resources          (index: cards, search, pills)
+      page.tsx            → /resources
+      ResourcesClient.tsx index: cards, search, category pills
       posts.ts            ← ALL BLOG CONTENT — the POSTS array
-      [slug]/page.tsx     → /resources/<slug>   (article + its own <style>)
+      [slug]/
+        page.tsx          → /resources/<slug>  generateMetadata +
+                            generateStaticParams (prerenders every post)
+        PostClient.tsx    the article ('use client', own <style> block)
+
+    ⚠️ Every page is split in two ON PURPOSE. A 'use client' module cannot
+       export `metadata`, so the thin server page.tsx exists to do that. Keep
+       the shape when you add a page — see §5.
 
 components/               ALL LIVE. Every file here is imported by app/.
   SiteHeader.tsx          Shared nav + Platform mega-menu shell. Used by all four
@@ -118,6 +130,8 @@ lib/
   site.ts                 SITE_URL — the single source of truth for the origin.
                           Feeds metadataBase, robots.ts and sitemap.ts so they can
                           never disagree. Set NEXT_PUBLIC_SITE_URL on a real domain.
+  metadata.ts             pageMetadata() — builds title/description/canonical/
+                          openGraph/twitter for a page from three fields.
 
 public/                   Served at the URL root.
   tahara-engine.js        ← THE LANDING ENGINE (198 KB). Must stay in public/.
@@ -194,13 +208,13 @@ Edit it in place. New features are standard React in their own route group.
 
 | Task | Where to go |
 | --- | --- |
-| **Add a blog post** | Add one object to `POSTS` in `app/(marketing)/resources/posts.ts`. The card, the article page at `/resources/<slug>`, and the sitemap entry all appear automatically. No other file. |
+| **Add a blog post** | Add one object to `POSTS` in `app/(marketing)/resources/posts.ts`. The card, the article page, the sitemap entry, **and the page's `<title>` / social card** all follow automatically from `title` and `excerpt`. No other file. |
 | **Change landing page text** | If the element has `data-i18n="key"` → edit the `I18N` dictionary in `public/tahara-engine.js`. Otherwise → edit `tahara-body.html`. **See the gotcha below.** |
 | **Change landing colors / layout** | `app/(marketing)/landing.css` |
 | **Change the nav or mega-menu on React pages** | `components/SiteHeader.tsx` (one place, all four pages) |
 | **Change the nav on the landing page** | `tahara-body.html` — the landing page has its own separate header |
 | **Change mega-menu *columns*** | `public/tahara-mega.js` (React pages) / `PLATFORM_MENU` in `tahara-engine.js` (landing) |
-| **Add a new page** | New folder under `app/(marketing)/` with a `page.tsx`. Start by copying `governance/page.tsx` — it's the smallest complete example. Add it to `app/sitemap.ts`. |
+| **Add a new page** | New folder under `app/(marketing)/` with **two** files: a server `page.tsx` that exports `pageMetadata({ title, description, path })` and renders `<XClient />`, plus the `'use client'` component itself. Copy `governance/` — it's the smallest complete example. Then add the route to `app/sitemap.ts`. |
 | **Add a page that must NOT inherit landing styles** | New route group, e.g. `app/(app)/`, with its own `layout.tsx` and stylesheet |
 | **Change the site domain** | Set `NEXT_PUBLIC_SITE_URL` in Vercel. `lib/site.ts` feeds metadata, robots and sitemap from it. |
 
@@ -260,8 +274,14 @@ follows whichever system is driving without needing to know which.
 13. **`fs.readFileSync` in `page.tsx`** is fine only because `/` is statically
     prerendered. If that page ever went dynamic, the file read needs rethinking —
     files outside the bundle aren't available to serverless functions.
-14. **cal.com loads before consent** — see §7.
-15. **Dev cache fragility** — never run dev and build at once (see §1).
+14. **An unknown post slug returns HTTP 200, not 404** (a "soft 404"). This is
+    deliberate: `PostClient` renders a designed, translated "Post not found" state
+    inside the site chrome, which reads far better than Next's bare 404 page. The
+    trade-off is that search engines can index the miss. If that becomes a problem,
+    the fix is a custom `not-found.tsx` reproducing that state, then calling
+    `notFound()` from the server `page.tsx` — don't just add `notFound()` alone.
+15. **cal.com loads before consent** — see §7.
+16. **Dev cache fragility** — never run dev and build at once (see §1).
 
 ---
 

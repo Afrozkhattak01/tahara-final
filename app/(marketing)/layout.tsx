@@ -10,8 +10,14 @@ const DESCRIPTION =
   'Discovery, live enforcement and audit-ready evidence for every model, agent and prompt your organisation runs.';
 
 export const metadata: Metadata = {
-  // `absolute` opts out of the root layout's "%s · Tahara AI" title template.
-  title: { absolute: TITLE },
+  // Two jobs in one field:
+  //   `absolute` -- this segment's own title ("/"), opting out of the ROOT
+  //                 layout's "%s · Tahara AI" template so it isn't doubled.
+  //   `template` -- wraps the bare titles child pages export, so /about ships
+  //                 "About us · Tahara AI" rather than a brandless "About us".
+  // The old code set `absolute` alone, which left children with no template AND
+  // no title of their own -- that is how all five pages shared one <title>.
+  title: { absolute: TITLE, template: '%s · Tahara AI' },
   description: DESCRIPTION,
   icons: {
     icon: [
