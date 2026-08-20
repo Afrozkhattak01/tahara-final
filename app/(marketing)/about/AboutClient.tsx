@@ -126,7 +126,7 @@ const T = {
 
   /* closing */
 
-  footer_tagline:   { en: 'Assurance for AI systems.', ar: 'ضمان لأنظمة الذكاء الاصطناعي.' },
+  footer_tagline:   { en: 'Safety, governance and transparency for the AI you actually run.', ar: 'السلامة والحوكمة والشفافية للذكاء الاصطناعي الذي تشغّلونه فعليًا.' },
   footer_copyright: { en: '© 2026 Tahara AI', ar: '© 2026 Tahara AI' },
   footer_motto:     { en: 'EVIDENCE, NOT ASSURANCES', ar: 'أدلة، لا وعود' },
 } as const;
@@ -618,8 +618,7 @@ export default function AboutPage() {
           border-top:1px solid var(--kf-stroke);border-inline-start:1px solid var(--kf-stroke);
           position:relative;isolation:isolate;cursor:pointer;-webkit-tap-highlight-color:transparent;
           background:#fff;opacity:0;
-          transition:transform .42s var(--e-out),box-shadow .42s var(--e-out),
-                     background .42s ease,border-color .42s ease}
+          transition:opacity .3s ease,background .4s ease,border-color .4s ease}
         .ab-kf-cell > *{position:relative;z-index:1}
         .ab-kf-cell:nth-child(-n+3){border-top:none}
         .ab-kf-cell:nth-child(3n+1){border-inline-start:none}
@@ -653,14 +652,26 @@ export default function AboutPage() {
            Select just persists that state with a fainter signal tint. Same
            -4px lift the section already used, so nothing new clips against the
            grid's overflow. */
+        /* No transform and no drop shadow: the card must not move at all.
+           Contrast does the work -- see the spotlight rules below. */
         .ab-kf-cell:hover,
-        .ab-kf-cell.is-selected{transform:translateY(-4px);box-shadow:var(--sh-m);
+        .ab-kf-cell.is-selected{
           background:linear-gradient(180deg,#fff 0%,var(--paper) 100%);z-index:2}
+
+        /* ── spotlight ──
+           Hovering anywhere in the grid recedes every card that entered, then
+           the one actually under the cursor is pulled back to full. Scoped to
+           .in so a card that has not run its entrance yet is never faded up
+           from 0 early. Specificity: the dim rule is (0,4,0) and the restore
+           is (0,5,0), so the cursor always wins regardless of source order. */
+        .ab-kf-grid:hover .ab-kf-cell.in{opacity:.5}
+        .ab-kf-grid:hover .ab-kf-cell.in:hover{opacity:1}
+        .ab-kf-cell.is-selected{opacity:1}
         .ab-kf-cell.is-selected{
           background:linear-gradient(180deg,#fff 0%,
             color-mix(in srgb,var(--kf-accent) 6%,#fff) 100%)}
         .ab-kf-cell:hover .ab-kf-ic,
-        .ab-kf-cell.is-selected .ab-kf-ic{transform:scale(1.08)}
+        .ab-kf-cell.is-selected .ab-kf-ic{transform:scale(1.08);color:var(--kf-accent)}
         .ab-kf-cell:hover .ab-kf-icwrap::after,
         .ab-kf-cell.is-selected .ab-kf-icwrap::after{opacity:1;transform:scale(1)}
 
@@ -701,10 +712,12 @@ export default function AboutPage() {
         /* ── click ── a single quiet settle, no ripple or rotation. The lift
            is held at -4px through the settle so it reads as a press, not a
            jump. */
+        /* The card no longer lifts, so the settle is a pure scale dip in
+           place. Holding a translateY here would jump it on click. */
         @keyframes ab-kf-settle{
-          0%{transform:translateY(-4px) scale(1)}
-          42%{transform:translateY(-4px) scale(.986)}
-          100%{transform:translateY(-4px) scale(1)}
+          0%{transform:scale(1)}
+          42%{transform:scale(.986)}
+          100%{transform:scale(1)}
         }
         .ab-kf-cell.kf-settle{animation:ab-kf-settle .26s var(--e-out)}
 
@@ -713,7 +726,9 @@ export default function AboutPage() {
           .ab-kf-ic path,.ab-kf-ic circle,.ab-kf-ic rect{transition:none;stroke-dashoffset:0}
           .ab-kf-ic{transition:none;color:var(--g700)}
           .ab-kf-cell::before{transition:transform .2s ease}
-          .ab-kf-cell:hover,.ab-kf-cell.is-selected{transform:none}
+          /* the spotlight is a fade, not movement, so it stays -- just without
+             an easing ramp. No transform rule needed: nothing transforms. */
+          .ab-kf-cell{transition:none}
           .ab-kf-cell.kf-settle{animation:none}
         }
 
