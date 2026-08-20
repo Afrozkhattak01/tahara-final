@@ -105,8 +105,6 @@ const T = {
   id_t2:  { en: 'live signal.', ar: 'إشارة حيّة.' },
 
   id_ck:  { en: 'Every layer', ar: 'كل طبقة' },
-  id_cd:  { en: 'Discovery, governance, adversarial testing, and guardrails run as one cycle against the same evidence trail.',
-            ar: 'الاكتشاف والحوكمة والاختبار العدائي وحواجز الحماية تعمل كدورة واحدة على مسار الأدلة نفسه.' },
   id_ct:  { en: 'Assurance Across Every Layer of the Stack',
             ar: 'ضمان يمتد عبر كل طبقة من طبقات المنظومة' },
   id_cta: { en: 'See how it fits together', ar: 'شاهد كيف يتكامل الأمر' },
@@ -814,8 +812,6 @@ export default function AboutPage() {
           letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3)}
         .ab-core h3{margin-top:16px;font-size:clamp(24px,2.5vw,34px);line-height:1.2;
           letter-spacing:-.015em;color:var(--ink)}
-        .ab-core p{margin-top:16px;max-width:42ch;font-size:15px;line-height:1.65;
-          color:var(--ink-2)}
         .ab-core-cta{margin-top:26px;display:inline-flex;align-items:center;gap:10px;
           background:var(--g800);color:#fff;border-radius:10px;padding:13px 22px;
           font-size:14.5px;font-weight:600;letter-spacing:-.01em;
@@ -1016,7 +1012,6 @@ export default function AboutPage() {
               <div className="ab-core">
                 <span className="ab-core-k">{tr('id_ck', lang)}</span>
                 <h3>{tr('id_ct', lang)}</h3>
-                <p>{tr('id_cd', lang)}</p>
                 {/* points at the crosswalk diagram above — the section that
                     literally shows how the pieces fit together */}
                 <a className="ab-core-cta" href="#crosswalk">
