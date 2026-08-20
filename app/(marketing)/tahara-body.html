@@ -575,14 +575,33 @@
       <p class="lede r" data-i18n="frameworks.lede">Every control ships with its mapping.</p>
     </div>
 
-    <div class="frames" id="frames">
-      <div class="seal" style="--i:0"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg>      <span class="ck"><img class="seal-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f7/ISO_english_logo_icon.svg" alt="ISO/IEC 42001"/></span></div><div class="k" data-i18n="seal.management">Management</div><div class="v">ISO/IEC 42001</div></div>
-      <div class="seal" style="--i:1"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg>      <span class="ck"><img class="seal-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f7/ISO_english_logo_icon.svg" alt="ISO/IEC 27001"/></span></div><div class="k" data-i18n="seal.security">Security</div><div class="v">ISO/IEC 27001</div></div>
-      <div class="seal" style="--i:2"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg>      <span class="ck"><img class="seal-logo" src="https://upload.wikimedia.org/wikipedia/commons/e/ee/NIST_logo.svg" alt="NIST AI RMF"/></span></div><div class="k" data-i18n="seal.risk">Risk</div><div class="v">NIST AI RMF</div></div>
-      <div class="seal" style="--i:3"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg>      <span class="ck"><img class="seal-logo" src="https://upload.wikimedia.org/wikipedia/commons/b/b7/Flag_of_Europe.svg" alt="EU AI Act"/></span></div><div class="k" data-i18n="seal.regulation">Regulation</div><div class="v">EU AI Act</div></div>
-      <div class="seal" style="--i:4"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg>      <span class="ck"><img class="seal-logo" src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/owasp.svg" alt="OWASP LLM"/></span></div><div class="k" data-i18n="seal.application">Application</div><div class="v">OWASP LLM</div></div>
-      <div class="seal" style="--i:5"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg>      <span class="ck"><img class="seal-logo" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Mitre_Corporation_logo.svg" alt="MITRE ATLAS"/></span></div><div class="k" data-i18n="seal.adversary">Adversary</div><div class="v">MITRE ATLAS</div></div>
-      <div class="seal" style="--i:6"><div class="seal-ring"><svg viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20"/></svg>      <span class="ck"><img class="seal-logo" src="https://api.iconify.design/tabler/certificate.svg?color=%23062451" alt="AIUC-1"/></span></div><div class="k" data-i18n="seal.regulation">Regulation</div><div class="v">AIUC-1</div></div>
+    <!-- Frameworks band.
+         The seven pills are STATIC markup on purpose: they ship inside the
+         prerendered HTML, so there is no blank flash and nothing depends on
+         JS to exist. tahara-engine.js only CLONES them once at runtime --
+         that duplicate is what lets the track loop seamlessly -- and then
+         flags the track so the CSS animation starts. With JS off the row
+         just sits still. Reuses the .marq-track loop the connector marquee
+         already uses. -->
+    <div class="frames-panel r">
+      <div class="fw-marq">
+        <div class="fw-track" id="fwTrack">
+          <div class="fw-pill"><img class="fw-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f7/ISO_english_logo_icon.svg" alt=""/><span>ISO/IEC 42001</span></div>
+          <div class="fw-pill"><img class="fw-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f7/ISO_english_logo_icon.svg" alt=""/><span>ISO/IEC 27001</span></div>
+          <div class="fw-pill"><img class="fw-logo" src="https://upload.wikimedia.org/wikipedia/commons/e/ee/NIST_logo.svg" alt=""/><span>NIST AI RMF</span></div>
+          <div class="fw-pill"><img class="fw-logo" src="https://upload.wikimedia.org/wikipedia/commons/b/b7/Flag_of_Europe.svg" alt=""/><span>EU AI Act</span></div>
+          <div class="fw-pill"><img class="fw-logo" src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/owasp.svg" alt=""/><span>OWASP LLM</span></div>
+          <div class="fw-pill"><img class="fw-logo" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Mitre_Corporation_logo.svg" alt=""/><span>MITRE ATLAS</span></div>
+          <div class="fw-pill"><img class="fw-logo" src="https://api.iconify.design/tabler/certificate.svg?color=%23062451" alt=""/><span>AIUC-1</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deliberately OUTSIDE the band: an item inside the loop would scroll
+         off screen. Still not wired to a destination -- make it an <a> once
+         a frameworks page exists. -->
+    <div class="fw-more">
+      <span class="fw-more-plus" aria-hidden="true">+</span><span data-i18n="seal.more">View more</span>
     </div>
   </section>
 

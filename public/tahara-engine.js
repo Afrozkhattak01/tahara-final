@@ -1321,6 +1321,8 @@ window.TaharaI18N = (function(){
     'seal.application': { en:'Application', ar:'التطبيق' },
     'seal.adversary':   { en:'Adversary', ar:'الخصم' },
 
+    /* TODO(ar-review): 'View more' Arabic is unreviewed by a native speaker. */
+    'seal.more':   { en:'View more', ar:'عرض المزيد' },
     'drawer.maps':     { en:'What Tahara maps', ar:'ما الذي ترسمه Tahara' },
     'drawer.download': { en:'Download the mapping', ar:'حمّل خريطة الربط' },
     'mark.sub':        { en:'Five layers · one record', ar:'خمس طبقات · سجلّ واحد' },
@@ -1488,6 +1490,59 @@ window.TaharaI18N = (function(){
   }
 
   return { init, apply, t, get current(){ return current; } };
+})();
+
+/* ════════════════════════════════════════════════════════════
+   FRAMEWORKS BAND
+   The pills live in tahara-body.html as static markup so they are in the
+   prerendered HTML. All this does is clone that row once and flag the track:
+   the CSS loop translates to -50%, which only reads as seamless when the
+   track holds exactly two copies. Clones are aria-hidden so screen readers
+   hear each framework once, not twice.
+   ════════════════════════════════════════════════════════════ */
+window.TaharaFrameworks = (function(){
+  function append(nodes, track){
+    nodes.forEach(function(node){
+      var copy = node.cloneNode(true);
+      copy.setAttribute('aria-hidden', 'true');   // each framework announced once
+      track.appendChild(copy);
+    });
+  }
+
+  function init(){
+    var track = document.getElementById('fwTrack');
+    if (!track || track.getAttribute('data-looped')) return;
+    var base = Array.prototype.slice.call(track.children);
+    if (!base.length) return;
+
+    /* The band is full-bleed, so one set of pills can be narrower than the
+       screen -- two copies would then leave a visible gap mid-loop. Repeat the
+       set until one HALF of the track covers the viewport, then mirror that
+       half. translateX(-50%) therefore always lands the second half exactly
+       where the first began, whatever the screen width.
+       screen.width is used alongside innerWidth so maximising the window
+       later does not expose a gap. */
+    var setWidth = track.scrollWidth || 1;
+    var widest   = Math.max(window.innerWidth || 0,
+                            (window.screen && window.screen.width) || 0);
+    var reps     = Math.max(1, Math.ceil((widest * 1.2) / setWidth));
+
+    for (var i = 1; i < reps; i++) append(base, track);
+    append(Array.prototype.slice.call(track.children), track);  // mirror the half
+
+    /* Constant speed, whatever the screen. The animation travels one half of
+       the track per cycle, and that half grows with both the pill size and the
+       repeat count above -- so a fixed duration would run visibly faster on a
+       wide monitor than on a laptop. Derive the duration from the distance
+       instead and the band reads the same everywhere. */
+    var halfPx = track.scrollWidth / 2;
+    var PX_PER_SEC = 55;
+    track.style.animationDuration = Math.round(halfPx / PX_PER_SEC) + 's';
+
+    track.setAttribute('data-looped', '1');
+    track.classList.add('is-looping');
+  }
+  return { init: init };
 })();
 
 /* ════════════════════════════════════════════════════════════
@@ -1985,6 +2040,7 @@ window.TaharaI18N = (function(){
   buildJourney();
   window.TaharaDrawer && window.TaharaDrawer.init();
   window.TaharaMarquee2 && window.TaharaMarquee2.init();
+  window.TaharaFrameworks && window.TaharaFrameworks.init();
 
   /* ── surface-check modal — opened by the ribbon, closed by X / scrim / Esc.
      Submitting hands a validated host to /assessment. The scan itself is not
