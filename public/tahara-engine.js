@@ -1113,6 +1113,17 @@ window.TaharaI18N = (function(){
     'rep.dlbusy':  { en:'Preparing PDF…', ar:'جارٍ تجهيز ملف PDF…' },
     'rep.dlerr':   { en:'Could not generate the PDF. Please try again.',
                      ar:'تعذّر إنشاء ملف PDF. يُرجى المحاولة مرة أخرى.' },
+    /* TODO(ar-review): the four strings below are my Arabic, unchecked by a
+       native speaker. Wording deliberately says "get the report" -- nothing
+       is emailed, because there is no backend to send it. */
+    'rep.mail':    { en:'Enter your email to get the report',
+                     ar:'أدخل بريدك الإلكتروني للحصول على التقرير' },
+    'rep.submit':  { en:'Submit', ar:'إرسال' },
+    'rep.again':   { en:'Reassess', ar:'إعادة التقييم' },
+    'rep.mailerr': { en:'Enter a valid email address.',
+                     ar:'أدخل بريدًا إلكترونيًا صالحًا.' },
+    'rep.mailok':  { en:'Report downloaded. Reassess to check another endpoint.',
+                     ar:'تم تنزيل التقرير. أعد التقييم لفحص نقطة نهاية أخرى.' },
     /* PDF document chrome — these appear only inside the generated file. */
     'rep.pdfkind': { en:'AI attack surface assessment', ar:'تقييم سطح الهجوم للذكاء الاصطناعي' },
     'rep.pdfgen':  { en:'Generated', ar:'تم الإنشاء' },
@@ -1719,17 +1730,25 @@ window.TaharaFrameworks = (function(){
      removes a forced synchronous layout from the hot loop, which is the
      main reason the assembly felt steppy while scrolling.
      ───────────────────────────────────────────────────────── */
+  /* The pin is released by the stylesheet at max-width:1050px OR
+     max-height:720px. Rather than restate those numbers (the width was
+     previously written as 1000 here, so between 1001-1050px the CSS had
+     already unpinned the section while this code still believed it was
+     pinned -- mTrackLen collapsed to its 1px floor and the five layers
+     snapped from 0 to 100% within a single pixel of scroll), ask the browser
+     the same question the stylesheet asks. Fractional widths from browser
+     zoom are covered too, which a >1050 comparison would not be. */
+  const UNPINNED = matchMedia('(max-width:1050px), (max-height:720px)');
   let mTrackTop = 0, mTrackLen = 1, mSvgTop = 0, mVH = innerHeight,
-      mWide = innerWidth > 1000 && innerHeight > 720;
+      mWide = !UNPINNED.matches;
   function measure(){
     if (!track) return;
     const y = scrollY || pageYOffset;
     mVH   = innerHeight;
-    /* Track-progress only while the section is actually pinned. The CSS
-       releases the pin under 1050px wide OR 720px tall; on an auto-height
-       track mTrackLen collapses and the assembly would jump 0-100% in a few
-       pixels of scroll, so the height test has to match the stylesheet. */
-    mWide = innerWidth > 1000 && innerHeight > 720;
+    /* Track-progress only while the section is actually pinned -- see the
+       UNPINNED note above. On an auto-height track mTrackLen collapses and
+       the assembly would jump 0-100% in a few pixels of scroll. */
+    mWide = !UNPINNED.matches;
     const tr = track.getBoundingClientRect();
     mTrackTop = tr.top + y;                       /* track's absolute document top */
     mTrackLen = Math.max(1, track.offsetHeight - mVH);
@@ -1763,7 +1782,20 @@ window.TaharaFrameworks = (function(){
      ───────────────────────────────────────────────────────────── */
   /* Reduced motion has no assembly to wait for — the stylesheet shows every
      slab in place from the start, so the stack is "finished" on arrival. */
-  let assembledOnce = REDUCE;
+  /* Whether the stack is assembled RIGHT NOW -- not merely whether it ever
+     was. This used to be a one-way latch: once the fifth slab landed it
+     stayed true for the life of the page, so scrolling back up flew the slabs
+     apart while hover stayed unlocked. Pointing at the gap then typed out the
+     text of a layer that was no longer on screen -- layer 05's copy showing
+     while the meter still read 26%. Recomputed every frame instead.
+     Under reduced motion the stylesheet paints every slab in place, so the
+     stack counts as assembled from the start and never comes apart. */
+  let assembled = REDUCE;
+  /* Whether the rows accept hover right now. Narrower than `assembled`: the
+     stack can be fully built and still be collapsing into the logo mark, and
+     during that collapse the rows must not respond. Drives the .ready class
+     too, which is the only thing giving them a pointer cursor. */
+  let interactive = REDUCE;
   const TW_MS = 620;                                   /* hover type-in speed */
   /* after assembly, hovering a layer reveals only its text; hoverLock holds
      the layer under the cursor, selT0 when its typewriter started.
@@ -1831,12 +1863,33 @@ window.TaharaFrameworks = (function(){
       ST.write(i, live.e[i]);
       if (live.e[i] < 0.995) allIn = false;
     }
-    if (allIn && !assembledOnce){
-      assembledOnce = true;
-      /* Hovering was locked out until this frame. If the pointer is already
-         sitting on a slab, apply it now — the cursor has just turned into a
-         pointer under a stationary mouse, and nothing happening reads as dead. */
-      if (hoverPend !== null) setSel(hoverPend);
+    if (!REDUCE){
+      assembled = allIn;
+
+      /* Hover is live only while the stack is BOTH assembled AND still
+         standing as five layers. Once it starts collapsing into the logo the
+         rows are already fading out (.stack-list is opacity 1 - --m), so
+         isolating one of them fights the converge and lights a slab that is on
+         its way off screen. 0.02 is the same threshold the beam sweep uses
+         below, so the whole end-phase switches off together.
+         live.m here is last frame's value -- it is updated further down --
+         which is a single frame of lag nobody can perceive. */
+      const canHover = assembled && live.m <= 0.02;
+      if (canHover !== interactive){
+        interactive = canHover;
+        if (canHover){
+          /* Just became hoverable: either the fifth slab landed, or the logo
+             scrolled back off and the stack stood up again. If the pointer is
+             already resting on a row, apply it now -- a stationary cursor over
+             a target that has silently gone live reads as dead. */
+          if (hoverPend !== null) setSel(hoverPend);
+        } else {
+          /* Release the open selection so all five rows return to the resting
+             state and fade out together with the list. hoverPend is kept, so a
+             stationary cursor re-applies if this goes live again. */
+          hoverLock = null;
+        }
+      }
     }
 
     /* per-layer text reveal — how many characters are typed out.
@@ -1844,7 +1897,7 @@ window.TaharaFrameworks = (function(){
        the resting assembled state shows all. Hovering after assembly: only
        the hovered layer types out, the others hide. */
     const nowT = now || 0;
-    const focus = assembledOnce && hoverLock !== null;
+    const focus = interactive && hoverLock !== null;
     items.forEach(it => {
       const li = +it.dataset.layer, asm = live.e[li];
       let rv;
@@ -1873,7 +1926,7 @@ window.TaharaFrameworks = (function(){
 
     /* the beam only sweeps a fully assembled stack */
     stackStage && stackStage.classList.toggle('assembled', allIn && live.m < 0.02);
-    stackStage && stackStage.classList.toggle('ready', assembledOnce);
+    stackStage && stackStage.classList.toggle('ready', interactive);
 
     /* one-shot flash the moment the fifth slab settles */
     if (allIn && !flashed && !REDUCE){
@@ -1883,12 +1936,22 @@ window.TaharaFrameworks = (function(){
     }
     if (!allIn) flashed = false;
 
-    /* during assembly the highlight walks with scroll; once assembled it is
-       driven purely by hover (applied inside highlight() via hoverLock), so
-       the box only ever appears on the layer whose text is showing */
-    const pb = clamp((want.p - 0.60) / 0.20, 0, 1);
-    const scrollHi = live.m > 0.02 ? -1 : (pb <= 0 ? -1 : Math.min(4, Math.floor(pb * 5)));
-    highlight(assembledOnce ? -1 : scrollHi);
+    /* During assembly the highlight tracks the layer whose text is typing.
+       It used to walk a scroll window of its own -- (want.p - 0.60) / 0.20 --
+       while the text above followed each layer's individual live.e[] easing.
+       Two different functions of the same scroll position, so they disagreed:
+       the text starts well before p reaches 0.60, which left a slab's text
+       typing with the box sitting on a different layer, or on no layer at all.
+       Reading the same live.e[] the text reads keeps them on one layer by
+       construction. Layers assemble bottom-up, so the highest index that has
+       begun is the one currently in flight -- the one being typed out.
+       Once assembled the box is hover-driven instead, via hoverLock. */
+    let scrollHi = -1;
+    for (let i = 4; i >= 0; i--){
+      if (live.e[i] > 0.02){ scrollHi = i; break; }
+    }
+    if (live.m > 0.02) scrollHi = -1;        /* converge/mark phase stays clean */
+    highlight(assembled ? -1 : scrollHi);
 
     return settled;
   }
@@ -1985,7 +2048,7 @@ window.TaharaFrameworks = (function(){
      Only once the stack has finished assembling. Before that the layers are
      still flying in and the section belongs to the scroll: lighting one slab
      and dimming the other four mid-flight fought the assembly, and because the
-     text reveal was already gated on `assembledOnce` it produced a highlighted
+     text reveal was already gated on `assembled` it produced a highlighted
      box with nothing in the card beside it. The pointer-cursor affordance in
      landing.css is on .stack-stage.ready for the same reason — this is the
      behaviour catching up with what the stylesheet already promised.
@@ -1997,7 +2060,7 @@ window.TaharaFrameworks = (function(){
   function setSel(li){
     clearTimeout(selHideT);
     hoverPend = li;                       /* tracked even while locked out */
-    if (!assembledOnce) return;
+    if (!interactive) return;
     if (hoverLock !== li){ hoverLock = li; selT0 = performance.now(); }
     highlight(hoverLock);
     wake();
@@ -2109,8 +2172,11 @@ window.TaharaFrameworks = (function(){
     const gauge  = document.querySelector('.rep-gauge-fg');
     const noteEl = document.getElementById('surfaceNote');
     const checks = document.getElementById('liveChecks');
-    const dlBtn  = document.getElementById('repDl');
-    const dlNote = document.getElementById('repDlNote');
+    const dlBtn   = document.getElementById('repDl');
+    const dlNote  = document.getElementById('repDlNote');
+    const mailF   = document.getElementById('repMailForm');
+    const mailI   = document.getElementById('repMail');
+    const againR  = document.getElementById('repAgain');
 
     const RUN_MS = 11000;
 
@@ -2401,9 +2467,14 @@ window.TaharaFrameworks = (function(){
       if (checks) Array.prototype.forEach.call(checks.children, r => {
         r.classList.remove('is-done', 'is-live');
       });
-      /* Clears a failed-export message, which would otherwise still be sitting
-         under the button the next time the modal is opened. */
-      if (dlNote) dlNote.textContent = t('rep.dln');
+      /* Clears a failed-export or confirmation message, which would otherwise
+         still be sitting under the button the next time the modal is opened. */
+      if (dlNote) dlNote.textContent = '';
+      /* Put the email gate back to its starting state too, so reopening the
+         modal never shows a stale address or a Reassess button with no report
+         behind it. */
+      if (mailI){ mailI.value = ''; mailI.removeAttribute('aria-invalid'); }
+      if (againR) againR.hidden = true;
       paint(0);
     }
 
@@ -2529,16 +2600,35 @@ window.TaharaFrameworks = (function(){
     }
 
     let building = false;
-    dlBtn && dlBtn.addEventListener('click', () => {
-      if (building) return;
+    /* Where a submitted address goes. There is no backend (BACKEND.md), so it
+       cannot be sent anywhere -- it is parked here for a future endpoint to
+       collect. NOTE for whoever builds that endpoint: this is personal data
+       kept without a consent step, and the cookie banner is still front-end
+       only. Wire this into consent before anything starts transmitting it. */
+    const REQ_KEY = 'tahara-report-requests';
+    function stashRequest(email){
+      try {
+        const raw  = localStorage.getItem(REQ_KEY);
+        const list = raw ? JSON.parse(raw) : [];
+        list.push({ email: email, endpoint: runTarget || '', at: new Date().toISOString() });
+        localStorage.setItem(REQ_KEY, JSON.stringify(list.slice(-50)));
+      } catch (_) { /* private mode / quota — never block the download for this */ }
+    }
+    /* Deliberately loose. Strict address validation rejects real addresses, and
+       nothing downstream depends on it: the check is a typo guard, not auth. */
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function exportReport(){
+      if (building) return Promise.resolve();
       /* Rasterising eight sheets takes a beat on a slow machine, and a button
          that looks idle for two seconds gets pressed again. */
       const label = dlBtn.querySelector('[data-i18n]') || dlBtn;
-      const idle  = t('rep.dlb');
+      const idle  = t('rep.submit');
       building = true;
       dlBtn.disabled = true;
       label.textContent = t('rep.dlbusy');
-      if (dlNote) dlNote.textContent = t('rep.dln');
+      /* Clear any previous message while this run is in flight. */
+      if (dlNote) dlNote.textContent = '';
 
       const done = () => {
         building = false;
@@ -2559,7 +2649,36 @@ window.TaharaFrameworks = (function(){
           if (dlNote) dlNote.textContent = t('rep.dlerr');
           console.error('[tahara] report export failed', err);
           done();
+          throw err;
         });
+    }
+
+    mailF && mailF.addEventListener('submit', e => {
+      e.preventDefault();
+      if (building) return;
+      const email = (mailI && mailI.value || '').trim();
+      if (!EMAIL_RE.test(email)){
+        mailI && mailI.setAttribute('aria-invalid', 'true');
+        if (dlNote) dlNote.textContent = t('rep.mailerr');
+        mailI && mailI.focus();
+        return;
+      }
+      mailI && mailI.removeAttribute('aria-invalid');
+      stashRequest(email);
+      exportReport().then(() => {
+        if (dlNote) dlNote.textContent = t('rep.mailok');
+        /* Reveal the way back only once the report is actually in hand. */
+        if (againR){ againR.hidden = false; againR.focus(); }
+      }).catch(() => { /* exportReport already wrote the error into dlNote */ });
+    });
+
+    /* Reassess -> screen 1, cleared, ready for a different endpoint.
+       resetRun() restores the screens; the field is emptied here because it is
+       the one thing resetRun deliberately leaves alone (the modal reopening
+       normally keeps what you typed). */
+    againR && againR.addEventListener('click', () => {
+      resetRun();
+      if (inp){ inp.value = ''; setTimeout(() => inp.focus(), 60); }
     });
   })();
 
@@ -3458,7 +3577,8 @@ window.TaharaFrameworks = (function(){
     pin && (pin.style.setProperty('--m', 0), pin.style.setProperty('--sp', 1));
     layers.forEach(l => l.style.setProperty('--e', 1));
     items.forEach(it => { it.style.setProperty('--seen', 1); it.style.setProperty('--ch', (it._tw || 0)); });
-    assembledOnce = true;
+    assembled = true;
+    interactive = true;
     stackStage && stackStage.classList.add('ready');
     mark && mark.classList.add('on');
     journey && journey.style.setProperty('--jp', 1);

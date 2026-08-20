@@ -549,6 +549,35 @@ code,pre{font-family:var(--font-mono)}
 .rep-dl-b:hover{background:var(--g800)}
 .rep-dl-n{margin-top:9px;font-size:12px;line-height:1.5;color:var(--ink-3)}
 
+/* ── email gate ── */
+.rep-mail{margin-top:12px;display:grid;gap:8px}
+.rep-mail-l{font-size:13px;line-height:1.45;color:var(--ink-2)}
+/* input and button share a row until the card gets narrow, where a 2-up row
+   leaves the address unreadable. */
+.rep-mail-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.rep-mail-i{width:100%;background:#fff;border:1px solid var(--line);border-radius:11px;
+  padding:11px 14px;font-family:var(--font-body);font-size:14px;color:var(--ink);
+  transition:border-color .25s ease,box-shadow .25s ease}
+.rep-mail-i::placeholder{color:var(--ink-3)}
+.rep-mail-i:focus{outline:none;border-color:var(--g400);
+  box-shadow:0 0 0 3px rgba(85,139,189,.18)}
+.rep-mail-i[aria-invalid="true"]{border-color:var(--signal)}
+/* the shared button rule adds a full-width top margin meant for a stacked
+   button; inside the row it needs neither. */
+.rep-mail-row .rep-dl-b{margin-top:0;width:auto;white-space:nowrap}
+
+.rep-again-b{margin-top:10px;width:100%;cursor:pointer;background:transparent;
+  color:var(--g600);border:1px dashed var(--line-2);border-radius:11px;
+  padding:10px 18px;font-family:var(--font-body);font-weight:500;font-size:14px;
+  transition:background .25s ease,border-color .25s ease,color .25s ease}
+.rep-again-b:hover{background:#fff;border-color:var(--g400);color:var(--g800)}
+.rep-again-b[hidden]{display:none}
+
+@media(max-width:520px){
+  .rep-mail-row{grid-template-columns:1fr}
+  .rep-mail-row .rep-dl-b{width:100%}
+}
+
 @media(prefers-reduced-motion:reduce){
   .rep-gauge-fg{transition:none}
 }

@@ -169,11 +169,36 @@
         <div class="rep-dl">
           <span class="rep-dl-t" data-i18n="rep.dl">Security assessment report</span>
           <span class="rep-dl-m"><span data-i18n="rep.pdf">PDF</span> · <span data-i18n="rep.evid">Evidence included</span></span>
-          <button class="rep-dl-b" type="button" id="repDl"><span data-i18n="rep.dlb">Download report</span></button>
-          <!-- The button does produce a real PDF, but of a scripted run — so the
-               caveat is about the figures, not about the file. aria-live: this
-               same element reports the failure if generation throws. -->
-          <span class="rep-dl-n" id="repDlNote" role="status" aria-live="polite" data-i18n="rep.dln">Illustrative sample — the figures are demonstrative, not a live scan.</span>
+          <!-- Email gate. There is NO backend (see BACKEND.md), so submitting
+               does exactly two things: builds the PDF in the browser, and parks
+               the address in localStorage for a future endpoint to collect.
+               Nothing is transmitted, and the copy deliberately says "get the
+               report" rather than promising an email will arrive. -->
+          <form class="rep-mail" id="repMailForm" novalidate>
+            <label class="rep-mail-l" for="repMail" data-i18n="rep.mail">Enter your email to get the report</label>
+            <div class="rep-mail-row">
+              <!-- placeholder is left untranslated on purpose: an address
+                   example reads the same in both languages. -->
+              <input class="rep-mail-i" id="repMail" type="email" name="email" required
+                     autocomplete="email" placeholder="you@company.com"
+                     aria-describedby="repDlNote" spellcheck="false" />
+              <button class="rep-dl-b" type="submit" id="repDl"><span data-i18n="rep.submit">Submit</span></button>
+            </div>
+          </form>
+
+          <!-- Revealed only after a successful submit. Returns to screen 1. -->
+          <button class="rep-again-b" type="button" id="repAgain" hidden>
+            <span data-i18n="rep.again">Reassess</span>
+          </button>
+
+          <!-- Status line, empty until there is something to say: an invalid
+               address, an export failure, or the post-download confirmation.
+               No data-i18n, because nothing static lives here any more — a key
+               would let applyStatic() overwrite a live message on a language
+               switch. The "illustrative sample" caveat that used to sit here is
+               still printed in the PDF footer (see rep.dln in the payload and
+               ReportPdf.tsx), so the downloaded document stays labelled. -->
+          <span class="rep-dl-n" id="repDlNote" role="status" aria-live="polite"></span>
         </div>
       </aside>
     </div>
