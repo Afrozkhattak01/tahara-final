@@ -28,19 +28,23 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   // Without these, sharing a link on LinkedIn, WhatsApp or Slack renders a
-  // blank card. og-image.png is the 1200x630 poster those unfurlers read.
+  // blank card.
+  // TODO: og-image.png (1200x630) was removed and has not been replaced. Using
+  // the wide lockup meanwhile -- it is 2120x632, almost exactly the 1.91:1 that
+  // unfurlers want, so they rescale it cleanly. Export a real 1200x630 poster
+  // when there is one and point these two entries back at it.
   openGraph: {
     type: 'website',
     siteName: 'Tahara AI',
     title: TITLE,
     description: DESCRIPTION,
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Tahara AI' }]
+    images: [{ url: '/logo-full-lockup.png', width: 2120, height: 632, alt: 'Tahara AI' }]
   },
   twitter: {
     card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
-    images: ['/og-image.png']
+    images: ['/logo-full-lockup.png']
   }
 };
 

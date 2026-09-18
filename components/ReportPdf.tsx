@@ -226,7 +226,7 @@ function buildBlocks(p: ReportPayload): { node: HTMLElement; keepWithNext?: bool
   const mast = el('div', 'tpdf-mast');
   const brand = el('div', 'tpdf-brand');
   const logo = document.createElement('img');
-  logo.src = '/logo.png';
+  logo.src = '/logo-mark-512.png';
   logo.alt = '';
   brand.appendChild(logo);
   brand.appendChild(el('span', undefined, p.brand));

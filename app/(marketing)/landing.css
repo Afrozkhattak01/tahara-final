@@ -645,7 +645,10 @@ code,pre{font-family:var(--font-mono)}
 .acct-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .acct-brand{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-display);font-weight:400;font-size:16px;color:var(--ink)}
 .acct-dia{width:42px;height:53px;flex:none;
-  background:url('/logo.png') center/contain no-repeat}
+  /* 512px source for a 42px slot -- ample even at 2x. The 1024px
+     logo-mark.png is 372 KB and is reserved for the one place that
+     actually renders large (the stack mark at 396px). */
+  background:url('/logo-mark-512.png') center/contain no-repeat}
 .acct-x{width:32px;height:32px;display:grid;place-items:center;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--ink-3);cursor:pointer;transition:color .2s,border-color .2s}
 .acct-x svg{width:12px;height:12px}
 .acct-x:hover{color:var(--ink);border-color:var(--g400)}
@@ -1236,7 +1239,8 @@ nav{max-width:var(--maxw);margin:0 auto;padding:16px var(--gutter);display:flex;
    The old placeholder was an 11px rotated square that spun on hover; a real
    mark should not spin, so it lifts slightly instead. */
 .brand-mark{width:48px;height:61px;flex:none;
-  background:url('/logo.png') center/contain no-repeat;
+  /* Nav mark, on every page -- keep it light. 512px covers a 48px slot at 2x. */
+  background:url('/logo-mark-512.png') center/contain no-repeat;
   transition:transform .5s var(--e-back);
   /* Override base.css defaults for old placeholder */
   transform:none !important;

@@ -21,13 +21,16 @@ export function pageMetadata(opts: {
 }): Metadata {
   const { title, description, path, type = 'website' } = opts;
   const social = `${title} · Tahara AI`;
-  const image = { url: '/og-image.png', width: 1200, height: 630, alt: 'Tahara AI' };
+  // TODO: og-image.png (1200x630) was removed. The wide lockup stands in -- at
+  // 2120x632 it is almost exactly the 1.91:1 unfurlers expect, so it rescales
+  // cleanly. Swap both entries back when a real poster exists.
+  const image = { url: '/logo-full-lockup.png', width: 2120, height: 632, alt: 'Tahara AI' };
 
   return {
     title,
     description,
     alternates: { canonical: path },
     openGraph: { type, siteName: 'Tahara AI', title: social, description, url: path, images: [image] },
-    twitter: { card: 'summary_large_image', title: social, description, images: ['/og-image.png'] }
+    twitter: { card: 'summary_large_image', title: social, description, images: ['/logo-full-lockup.png'] }
   };
 }
