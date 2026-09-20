@@ -1,6 +1,6 @@
 
 <!-- ambient background -->
-<div class="bg" aria-hidden="true"></div>S
+<div class="bg" aria-hidden="true"></div>
 <!-- Survey field: a major grid with a fine dot matrix inside each cell. Drawn
      twice — .is-sharp is masked out of the middle of the viewport, .is-soft is
      masked to only the middle and blurred, so the field stays crisp out at the
@@ -275,11 +275,13 @@
 </div>
 
 <!-- ══════════ navigation ══════════ -->
-<header id="siteHeader">
+<!-- data-intro: opts this header into the one-time drop-in entrance.
+     Only the landing page gets it — see the header rule in landing.css. -->
+<header id="siteHeader" data-intro>
   <nav>
     <a href="#" class="brand"><span class="brand-mark" aria-hidden="true"></span>Tahara AI</a>
     <div class="nav-links" id="navLinks">
-      <a href="#platform" class="on has-mega" id="megaBtn" role="button" aria-haspopup="true" aria-expanded="false" aria-controls="mega"><span data-i18n="nav.platform">Platform</span>
+      <a href="#platform" class="has-mega" id="megaBtn" role="button" aria-haspopup="true" aria-expanded="false" aria-controls="mega"><span data-i18n="nav.platform">Platform</span>
         <svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1.6 3.4 5 6.8l3.4-3.4"/></svg>
       </a>
       <a href="#lifecycle" data-i18n="nav.lifecycle">Lifecycle</a>
@@ -622,12 +624,18 @@
       </div>
     </div>
 
-    <!-- Deliberately OUTSIDE the band: an item inside the loop would scroll
-         off screen. Still not wired to a destination -- make it an <a> once
-         a frameworks page exists. -->
+    <!-- "View more" — COMMENTED OUT, not deleted.
+         Removed because it had no destination: clicking it did nothing, and a
+         control that does nothing is worse than no control. Everything it needs
+         is still here and still styled (.fw-more / .fw-more-plus in landing.css,
+         and the seal.more translation in tahara-engine.js).
+         TO BRING IT BACK: uncomment the block below and change the <div> to an
+         <a href="/frameworks"> once that page exists.
+
     <div class="fw-more">
       <span class="fw-more-plus" aria-hidden="true">+</span><span data-i18n="seal.more">View more</span>
     </div>
+    -->
   </section>
 
   <!-- ══════════ 7 · FAQ ══════════ -->

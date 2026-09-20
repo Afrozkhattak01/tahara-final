@@ -30,86 +30,14 @@ export default function PageHero({ badge, title, lead, cta, calLink }: Props) {
   return (
     <section className="ph-hero">
       <span className="ph-field" aria-hidden="true"></span>
-      <style suppressHydrationWarning>{`
-        .ph-hero{position:relative;isolation:isolate;text-align:center;
-          padding:104px 0 118px;overflow:hidden}
-        .ph-field{position:absolute;inset:0;z-index:-1;pointer-events:none;
-          background-image:
-            linear-gradient(rgba(17,64,134,.07) 1px,transparent 1px),
-            linear-gradient(90deg,rgba(17,64,134,.07) 1px,transparent 1px);
-          background-size:96px 96px;
-          -webkit-mask-image:radial-gradient(ellipse 96% 88% at 50% 46%,#000 62%,transparent 100%);
-          mask-image:radial-gradient(ellipse 96% 88% at 50% 46%,#000 62%,transparent 100%)}
-        /* a small cross at each coarse intersection */
-        .ph-field::after{content:'';position:absolute;inset:0;
-          background-image:
-            linear-gradient(rgba(17,64,134,.32) 1px,transparent 1px),
-            linear-gradient(90deg,rgba(17,64,134,.32) 1px,transparent 1px);
-          background-size:96px 17px,17px 96px;
-          background-position:40px 39px,39px 40px;
-          background-repeat:repeat}
-
-        .ph-badge{display:inline-flex;align-items:center;gap:9px;
-          border:1px solid var(--line);border-radius:999px;background:#fff;
-          padding:8px 18px;box-shadow:var(--sh-s);
-          font-family:var(--font-mono);font-size:11.5px;font-weight:500;
-          letter-spacing:.13em;text-transform:uppercase;color:var(--g600)}
-        .ph-badge > i{width:7px;height:7px;border-radius:50%;background:#12855a;
-          animation:ph-pulse 2.2s ease-in-out infinite}
-        @keyframes ph-pulse{0%,100%{opacity:.35}50%{opacity:1}}
-
-        /* 700, not the site's usual 400 display weight: the reference hero is
-           set in the bold cut, and Libre Caslon Text's bold is now loaded for
-           it. No max-width — .wrap's 1180px is what breaks the line, which is
-           what puts "Your Company" on its own row rather than a 16ch cap
-           forcing three. */
-        /* Weight 400 and a size in step with the rest of the site: every other
-           heading here is Libre Caslon Text at 400, and a bold 64px hero read
-           as a different site. Width is capped against the viewport so it can
-           never push the page sideways. */
-        /* Sized so the headline holds one line on a desktop viewport. It still
-           wraps below roughly 1100px — forcing nowrap there would either
-           overflow the page or shrink the type past reading size. */
-        /* No width of its own: it fills .wrap, the same container every other
-           section uses, so its edges line up with the video panel below rather
-           than overhanging it. The size is then set by what fits one line
-           inside that width. */
-        .ph-hero h1{margin:28px auto 0;font-weight:400;width:auto;max-width:100%;
-          font-size:clamp(28px,3.05vw,43px);line-height:1.18;letter-spacing:-.015em;
-          text-wrap:balance;color:var(--ink)}
-        .ph-hero p{margin:28px auto 0;max-width:min(100%,640px);
-          font-size:clamp(15.5px,1.4vw,19px);line-height:1.62;color:var(--ink-2)}
-        .ph-cta{margin-top:38px}
-        /* the hero button sits larger than the nav's */
-        .ph-cta .btn{padding:15px 30px;font-size:16.5px;font-weight:600;border-radius:9px}
-
-        @media(prefers-reduced-motion:reduce){ .ph-badge > i{animation:none} }
-
-        /* Large desktop — tracks the 1600/2000 stops landing.css introduces
-           for --maxw. Without this the hero headline stays at 43px while the
-           container it sits in grows to 1400px, which reads as a small title
-           adrift in a wide band. The clamp maxima are what bind at these
-           widths; the vw term stopped mattering around 1410px. */
-        @media(min-width:1600px){
-          .ph-hero{padding:128px 0 142px}
-          .ph-hero h1{font-size:clamp(28px,3.05vw,52px)}
-          .ph-hero p{max-width:min(100%,720px);font-size:clamp(15.5px,1.4vw,20px)}
-          .ph-field{background-size:112px 112px}
-        }
-        @media(min-width:2000px){
-          .ph-hero h1{font-size:clamp(28px,3.05vw,58px)}
-          .ph-hero p{max-width:min(100%,780px)}
-        }
-
-        @media(max-width:640px){
-          .ph-hero{padding:66px 0 78px}
-          .ph-hero h1{max-width:none}
-          .ph-badge{font-size:10.5px;padding:7px 14px}
-          .ph-field{background-size:64px 64px}
-          .ph-field::after{background-size:64px 9px,9px 64px;
-            background-position:31px 27px,27px 31px}
-        }
-      `}</style>
+      {/* The .ph-* rules live in landing.css, NOT in an inline <style> here.
+          They used to be inline, which made the hero style itself differently
+          depending on how you arrived: on a direct load the <style> was in the
+          server HTML, but on a client-side <Link> navigation the RSC payload
+          carries no markup at all -- it only references JS chunks -- so the
+          style element had to be created by React at runtime, after the grid
+          had already painted. landing.css is loaded by the route-group layout
+          before anything renders, so both paths now look identical. */}
       <div className="wrap">
         {badge ? <span className="ph-badge"><i aria-hidden="true"></i>{badge}</span> : null}
         <h1>{title}</h1>

@@ -1226,8 +1226,18 @@ code,pre{font-family:var(--font-mono)}
 
 header{position:sticky;top:0;z-index:80;background:rgba(230,237,248,.78);backdrop-filter:blur(14px);
   border-bottom:1px solid transparent;
-  transition:box-shadow .4s ease,border-color .4s ease,background .4s ease;
-  opacity:0;transform:translateY(-12px);animation:dropIn .8s var(--e-out) .22s forwards}
+  transition:box-shadow .4s ease,border-color .4s ease,background .4s ease}
+/* The drop-in entrance belongs to the landing page's first paint ONLY.
+   It used to sit on bare `header`, which meant every header everywhere started
+   at opacity:0 and waited 220ms before appearing. The React pages each render
+   their own <SiteHeader>, so navigating between them remounted it and replayed
+   the animation — the header visibly vanished and dropped back in on every
+   page change. Opt in with data-intro instead; nothing else does. */
+header[data-intro]{opacity:0;transform:translateY(-12px);
+  animation:dropIn .8s var(--e-out) .22s forwards}
+@media(prefers-reduced-motion:reduce){
+  header[data-intro]{opacity:1;transform:none;animation:none}
+}
 header.stuck{border-bottom-color:var(--line);box-shadow:0 6px 26px rgba(3,24,56,.06);
   background:rgba(230,237,248,.9)}
 .prog{position:absolute;left:0;bottom:-1px;height:2px;border-radius:0 2px 2px 0;width:0%;
@@ -2583,7 +2593,7 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
 .mchip:hover .tip,.mchip:focus-visible .tip{opacity:1;transform:translate(-50%,0)}
 
 /* ── static hub, centred below both rows ── */
-.connect2-hub{max-width:640px;margin:52px auto 0;text-align:center;padding:0 24px}
+.connect2-hub{max-width:760px;margin:52px auto 0;text-align:center;padding:0 24px}
 .hub-mark{width:104px;height:104px;margin:0 auto 18px;background:#062450;border-radius:16px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   box-shadow:0 20px 44px rgba(6,36,80,.28)}
@@ -2591,7 +2601,13 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
 .hub-mark b{font-family:var(--font-display);font-weight:400;font-size:14px;letter-spacing:-.01em;color:#fff}
 .hub-mark i{font-style:normal;font-family:var(--font-mono);font-size:8px;letter-spacing:.11em;
   text-transform:uppercase;color:#83a8cb;margin-top:2px}
-.connect2-hub h2{font-size:16px;font-weight:500;color:#051e43;letter-spacing:0;margin-bottom:10px}
+/* Let it use the site's own h2 treatment -- Libre Caslon Text at
+   clamp(28px,3.6vw,44px) -- instead of overriding it down to 16px/500, which
+   was SMALLER than the 17px body text and made a section heading read as a
+   stray caption. Only colour, tracking and spacing are set here now.
+   text-wrap:balance keeps the two lines close to equal length rather than
+   leaving one word stranded on the second row. */
+.connect2-hub h2{color:var(--ink);margin-bottom:10px;text-wrap:balance}
 .connect2-hub .sub{font-family:var(--font-body);font-size:14px;font-weight:400;line-height:1.6;
   color:#6f9cc5;max-width:56ch;margin:0 auto 24px}
 .connect2-hub .btn.btn-solid{background:#062450}
@@ -2748,4 +2764,88 @@ footer li a:hover{color:var(--g700);transform:translateX(3px)}
      this leaves ~170px of margin either side. */
   .wrap-wide{max-width:calc(1660px + var(--gutter) * 2)}
   .aura{width:min(100%,calc(1660px + var(--gutter) * 2))}
+}
+
+/* ════════════════════════════════════════════════════════════
+   PAGE HERO  (components/PageHero.tsx)
+   Moved here from an inline <style> inside the component. Inline styles in a
+   client-rendered tree are created by React at runtime, so on a <Link>
+   navigation they land AFTER the markup paints -- the hero grid rendered
+   unstyled for a moment and looked wrong. In this file it is part of the
+   stylesheet the (marketing) layout already loads, so it applies on the
+   first paint whichever way you reach the page.
+   ════════════════════════════════════════════════════════════ */
+.ph-hero{position:relative;isolation:isolate;text-align:center;
+  padding:104px 0 118px;overflow:hidden}
+/* Deliberately identical to the landing page's .field-grid above: the same
+   224px rule spacing, the same 28px dot lattice, the same ink. The hero used
+   to draw a 96px grid with an extra cross-hatch on ::after, which read as a
+   much denser field than the homepage it sits next to. Keep these values in
+   step with .field-grid if that one ever changes.
+   The one thing kept from the old hero treatment is the elliptical mask, which
+   fades the grid out behind the headline. */
+.ph-field{position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(9,47,104,.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(9,47,104,.07) 1px, transparent 1px),
+    radial-gradient(rgba(9,47,104,.11) 1.1px, transparent 1.1px);
+  background-size:224px 224px,224px 224px,28px 28px;
+  -webkit-mask-image:radial-gradient(ellipse 96% 88% at 50% 46%,#000 62%,transparent 100%);
+  mask-image:radial-gradient(ellipse 96% 88% at 50% 46%,#000 62%,transparent 100%)}
+
+.ph-badge{display:inline-flex;align-items:center;gap:9px;
+  border:1px solid var(--line);border-radius:999px;background:#fff;
+  padding:8px 18px;box-shadow:var(--sh-s);
+  font-family:var(--font-mono);font-size:11.5px;font-weight:500;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--g600)}
+.ph-badge > i{width:7px;height:7px;border-radius:50%;background:#12855a;
+  animation:ph-pulse 2.2s ease-in-out infinite}
+@keyframes ph-pulse{0%,100%{opacity:.35}50%{opacity:1}}
+
+/* 700, not the site's usual 400 display weight: the reference hero is
+   set in the bold cut, and Libre Caslon Text's bold is now loaded for
+   it. No max-width — .wrap's 1180px is what breaks the line, which is
+   what puts "Your Company" on its own row rather than a 16ch cap
+   forcing three. */
+/* Weight 400 and a size in step with the rest of the site: every other
+   heading here is Libre Caslon Text at 400, and a bold 64px hero read
+   as a different site. Width is capped against the viewport so it can
+   never push the page sideways. */
+/* Sized so the headline holds one line on a desktop viewport. It still
+   wraps below roughly 1100px — forcing nowrap there would either
+   overflow the page or shrink the type past reading size. */
+/* No width of its own: it fills .wrap, the same container every other
+   section uses, so its edges line up with the video panel below rather
+   than overhanging it. The size is then set by what fits one line
+   inside that width. */
+.ph-hero h1{margin:28px auto 0;font-weight:400;width:auto;max-width:100%;
+  font-size:clamp(28px,3.05vw,43px);line-height:1.18;letter-spacing:-.015em;
+  text-wrap:balance;color:var(--ink)}
+.ph-hero p{margin:28px auto 0;max-width:min(100%,640px);
+  font-size:clamp(15.5px,1.4vw,19px);line-height:1.62;color:var(--ink-2)}
+.ph-cta{margin-top:38px}
+/* the hero button sits larger than the nav's */
+.ph-cta .btn{padding:15px 30px;font-size:16.5px;font-weight:600;border-radius:9px}
+
+@media(prefers-reduced-motion:reduce){ .ph-badge > i{animation:none} }
+
+/* Large desktop — tracks the 1600/2000 stops landing.css introduces
+   for --maxw. Without this the hero headline stays at 43px while the
+   container it sits in grows to 1400px, which reads as a small title
+   adrift in a wide band. The clamp maxima are what bind at these
+   widths; the vw term stopped mattering around 1410px. */
+@media(min-width:1600px){
+  .ph-hero{padding:128px 0 142px}
+  .ph-hero h1{font-size:clamp(28px,3.05vw,52px)}
+  .ph-hero p{max-width:min(100%,720px);font-size:clamp(15.5px,1.4vw,20px)}
+}
+@media(min-width:2000px){
+  .ph-hero h1{font-size:clamp(28px,3.05vw,58px)}
+  .ph-hero p{max-width:min(100%,780px)}
+}
+
+@media(max-width:640px){
+  .ph-hero{padding:66px 0 78px}
+  .ph-hero h1{max-width:none}
+  .ph-badge{font-size:10.5px;padding:7px 14px}
 }

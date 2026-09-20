@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 /**
  * The shared site header: brand, nav, the Platform mega-menu shell and the
@@ -73,11 +74,18 @@ export default function SiteHeader({ lang, active, progress = false }: SiteHeade
                 <path d="M1.6 3.4 5 6.8l3.4-3.4" />
               </svg>
             </a>
+            {/* These four point at the landing page, and they MUST stay plain
+                <a> tags rather than <Link>. TaharaRuntime boots the vanilla
+                engine once per document ("if (document.getElementById(
+                'tahara-engine')) return"), so a client-side navigation to /
+                would re-inject the markup without ever re-running the engine:
+                no animations, no mega-menu, no language toggle. A full page
+                load is what makes the landing page work. */}
             <a href="/#lifecycle">{tr('nav_lifecycle', lang)}</a>
             <a href="/#stack">{tr('nav_architecture', lang)}</a>
-            <a href="/resources" {...(active === 'resources' ? { className: 'on' } : {})}>{tr('nav_resources', lang)}</a>
+            <Link href="/resources" {...(active === 'resources' ? { className: 'on' } : {})}>{tr('nav_resources', lang)}</Link>
             <a href="/#faq">{tr('nav_faq', lang)}</a>
-            <a href="/about" {...(active === 'about' ? { className: 'on' } : {})}>{tr('nav_about', lang)}</a>
+            <Link href="/about" {...(active === 'about' ? { className: 'on' } : {})}>{tr('nav_about', lang)}</Link>
           </div>
           <div className="nav-right">
             <button className="btn btn-solid" data-cal-link="tahara-ai-xpf7u0/product-demo">

@@ -1557,6 +1557,69 @@ window.TaharaFrameworks = (function(){
 })();
 
 /* ════════════════════════════════════════════════════════════
+   NAV SCROLL-SPY
+   The landing nav points at in-page sections, so the underline should follow
+   whichever section you are actually reading. "Platform" used to carry a
+   hardcoded class="on" in the markup, which meant the underline never moved
+   off it no matter how far you scrolled.
+
+   Only in-page anchors are tracked. /resources and /about lead to other pages
+   and must never light up while you are on the landing page -- those pages set
+   their own active item through SiteHeader's `active` prop.
+   ════════════════════════════════════════════════════════════ */
+window.TaharaNavSpy = (function(){
+  function init(){
+    var nav = document.getElementById('navLinks');
+    if (!nav || !('IntersectionObserver' in window)) return;
+
+    var links = [], targets = [], map = [];
+    Array.prototype.forEach.call(nav.querySelectorAll('a[href^="#"]'), function(a){
+      var href = a.getAttribute('href');
+      if (!href || href === '#') return;
+      var el = null;
+      try { el = document.querySelector(href); } catch (_) { return; }
+      if (!el) return;
+      links.push(a); targets.push(el); map.push({ el: el, a: a });
+    });
+    if (!map.length) return;
+
+    function setActive(a){
+      links.forEach(function(l){ l.classList.toggle('on', l === a); });
+    }
+
+    /* A thin detector band across the middle of the viewport: a section counts
+       as "current" only while it crosses that line. Above the first section
+       (in the hero) nothing crosses it, so nothing is underlined -- which is
+       correct, since no nav item represents the top of the page. */
+    var visible = [];
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        var i = visible.indexOf(e.target);
+        if (e.isIntersecting){ if (i === -1) visible.push(e.target); }
+        else if (i !== -1) visible.splice(i, 1);
+      });
+
+      if (!visible.length){ setActive(null); return; }
+
+      /* More than one can straddle the band on a short viewport; take the one
+         whose middle sits closest to the middle of the screen. */
+      var mid = innerHeight / 2, best = null, bestD = Infinity;
+      visible.forEach(function(el){
+        var r = el.getBoundingClientRect();
+        var d = Math.abs((r.top + r.bottom) / 2 - mid);
+        if (d < bestD){ bestD = d; best = el; }
+      });
+      for (var j = 0; j < map.length; j++){
+        if (map[j].el === best){ setActive(map[j].a); return; }
+      }
+    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+
+    targets.forEach(function(el){ io.observe(el); });
+  }
+  return { init: init };
+})();
+
+/* ════════════════════════════════════════════════════════════
    TAHARA AI · boot + scroll engine
    The stack no longer tracks scroll position rigidly. Scroll sets a
    target; a continuous rAF loop eases the live value toward it, so
@@ -2104,6 +2167,7 @@ window.TaharaFrameworks = (function(){
   window.TaharaDrawer && window.TaharaDrawer.init();
   window.TaharaMarquee2 && window.TaharaMarquee2.init();
   window.TaharaFrameworks && window.TaharaFrameworks.init();
+  window.TaharaNavSpy && window.TaharaNavSpy.init();
 
   /* ── surface-check modal — opened by the ribbon, closed by X / scrim / Esc.
      Submitting hands a validated host to /assessment. The scan itself is not
