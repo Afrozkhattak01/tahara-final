@@ -2513,37 +2513,63 @@ window.TaharaNavSpy = (function(){
       var techs = uniqueTechs(findings);
       var cveSummary = findings.find(function(f){ return f.finding_type === 'cve_summary'; });
       var cveItems = findings.filter(function(f){ return f.finding_type === 'cve'; });
-      var totalCVEs = 0; var critCVEs = 0;
+      /* "We found none" and "we could not look" must never render the same. When
+         fingerprinting is blocked no CVE correlation runs, and printing 0 CVEs and
+         0 critical then tells the viewer the site is clean when nothing was
+         checked. Show a dash and say why; a real zero only when correlation ran. */
+      var notAssessed = findings.some(function(f){ return f.finding_type === 'cve_not_assessed'; });
+      var techBlocked = !techs.length && findings.some(function(f){ return f.finding_type === 'technology_inconclusive'; });
+      var cveRan = !!cveSummary || cveItems.length > 0;
+
+      var totalCVEs = 0, critCVEs = 0, kevCVEs = 0;
       if (cveSummary){
-        var tm = (cveSummary.description || '').match(/Correlated (\d+) CVEs/);
-        if (tm) totalCVEs = parseInt(tm[1]);
-        var cm = (cveSummary.description || '').match(/Critical:\s*(\d+)/);
-        if (cm) critCVEs = parseInt(cm[1]);
+        var sm = metaOf(cveSummary);
+        if (typeof sm.total_matches === 'number') totalCVEs = sm.total_matches;
+        else { var tm = (cveSummary.description || '').match(/Correlated (\d+) CVEs/); if (tm) totalCVEs = parseInt(tm[1], 10); }
+        if (typeof sm.critical === 'number') critCVEs = sm.critical;
+        else { var cm = (cveSummary.description || '').match(/Critical:\s*(\d+)/); if (cm) critCVEs = parseInt(cm[1], 10); }
       } else {
         cveItems.forEach(function(c){
           var m = (c.description || '').match(/Found (\d+) CVEs/);
-          if (m) totalCVEs += parseInt(m[1]);
+          if (m) totalCVEs += parseInt(m[1], 10);
           var cm2 = (c.description || '').match(/Critical:\s*(\d+)/);
-          if (cm2) critCVEs += parseInt(cm2[1]);
+          if (cm2) critCVEs += parseInt(cm2[1], 10);
         });
       }
-      if (cards[0]){
-        cards[0].querySelector('.rep-card-l').textContent = 'Technologies';
-        cards[0].querySelector('b').textContent = String(techs.length);
-        cards[0].querySelector('.rep-card-d').textContent = 'Detected via passive fingerprinting';
+      cveItems.forEach(function(c){
+        (Array.isArray(metaOf(c).cves) ? metaOf(c).cves : []).forEach(function(v){ if (v && v.in_kev) kevCVEs++; });
+      });
+
+      function setCard(card, label, value, desc, sig){
+        if (!card) return;
+        card.querySelector('.rep-card-l').textContent = label;
+        var b = card.querySelector('b');
+        b.textContent = value;
+        b.className = sig ? 'is-sig' : '';
+        card.querySelector('.rep-card-d').textContent = desc;
       }
-      if (cards[1]){
-        cards[1].querySelector('.rep-card-l').textContent = 'CVE Candidates';
-        cards[1].querySelector('b').textContent = String(totalCVEs);
-        cards[1].querySelector('.rep-card-d').textContent = 'Matched from local vulnerability database';
+
+      setCard(cards[0], 'Technologies',
+        techBlocked ? '—' : String(techs.length),
+        techBlocked ? 'Blocked by the site’s bot protection' : 'Detected via passive fingerprinting');
+
+      if (cveRan){
+        setCard(cards[1], 'Known CVEs', String(totalCVEs),
+          totalCVEs ? 'Matched against NVD, ranked by EPSS & CISA KEV' : 'None known for the detected versions');
+        setCard(cards[2], 'Critical CVEs', String(critCVEs),
+          kevCVEs ? kevCVEs + ' actively exploited (CISA KEV)' : (critCVEs ? 'CVSS 9.0 or higher' : 'None at CVSS 9.0+'),
+          critCVEs > 0 || kevCVEs > 0);
+      } else {
+        var why = notAssessed ? 'Not assessed — software could not be identified' : 'Not assessed';
+        setCard(cards[1], 'Known CVEs', '—', why);
+        setCard(cards[2], 'Critical CVEs', '—', why);
       }
-      if (cards[2]){
-        cards[2].querySelector('.rep-card-l').textContent = 'Critical CVEs';
-        cards[2].querySelector('b').textContent = String(critCVEs);
-        cards[2].querySelector('b').className = critCVEs > 0 ? 'is-sig' : '';
-        cards[2].querySelector('.rep-card-d').textContent = 'Require immediate attention';
-      }
-      var nonInfo = findings.filter(function(f){ return f.severity !== 'info' && f.finding_type !== 'technology'; });
+
+      /* CVEs have their own two cards; counting them here as well double-reports. */
+      var nonInfo = findings.filter(function(f){
+        return f.severity !== 'info' && f.finding_type !== 'technology' &&
+               f.finding_type !== 'cve' && f.finding_type !== 'cve_summary' && f.finding_type !== 'cve_not_assessed';
+      });
       if (cards[3]){
         cards[3].querySelector('.rep-card-l').textContent = 'Security Issues';
         cards[3].querySelector('b').textContent = String(nonInfo.length);
