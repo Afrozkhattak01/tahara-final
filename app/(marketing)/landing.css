@@ -593,6 +593,50 @@ code,pre{font-family:var(--font-mono)}
 .rep-again-b:hover{background:#fff;border-color:var(--g400);color:var(--g800)}
 .rep-again-b[hidden]{display:none}
 
+/* ── Asset inventory · real scans ─────────────────────────────────
+   Domain overview, hosts with their exposed services, and the technology
+   stack — the data every scan mode collects, including simple, which has no
+   header, email or path checks to fill the findings list. */
+.inv-block{grid-column:1/-1;display:block;padding:20px 0 8px;border-top:1px solid var(--line)}
+.inv-block:first-child{border-top:none;padding-top:4px}
+.inv-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
+.inv-title{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3)}
+.inv-note{font-family:var(--font-mono);font-size:11px;color:var(--ink-3)}
+.inv-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.inv-fact{background:#fff;padding:11px 14px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.inv-fact-l{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.inv-fact-v{font-size:14px;color:var(--ink);line-height:1.35;overflow-wrap:anywhere}
+.inv-fact-s{font-size:12px;color:var(--ink-2);line-height:1.4;overflow-wrap:anywhere}
+.inv-fact.is-warn .inv-fact-v{color:var(--signal);font-weight:600}
+.inv-hosts{display:grid;gap:10px}
+.inv-host{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0}
+.inv-host-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.inv-host-n{font-family:var(--font-mono);font-size:14px;font-weight:500;color:var(--ink);overflow-wrap:anywhere}
+.inv-grade{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.04em;
+  padding:3px 9px;border-radius:7px;border:1px solid var(--line);background:var(--bg-2);color:var(--ink-2);white-space:nowrap}
+.inv-grade.g-a{background:#e8f4ec;border-color:#b9dcc5;color:#256a41}
+.inv-grade.g-c{background:#fbf1e7;border-color:#ecc9a6;color:#8f5314}
+.inv-grade.g-f{background:#fbeaea;border-color:#ecbcb8;color:#a5372e}
+.inv-host-cert{font-size:12.5px;color:var(--ink-2);margin-top:6px;line-height:1.45}
+.inv-host-cert.is-warn{color:var(--signal)}
+.inv-ports{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.inv-port{display:inline-flex;align-items:baseline;gap:6px;font-family:var(--font-mono);font-size:12px;
+  padding:5px 9px;border-radius:8px;background:var(--bg-2);border:1px solid var(--line);color:var(--ink-2)}
+.inv-port b{font-weight:600;color:var(--ink)}
+.inv-port.is-risky{background:#fbf1e7;border-color:#ecc9a6}
+.inv-port.is-risky b{color:var(--signal)}
+.inv-empty{font-size:13px;color:var(--ink-3);margin-top:8px}
+.inv-tech{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:8px}
+.inv-tech-c{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;
+  display:flex;flex-direction:column;gap:4px;min-width:0}
+.inv-tech-k{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.inv-tech-n{font-size:14.5px;font-weight:600;color:var(--ink);line-height:1.3;overflow-wrap:anywhere}
+.inv-tech-v{font-family:var(--font-mono);font-size:12px;color:var(--g600)}
+.inv-tech-v.is-none{color:var(--ink-3)}
+.inv-more{font-size:12.5px;color:var(--ink-3);margin-top:10px}
+
 @media(max-width:520px){
   .rep-mail-row{grid-template-columns:1fr}
   .rep-mail-row .rep-dl-b{width:100%}
