@@ -282,6 +282,26 @@ code,pre{font-family:var(--font-mono)}
 .surface-field.is-bad{border-color:#c4443a;box-shadow:0 0 0 4px rgba(196,68,58,.1)}
 .surface-err{margin:10px 2px 0;font-size:13px;line-height:1.5;color:#a5372e}
 .surface-err[hidden]{display:none}
+/* Scan mode — three cards beneath the field, drawn with the field's own border
+   and radius so they read as part of the same control. */
+.surface-modes{border:none;margin:18px 0 0;padding:0;min-width:0;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.surface-modes-l{grid-column:1/-1;padding:0;margin:0 2px 2px;
+  font-family:var(--font-mono);font-size:11px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.surface-mode{position:relative;cursor:pointer;display:grid;
+  grid-template-columns:1fr auto;align-items:baseline;gap:4px 8px;
+  background:#fff;border:1.5px solid #cdddf5;border-radius:12px;padding:12px 14px;
+  transition:border-color .2s ease,box-shadow .2s ease,background .2s ease}
+.surface-mode:hover{border-color:var(--g400)}
+.surface-mode input{position:absolute;opacity:0;pointer-events:none}
+.surface-mode-n{font-weight:600;font-size:14px;color:var(--ink)}
+.surface-mode-t{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-3)}
+.surface-mode-d{grid-column:1/-1;font-size:12.5px;line-height:1.45;color:var(--ink-2)}
+.surface-mode:has(input:checked){border-color:var(--g600);background:#f3f7fd;
+  box-shadow:0 0 0 3px rgba(17,64,134,.1)}
+.surface-mode:has(input:checked) .surface-mode-t{color:var(--g600)}
+.surface-mode:has(input:focus-visible){outline:2px solid var(--g600);outline-offset:2px}
 /* Bare ticks, not the circled ones the account modal uses — five circles in a
    column read as a form to fill in rather than a list of what runs. */
 .surface-checks{display:grid;gap:16px;margin-top:30px}
@@ -610,6 +630,7 @@ code,pre{font-family:var(--font-mono)}
   .surface-checks{gap:14px;margin-top:24px}
   .surface-modal h3{font-size:22px}
   .surface-field{flex-wrap:wrap}
+  .surface-modes{grid-template-columns:1fr}
   .surface-run{width:100%;justify-content:center}
 
   .rep-main{padding:26px 22px 22px}

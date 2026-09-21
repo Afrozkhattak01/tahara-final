@@ -49,6 +49,30 @@
         <button class="surface-run" type="submit"><span data-i18n="surface.cta">Start Assessment</span> <span class="arw" aria-hidden="true">→</span></button>
       </div>
       <p class="surface-err" id="surfaceErr" role="alert" data-i18n="surface.err" hidden>Enter a valid domain, for example your-company.ai</p>
+      <!-- Scan depth. The backend runs all three; stealth is its default and
+           stays pre-selected here. Native radios, so keyboard and screen-reader
+           behaviour comes for free. -->
+      <fieldset class="surface-modes">
+        <legend class="surface-modes-l">Scan mode</legend>
+        <label class="surface-mode">
+          <input type="radio" name="scanMode" value="simple" />
+          <span class="surface-mode-n">Simple</span>
+          <span class="surface-mode-t">~2 min</span>
+          <span class="surface-mode-d">Quick recon of the main host. No subdomains or path probing.</span>
+        </label>
+        <label class="surface-mode">
+          <input type="radio" name="scanMode" value="stealth" checked />
+          <span class="surface-mode-n">Stealth</span>
+          <span class="surface-mode-t">~8 min</span>
+          <span class="surface-mode-d">Full assessment, paced to stay quiet. Recommended.</span>
+        </label>
+        <label class="surface-mode">
+          <input type="radio" name="scanMode" value="aggressive" />
+          <span class="surface-mode-n">Aggressive</span>
+          <span class="surface-mode-t">~25 min</span>
+          <span class="surface-mode-d">Deepest coverage, unthrottled. Only for sites you own.</span>
+        </label>
+      </fieldset>
     </form>
     <ul class="surface-checks">
       <li><svg class="surface-tick" viewBox="0 0 14 12" aria-hidden="true"><path d="M1 6.2 5 10.4 13 1.6"/></svg><span data-i18n="surface.c1">Discovers exposed domains, subdomains, hosts, and AI-facing infrastructure.</span></li>
