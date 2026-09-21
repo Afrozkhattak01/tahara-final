@@ -2243,6 +2243,7 @@ window.TaharaNavSpy = (function(){
     const againR  = document.getElementById('repAgain');
 
     const RUN_MS = 11000;
+    let pollTimer = 0, scanId = '', realFindings = null, scanDone = false, pendingFindings = 0;
 
     /* ── the ring · one arc per checklist stage ───────────────────────
        Six arcs on r=80 in a 200-box. Each owns a sixth of the run and
@@ -2394,15 +2395,249 @@ window.TaharaNavSpy = (function(){
 
     function buildReport(target){
       if (repTgt)  repTgt.textContent = target;
+      var useReal = realFindings && realFindings.length > 0;
       if (repMeta){
-        const secs = (RUN_MS / 1000).toFixed(1) + 's';
-        repMeta.textContent = (lang() === 'ar' ? 'اكتمل · ' : 'Completed · ') + secs + ' · SHA256 4F9C…B120';
+        repMeta.textContent = (lang() === 'ar' ? 'اكتمل · ' : 'Completed · ') +
+          (useReal ? realFindings.length + ' findings' : (RUN_MS / 1000).toFixed(1) + 's');
       }
-      const L = lang();
+      var L = lang();
+
+      if (useReal){
+        buildRealReport(L);
+      } else {
+        buildFallbackReport(L);
+      }
+
+      var riskScore = useReal ? computeRisk(realFindings) : RISK;
+      var gaugeN = document.querySelector('.rep-gauge-n');
+      if (gaugeN) gaugeN.textContent = String(riskScore);
+      if (gauge){
+        gauge.style.strokeDashoffset = String(GAUGE_C);
+        requestAnimationFrame(function(){
+          gauge.style.strokeDashoffset = String(GAUGE_C * (1 - riskScore / 100));
+        });
+      }
+
+      var countEl = document.querySelector('.rep-count b');
+      if (countEl) countEl.textContent = String(useReal ? realFindings.length : FINDINGS.length);
+
+      updateCards(useReal ? realFindings : null);
+
+      var fullLink = document.getElementById('repFullLink');
+      var dlBtn = document.getElementById('repDownloadBtn');
+      if (fullLink && useReal && scanId){
+        var reportUrl = 'http://136.119.22.21/scans/' + scanId + '/report-detailed';
+        fullLink.href = reportUrl;
+        fullLink.style.display = 'block';
+        fullLink.hidden = false;
+        if (dlBtn){
+          dlBtn.style.display = 'block';
+          dlBtn.hidden = false;
+          dlBtn.onclick = function(){
+            window.open(reportUrl, '_blank');
+          };
+        }
+      } else if (fullLink){
+        fullLink.style.display = 'none';
+        fullLink.hidden = true;
+        if (dlBtn){ dlBtn.style.display = 'none'; dlBtn.hidden = true; }
+      }
+
+      /* Hide email gate when real scan — show direct report link instead */
+      var mailForm = document.getElementById('repMailForm');
+      if (mailForm && useReal) mailForm.style.display = 'none';
+      var dlTitle = document.querySelector('.rep-dl-t');
+      if (dlTitle && useReal) dlTitle.textContent = 'Full Detailed Report';
+      var dlMeta = document.querySelector('.rep-dl-m');
+      if (dlMeta && useReal) dlMeta.textContent = 'View the complete assessment with all findings';
+    }
+
+    function computeRisk(findings){
+      var score = 0;
+      findings.forEach(function(f){
+        var s = (f.severity || '').toLowerCase();
+        if (s === 'critical') score += 15;
+        else if (s === 'high') score += 8;
+        else if (s === 'medium') score += 3;
+        else if (s === 'low') score += 1;
+      });
+      return Math.min(100, Math.max(0, score));
+    }
+
+    function updateCards(findings){
+      var cards = document.querySelectorAll('.rep-cards > li');
+      if (!findings || !cards.length) return;
+      var techs = findings.filter(function(f){ return f.finding_type === 'technology' && !f.title.startsWith('Technology Stack'); });
+      var cveSummary = findings.find(function(f){ return f.finding_type === 'cve_summary'; });
+      var cveItems = findings.filter(function(f){ return f.finding_type === 'cve'; });
+      var totalCVEs = 0; var critCVEs = 0;
+      if (cveSummary){
+        var tm = (cveSummary.description || '').match(/Correlated (\d+) CVEs/);
+        if (tm) totalCVEs = parseInt(tm[1]);
+        var cm = (cveSummary.description || '').match(/Critical:\s*(\d+)/);
+        if (cm) critCVEs = parseInt(cm[1]);
+      } else {
+        cveItems.forEach(function(c){
+          var m = (c.description || '').match(/Found (\d+) CVEs/);
+          if (m) totalCVEs += parseInt(m[1]);
+          var cm2 = (c.description || '').match(/Critical:\s*(\d+)/);
+          if (cm2) critCVEs += parseInt(cm2[1]);
+        });
+      }
+      if (cards[0]){
+        cards[0].querySelector('.rep-card-l').textContent = 'Technologies';
+        cards[0].querySelector('b').textContent = String(techs.length);
+        cards[0].querySelector('.rep-card-d').textContent = 'Detected via passive fingerprinting';
+      }
+      if (cards[1]){
+        cards[1].querySelector('.rep-card-l').textContent = 'CVE Candidates';
+        cards[1].querySelector('b').textContent = String(totalCVEs);
+        cards[1].querySelector('.rep-card-d').textContent = 'Matched from local vulnerability database';
+      }
+      if (cards[2]){
+        cards[2].querySelector('.rep-card-l').textContent = 'Critical CVEs';
+        cards[2].querySelector('b').textContent = String(critCVEs);
+        cards[2].querySelector('b').className = critCVEs > 0 ? 'is-sig' : '';
+        cards[2].querySelector('.rep-card-d').textContent = 'Require immediate attention';
+      }
+      var nonInfo = findings.filter(function(f){ return f.severity !== 'info' && f.finding_type !== 'technology'; });
+      if (cards[3]){
+        cards[3].querySelector('.rep-card-l').textContent = 'Security Issues';
+        cards[3].querySelector('b').textContent = String(nonInfo.length);
+        cards[3].querySelector('.rep-card-d').textContent = 'SSL, CORS, headers, email security';
+      }
+    }
+
+    function sevLabel(sev, L){
+      var map = { critical:'Critical', high:'High', medium:'Medium', low:'Low', info:'Info' };
+      return map[sev] || sev || 'Info';
+    }
+
+    function buildRealReport(L){
+      var secHead = document.querySelector('.rep-sec-head > span:first-child');
+      if (secHead) secHead.textContent = 'Asset Inventory & Top CVEs';
+      var countEl = document.querySelector('.rep-sec-head .rep-count');
       if (repList){
         repList.textContent = '';
-        FINDINGS.forEach(f => {
-          const li = document.createElement('li');
+
+        /* ── Tech Stack section ── */
+        var techs = realFindings.filter(function(f){ return f.finding_type === 'technology' && !f.title.startsWith('Technology Stack'); });
+        if (techs.length){
+          var techHeader = document.createElement('li');
+          techHeader.style.cssText = 'grid-column:1/-1;display:block;padding:16px 0 8px;font-weight:700;font-size:15px;color:var(--ink);letter-spacing:.02em;border-top:1px solid var(--line)';
+          techHeader.textContent = 'Detected Technology Stack';
+          repList.appendChild(techHeader);
+
+          var techGrid = document.createElement('li');
+          techGrid.style.cssText = 'grid-column:1/-1;display:block;padding:0 0 16px';
+          var chips = techs.map(function(t){
+            var name = (t.title || '').replace('Technology: ', '');
+            return '<span style="display:inline-block;padding:6px 14px;margin:4px;background:var(--line);border-radius:20px;font-size:13px;font-weight:600;color:var(--ink)">' + name + '</span>';
+          }).join('');
+          techGrid.innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:2px">' + chips + '</div>';
+          repList.appendChild(techGrid);
+        }
+
+        /* ── Top 3 CVEs section ── */
+        var cveFindings = realFindings.filter(function(f){ return f.finding_type === 'cve'; });
+        if (cveFindings.length){
+          var cveHeader = document.createElement('li');
+          cveHeader.style.cssText = 'grid-column:1/-1;display:block;padding:16px 0 8px;font-weight:700;font-size:15px;color:var(--ink);letter-spacing:.02em;border-top:1px solid var(--line)';
+          cveHeader.textContent = 'Top CVE Findings';
+          repList.appendChild(cveHeader);
+
+          cveFindings.slice(0, 3).forEach(function(f){
+            var li = document.createElement('li');
+            li.style.cssText = 'grid-column:1/-1;display:block;padding:12px 0;border-top:1px solid var(--line)';
+            var sev = (f.severity || 'info').toLowerCase();
+            var desc = f.description || '';
+            var topCVE = desc.match(/Top CVE:\s*(CVE-[\d-]+)\s*\(CVSS:\s*([\d.]+)\)/);
+            var countMatch = desc.match(/Found (\d+) CVEs/);
+            var critMatch = desc.match(/Critical:\s*(\d+)/);
+            var highMatch = desc.match(/High:\s*(\d+)/);
+            var techName = (f.title || '').replace('CVE Candidates: ', '');
+            var sevColor = sev === 'critical' ? '#ef4444' : sev === 'high' ? '#f59e0b' : sev === 'medium' ? '#d6a25e' : 'var(--ink-3)';
+
+            var html = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">' +
+              '<span style="font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:' + sevColor + '">' + sevLabel(sev, L) + '</span>' +
+              '<span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-2);background:var(--bg-2);border:1px solid var(--line);border-radius:7px;padding:3px 9px">' + techName + '</span>' +
+              '</div>' +
+              '<div style="font-size:15px;color:var(--ink);line-height:1.35">' + (f.title || '') + '</div>';
+            if (topCVE) html += '<div style="margin-top:6px;font-size:13px;color:var(--ink-2)"><b style="color:var(--ink)">' + topCVE[1] + '</b> · CVSS ' + topCVE[2] + '</div>';
+            html += '<div style="margin-top:4px;font-size:13px;color:var(--ink-3)">' +
+              (countMatch ? countMatch[1] + ' CVEs found' : '') +
+              (critMatch && parseInt(critMatch[1]) > 0 ? ' · <span style="color:#ef4444;font-weight:600">' + critMatch[1] + ' Critical</span>' : '') +
+              (highMatch && parseInt(highMatch[1]) > 0 ? ' · <span style="color:#f59e0b;font-weight:600">' + highMatch[1] + ' High</span>' : '') +
+              '</div>';
+            li.innerHTML = html;
+            repList.appendChild(li);
+          });
+        }
+
+        /* ── Key security findings (non-tech, non-cve, max 3) ── */
+        var secFindings = realFindings.filter(function(f){
+          return f.severity !== 'info' && f.finding_type !== 'technology' && f.finding_type !== 'technology_inconclusive' && f.finding_type !== 'cve' && f.finding_type !== 'cve_summary';
+        }).slice(0, 3);
+        if (secFindings.length){
+          var sfHeader = document.createElement('li');
+          sfHeader.style.cssText = 'grid-column:1/-1;display:block;padding:16px 0 8px;font-weight:700;font-size:15px;color:var(--ink);letter-spacing:.02em;border-top:1px solid var(--line)';
+          sfHeader.textContent = 'Key Security Findings';
+          repList.appendChild(sfHeader);
+
+          secFindings.forEach(function(f){
+            var li = document.createElement('li');
+            var sev = (f.severity || 'info').toLowerCase();
+            li.style.cssText = 'grid-column:1/-1;display:block;padding:12px 0;border-top:1px solid var(--line)';
+            var sevColor = sev === 'critical' ? '#ef4444' : sev === 'high' ? '#f59e0b' : sev === 'medium' ? '#d6a25e' : 'var(--ink-3)';
+            var ftype = (f.finding_type || '').replace(/_/g, ' ');
+            li.innerHTML = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">' +
+              '<span style="font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:' + sevColor + '">' + sevLabel(sev, L) + '</span>' +
+              '<span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-2);background:var(--bg-2);border:1px solid var(--line);border-radius:7px;padding:3px 9px">' + ftype + '</span>' +
+              '</div>' +
+              '<div style="font-size:15px;color:var(--ink);line-height:1.35">' + (f.title || '') + '</div>' +
+              '<div style="font-size:13px;color:var(--ink-2);line-height:1.55;margin-top:4px">' + (f.description || '').slice(0, 150) + '</div>';
+            repList.appendChild(li);
+          });
+        }
+
+        if (countEl){
+          countEl.innerHTML = '<b>' + realFindings.length + '</b> total';
+        }
+      }
+
+      /* ── Coverage sidebar ── */
+      if (repCov){
+        repCov.textContent = '';
+        var cats = {};
+        var skipCov = { 'cve_summary':1, 'ai_analysis':1, 'technology_inconclusive':1, 'wayback_history':1, 'reverse_ip':1, 'certificate_transparency':1, 'site_crawl':1 };
+        realFindings.forEach(function(f){
+          var t = f.finding_type || 'other';
+          if (skipCov[t]) return;
+          if (!cats[t]) cats[t] = { total:0, crit:0 };
+          cats[t].total++;
+          if (f.severity === 'critical' || f.severity === 'high') cats[t].crit++;
+        });
+        Object.keys(cats).forEach(function(k){
+          var c = cats[k];
+          var pct = Math.round(100 - (c.crit / c.total * 100));
+          var s = pct >= 80 ? 'pass' : pct >= 50 ? 'watch' : 'fail';
+          var li = document.createElement('li');
+          li.className = 'is-' + s;
+          li.innerHTML = '<span class="rep-cov-n"></span><span class="rep-cov-s"></span>' +
+                         '<span class="rep-cov-bar"><i></i></span>';
+          li.querySelector('.rep-cov-n').textContent = k.replace(/_/g, ' ');
+          li.querySelector('.rep-cov-s').textContent = (COV_S[s] || COV_S.pass)[L];
+          li.querySelector('.rep-cov-bar > i').style.width = pct + '%';
+          repCov.appendChild(li);
+        });
+      }
+    }
+
+    function buildFallbackReport(L){
+      if (repList){
+        repList.textContent = '';
+        FINDINGS.forEach(function(f){
+          var li = document.createElement('li');
           li.className = 'rep-find is-' + f.sev;
           li.innerHTML = '<span class="rep-sev"><span class="rep-sev-l"></span><span class="rep-tag"></span></span>' +
                          '<span class="rep-find-t"></span><span class="rep-asset"></span>' +
@@ -2417,8 +2652,8 @@ window.TaharaNavSpy = (function(){
       }
       if (repCov){
         repCov.textContent = '';
-        COVERAGE.forEach(c => {
-          const li = document.createElement('li');
+        COVERAGE.forEach(function(c){
+          var li = document.createElement('li');
           li.className = 'is-' + c.s;
           li.innerHTML = '<span class="rep-cov-n"></span><span class="rep-cov-s"></span>' +
                          '<span class="rep-cov-bar"><i></i></span>';
@@ -2426,12 +2661,6 @@ window.TaharaNavSpy = (function(){
           li.querySelector('.rep-cov-s').textContent = COV_S[c.s][L];
           li.querySelector('.rep-cov-bar > i').style.width = c.fill + '%';
           repCov.appendChild(li);
-        });
-      }
-      if (gauge){
-        gauge.style.strokeDashoffset = String(GAUGE_C);      /* reset, then draw */
-        requestAnimationFrame(() => {
-          gauge.style.strokeDashoffset = String(GAUGE_C * (1 - RISK / 100));
         });
       }
     }
@@ -2449,9 +2678,50 @@ window.TaharaNavSpy = (function(){
     function finish(target){
       running = false;
       paint(100);
-      /* paint() leaves the caption on the last stage, which still reads as
-         work in progress once the dial has stopped. */
-      if (stgEl) stgEl.textContent = lang() === 'ar' ? 'اكتمل التقييم' : 'Assessment complete';
+      if (stgEl) stgEl.textContent = lang() === 'ar'
+        ? (scanDone ? 'اكتمل التقييم' : 'في انتظار نتائج الفحص…')
+        : (scanDone ? 'Assessment complete' : 'Waiting for scan results…');
+      if (scanDone){
+        finishUI(target);
+      } else {
+        var dots = 0;
+        var waitStart = Date.now();
+        var linkShown = false;
+        var waitTimer = setInterval(function(){
+          if (scanDone){
+            clearInterval(waitTimer);
+            if (stgEl) stgEl.textContent = lang() === 'ar' ? 'اكتمل التقييم' : 'Assessment complete';
+            finishUI(target);
+            return;
+          }
+          dots = (dots + 1) % 4;
+          var d = '.'.repeat(dots || 1);
+          var waited = Math.floor((Date.now() - waitStart) / 1000);
+          var msg = lang() === 'ar' ? 'جارٍ تحليل الثغرات' + d : 'Analyzing vulnerabilities' + d;
+          if (pendingFindings > 0) msg += ' (' + pendingFindings + ' findings so far)';
+          /* Elapsed time distinguishes "still working" from "stuck". Without it the
+             same three dots animate whether the scan is progressing or the request
+             died, and a large target — 27 tasks across 7 subdomains — legitimately
+             takes minutes. */
+          msg += ' · ' + Math.floor(waited / 60) + 'm ' + (waited % 60) + 's';
+          if (stgEl) stgEl.textContent = msg;
+
+          /* Past five minutes, hand over a direct link to the backend report rather
+             than leaving the only exit as closing the modal. The report renders from
+             whatever findings exist, so it is useful before the poll flips to done. */
+          if (!linkShown && waited > 300 && scanId && noteEl){
+            linkShown = true;
+            noteEl.removeAttribute('data-i18n');
+            noteEl.innerHTML = 'Still running. You can open the report directly: ' +
+              '<a href="http://136.119.22.21/scans/' + scanId + '/report-detailed" ' +
+              'target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline">' +
+              'full report</a>';
+          }
+        }, 2000);
+      }
+    }
+
+    function finishUI(target){
       if (stateEl){
         stateEl.classList.add('is-done');
         const label = stateEl.querySelector('[data-i18n]');
@@ -2460,11 +2730,8 @@ window.TaharaNavSpy = (function(){
           label.textContent = lang() === 'ar' ? 'اكتمل التقييم' : 'Assessment complete';
         }
       }
-      /* the pulsing dot in the card footer stops with the run */
       const dot = document.querySelector('.live-badge > i');
       if (dot) dot.style.animation = 'none';
-      /* A beat on 100% before the report replaces it — swapping on the same
-         frame the dial fills reads as the run having been skipped. */
       if (reduced) showReport(target);
       else handoff = setTimeout(() => showReport(target), 1100);
     }
@@ -2482,30 +2749,104 @@ window.TaharaNavSpy = (function(){
     function startRun(target){
       if (!live || !body) return;
       runTarget = target;
+      scanDone = false;
+      realFindings = null;
       body.hidden = true;
       live.hidden = false;
       modal.classList.add('is-live');
       if (tgtEl) tgtEl.textContent = target;
       if (noteEl){
-        /* Blanked for the run rather than swapped. The screen-1 wording is a
-           claim about a scan that is not happening, so it cannot simply stay;
-           the footer keeps its state chip on the right and nothing else. */
         noteEl.removeAttribute('data-i18n');
         noteEl.textContent = '';
       }
       if (stateEl) stateEl.hidden = false;
-      if (reduced){ printed = 0; t0 = performance.now(); finish(target); return; }
       printed = 0;
       running = true;
       t0 = performance.now();
       raf = requestAnimationFrame(tick);
+
+      fetch('/api/surface-check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endpoint: target })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if (data.scanId){
+          scanId = data.scanId;
+          pollScan();
+        } else {
+          /* Without this the failure went only to console.error, the progress ring
+             kept animating to 100%, and the modal then waited forever on a scan that
+             was never created — indistinguishable from a slow scan. */
+          showStartFailure(data && data.error ? (data.error.detail || data.error.code) : 'no scan id returned');
+        }
+      })
+      .catch(function(e){ showStartFailure(e && e.message ? e.message : String(e)); });
+    }
+
+    function showStartFailure(reason){
+      running = false;
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+      paint(100);
+      if (stgEl) stgEl.textContent = lang() === 'ar' ? 'تعذّر بدء الفحص' : 'Scan could not be started';
+      if (noteEl){
+        noteEl.removeAttribute('data-i18n');
+        noteEl.textContent = 'The scanner did not accept this request: ' + reason +
+          '. Check that the ARIE backend is reachable, then try again.';
+      }
+    }
+
+    function pollScan(){
+      if (!scanId) return;
+      var pollErrors = 0;
+      pollTimer = setInterval(function(){
+        fetch('/api/surface-check/' + scanId)
+          .then(function(r){ return r.json(); })
+          .then(function(data){
+            pollErrors = 0;
+            if (data.status === 'completed'){
+              clearInterval(pollTimer);
+              pollTimer = 0;
+              scanDone = true;
+              realFindings = data.findings || [];
+            } else if (data.status === 'failed'){
+              clearInterval(pollTimer);
+              pollTimer = 0;
+              scanDone = true;
+              realFindings = [];
+            } else {
+              pendingFindings = data.findingsCount || 0;
+            }
+          })
+          .catch(function(e){
+            /* One failed poll is nothing — a dropped request on a 5s loop. Several in
+               a row means the status endpoint is unreachable, and silently retrying
+               forever looked identical to a scan still in progress. */
+            pollErrors++;
+            if (pollErrors >= 3 && stgEl){
+              stgEl.textContent = lang() === 'ar'
+                ? 'تعذّر الوصول إلى حالة الفحص'
+                : 'Lost contact with the scanner';
+              if (noteEl){
+                noteEl.removeAttribute('data-i18n');
+                noteEl.textContent = 'Could not reach the scan status endpoint (' +
+                  (e && e.message ? e.message : e) + '). The scan may still be running ' +
+                  'on the server — the full report link will work if it completes.';
+              }
+            }
+          });
+      }, 5000);
     }
 
     function resetRun(){
       running = false;
       if (raf) cancelAnimationFrame(raf);
       if (handoff) clearTimeout(handoff);
+      if (pollTimer) clearInterval(pollTimer);
       raf = 0; handoff = 0; printed = 0; runTarget = '';
+      scanId = ''; scanDone = false; realFindings = null; pollTimer = 0; pendingFindings = 0;
       if (live) live.hidden = true;
       if (report) report.hidden = true;
       if (body) body.hidden = false;
