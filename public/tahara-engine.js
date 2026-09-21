@@ -2358,7 +2358,7 @@ window.TaharaNavSpy = (function(){
     const lang = () => (window.TaharaI18N && window.TaharaI18N.current === 'ar') ? 'ar' : 'en';
     const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    let raf = 0, t0 = 0, printed = 0, running = false, handoff = 0, runTarget = '';
+    let raf = 0, t0 = 0, printed = 0, running = false, handoff = 0, runTarget = '', runMode = 'stealth';
 
     function paint(p){
       const whole = Math.round(p);
@@ -2406,7 +2406,7 @@ window.TaharaNavSpy = (function(){
         var n = useReal ? realFindings.length : 0;
         repMeta.textContent = scanFailed ? 'Scan failed · ' + n + ' findings recovered'
           : scanPartial ? 'Partial results · ' + n + ' findings'
-          : realScan ? (lang() === 'ar' ? 'اكتمل · ' : 'Completed · ') + n + ' findings'
+          : realScan ? (lang() === 'ar' ? 'اكتمل · ' : 'Completed · ') + n + ' findings · ' + runMode + ' scan'
           : (lang() === 'ar' ? 'اكتمل · ' : 'Completed · ') + (RUN_MS / 1000).toFixed(1) + 's';
       }
       var L = lang();
@@ -2873,9 +2873,10 @@ window.TaharaNavSpy = (function(){
       else finish(runTarget);
     }
 
-    function startRun(target){
+    function startRun(target, mode){
       if (!live || !body) return;
       runTarget = target;
+      runMode = mode || 'stealth';
       scanDone = false;
       scanFailed = false;
       scanPartial = false;
@@ -2883,7 +2884,7 @@ window.TaharaNavSpy = (function(){
       body.hidden = true;
       live.hidden = false;
       modal.classList.add('is-live');
-      if (tgtEl) tgtEl.textContent = target;
+      if (tgtEl) tgtEl.textContent = target + ' · ' + runMode;
       if (noteEl){
         noteEl.removeAttribute('data-i18n');
         noteEl.textContent = '';
@@ -2897,7 +2898,7 @@ window.TaharaNavSpy = (function(){
       fetch('/api/surface-check', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ endpoint: target })
+        body: JSON.stringify({ endpoint: target, mode: runMode })
       })
       .then(function(r){ return r.json(); })
       .then(function(data){
@@ -3042,7 +3043,10 @@ window.TaharaNavSpy = (function(){
       const host   = hostOf(target);
       if (!host || !HOST_RE.test(host)){ showErr(true); inp && inp.focus(); return; }
       showErr(false);
-      startRun(host);
+      /* The picker's choice; stealth if the markup ever lacks it, matching the
+         backend default. Every scan used to run as stealth whatever was wanted. */
+      const picked = form.querySelector('input[name="scanMode"]:checked');
+      startRun(host, picked ? picked.value : 'stealth');
     });
 
     /* "Run again" replays the same scripted run against the same host. It is
@@ -3066,7 +3070,7 @@ window.TaharaNavSpy = (function(){
       }
       if (report) report.hidden = true;
       modal.classList.remove('is-report');
-      startRun(host);
+      startRun(host, runMode);
     });
 
     /* ── report → PDF ──────────────────────────────────────────────────
