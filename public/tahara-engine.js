@@ -2536,6 +2536,179 @@ window.TaharaNavSpy = (function(){
       return t.indexOf(': ') >= 0 ? t.slice(t.indexOf(': ') + 2) : t;
     }
 
+    /* ── Asset inventory ─────────────────────────────────────────────
+       What every scan mode collects — DNS, open ports, TLS certificates and the
+       technology stack — shown as an inventory instead of being left out. A
+       simple scan runs no header, email or path checks, so without this its
+       report was nearly empty despite having all of the data below. */
+    var RISKY_PORTS = { 21:'FTP', 23:'Telnet', 110:'POP3', 143:'IMAP', 445:'SMB', 1433:'MSSQL',
+      3306:'MySQL', 3389:'RDP', 5432:'PostgreSQL', 5900:'VNC', 6379:'Redis', 9200:'Elasticsearch',
+      11211:'Memcached', 27017:'MongoDB' };
+
+    var TECH_CATEGORY = {
+      'next.js':'Framework', 'react':'Framework', 'vue.js':'Framework', 'angular':'Framework',
+      'svelte':'Framework', 'nuxt.js':'Framework', 'gatsby':'Framework', 'remix':'Framework',
+      'wordpress':'CMS', 'drupal':'CMS', 'joomla':'CMS', 'magento':'CMS', 'shopify':'CMS',
+      'wix':'CMS', 'squarespace':'CMS', 'ghost':'CMS',
+      'php':'Language', 'node.js':'Language', 'python':'Language', 'ruby':'Language', 'java':'Language',
+      'nginx':'Web server', 'apache http server':'Web server', 'litespeed':'Web server',
+      'iis':'Web server', 'caddy':'Web server', 'openresty':'Web server', 'tomcat':'Web server',
+      'jquery':'Library', 'bootstrap':'Library', 'tailwind css':'Library', 'font awesome':'Library',
+      'lodash':'Library', 'moment.js':'Library', 'prism':'Library', 'd3':'Library',
+      'vercel':'Hosting', 'cloudflare':'Hosting', 'netlify':'Hosting', 'amazon cloudfront':'Hosting',
+      'amazon web services':'Hosting', 'akamai':'Hosting', 'fastly':'Hosting', 'azure':'Hosting',
+      'google fonts':'Service', 'google analytics':'Service', 'google tag manager':'Service',
+      'facebook pixel':'Service', 'hotjar':'Service', 'stripe':'Service', 'razorpay':'Service',
+      'webpack':'Build tool', 'vite':'Build tool', 'parcel':'Build tool',
+      'gzip':'Web feature', 'http/2':'Web feature', 'http/3':'Web feature', 'minification':'Web feature',
+      'open graph':'Web feature', 'pwa':'Web feature', 'priority hints':'Web feature'
+    };
+    var CATEGORY_ORDER = ['Framework','CMS','Language','Web server','Library','Hosting','Service','Build tool','Web feature','Other'];
+    /* Features, protocols and hosted services have no version to find; say so
+       rather than implying one was hidden. */
+    var UNVERSIONED = { 'Web feature':1, 'Service':1, 'Hosting':1 };
+
+    function hostKey(v){
+      return String(v || '').toLowerCase().replace(/^https?:\/\//, '').split(/[\/:?#]/)[0];
+    }
+    function cleanDns(v){ return String(v || '').replace(/^\d+\s+/, '').replace(/\.$/, ''); }
+    function shown(v){ return v != null && v !== '' && v !== 'N/A' && v !== 'None'; }
+    function fmtDate(v){
+      var d = new Date(v);
+      if (isNaN(d)) return String(v);
+      return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+    }
+    function daysUntil(v){
+      var d = new Date(v);
+      return isNaN(d) ? null : Math.round((d - Date.now()) / 86400000);
+    }
+    function invBlock(title, note){
+      var li = document.createElement('li');
+      li.className = 'inv-block';
+      li.innerHTML = '<div class="inv-head"><span class="inv-title">' + escapeHtml(title) + '</span>' +
+        (note ? '<span class="inv-note">' + escapeHtml(note) + '</span>' : '') + '</div>';
+      return li;
+    }
+    function fact(label, value, sub, warn){
+      return '<div class="inv-fact' + (warn ? ' is-warn' : '') + '"><span class="inv-fact-l">' + escapeHtml(label) +
+        '</span><span class="inv-fact-v">' + escapeHtml(value) + '</span>' +
+        (sub ? '<span class="inv-fact-s">' + escapeHtml(sub) + '</span>' : '') + '</div>';
+    }
+
+    function renderDomainOverview(list, findings){
+      var dns = findings.find(function(f){ return f.finding_type === 'dns'; });
+      if (!dns) return;
+      var m = metaOf(dns), w = (m.whois && typeof m.whois === 'object') ? m.whois : {};
+      var geo = (m.geo && typeof m.geo === 'object') ? m.geo : {};
+      var ips = Array.isArray(m.ips) ? m.ips : [];
+      var html = '';
+
+      if (ips.length){
+        var g = geo[ips[0]] || {};
+        var where = [g.city, g.country].filter(shown).join(', ');
+        html += fact(ips.length > 1 ? 'IP addresses' : 'IP address',
+          ips.slice(0, 3).join(', ') + (ips.length > 3 ? ' +' + (ips.length - 3) : ''), where);
+        if (shown(g.org)) html += fact('Hosted by', g.org);
+      }
+      if (shown(w.registrar)) html += fact('Registrar', w.registrar);
+      if (shown(w.creation_date)){
+        var age = (Date.now() - new Date(w.creation_date)) / (365.25 * 86400000);
+        html += fact('Registered', fmtDate(w.creation_date),
+          isNaN(age) ? '' : (age >= 1 ? Math.floor(age) + ' years ago' : 'Less than a year ago'));
+      }
+      if (shown(w.expiry_date)){
+        var left = typeof w.days_until_expiry === 'number' ? w.days_until_expiry : daysUntil(w.expiry_date);
+        html += fact('Domain expires', fmtDate(w.expiry_date),
+          left == null ? '' : (left < 0 ? 'Expired' : 'In ' + left + ' days'), left != null && left < 90);
+      }
+      var ns = (Array.isArray(m.ns_records) ? m.ns_records : []).map(cleanDns).filter(Boolean);
+      if (ns.length) html += fact('Name servers', ns.slice(0, 2).join(', '), ns.length > 2 ? '+' + (ns.length - 2) + ' more' : '');
+      var mx = (Array.isArray(m.mx_records) ? m.mx_records : []).map(cleanDns).filter(Boolean);
+      html += fact('Mail servers', mx.length ? mx.slice(0, 2).join(', ') : 'None published',
+        mx.length > 2 ? '+' + (mx.length - 2) + ' more' : '');
+
+      var li = invBlock('Domain overview', m.target || '');
+      li.insertAdjacentHTML('beforeend', '<div class="inv-facts">' + html + '</div>');
+      list.appendChild(li);
+    }
+
+    function renderHosts(list, findings, root){
+      var hosts = {};
+      function host(k){ return hosts[k] || (hosts[k] = { name:k, ports:null, ssl:null }); }
+      findings.forEach(function(f){
+        var m = metaOf(f);
+        if (f.finding_type === 'port' && m.target) host(hostKey(m.target)).ports = Array.isArray(m.ports) ? m.ports : [];
+        if (f.finding_type === 'ssl_tls' && m.target) host(hostKey(m.target)).ssl = m;
+      });
+      var names = Object.keys(hosts);
+      if (!names.length) return;
+      var r = hostKey(root);
+      names.sort(function(a, b){
+        var ra = a === r ? 0 : a === 'www.' + r ? 1 : 2, rb = b === r ? 0 : b === 'www.' + r ? 1 : 2;
+        return ra - rb || a.localeCompare(b);
+      });
+      var totalPorts = names.reduce(function(n, k){ return n + (hosts[k].ports ? hosts[k].ports.length : 0); }, 0);
+      var li = invBlock('Hosts & exposed services',
+        names.length + (names.length === 1 ? ' host · ' : ' hosts · ') + totalPorts + ' open ' + (totalPorts === 1 ? 'port' : 'ports'));
+      var MAX = 8, html = '<div class="inv-hosts">';
+
+      names.slice(0, MAX).forEach(function(k){
+        var h = hosts[k], s = h.ssl;
+        var grade = s && s.grade ? String(s.grade) : '';
+        var gcls = grade === 'A' || grade === 'B' ? 'g-a' : grade === 'C' ? 'g-c' : (grade === 'D' || grade === 'F') ? 'g-f' : '';
+        html += '<div class="inv-host"><div class="inv-host-top"><span class="inv-host-n">' + escapeHtml(h.name) + '</span>' +
+          (grade ? '<span class="inv-grade ' + gcls + '">TLS ' + escapeHtml(grade) + '</span>' : '') + '</div>';
+
+        var cert = s && s.certificate && typeof s.certificate === 'object' ? s.certificate : null;
+        if (cert && shown(cert.not_after)){
+          var d = daysUntil(cert.not_after);
+          html += '<div class="inv-host-cert' + (d != null && d < 30 ? ' is-warn' : '') + '">Certificate' +
+            (shown(cert.issuer) ? ' from ' + escapeHtml(cert.issuer) : '') + ' · expires ' + escapeHtml(fmtDate(cert.not_after)) +
+            (d != null ? (d < 0 ? ' (expired)' : ' (' + d + ' days)') : '') + '</div>';
+        } else if (grade === 'Unknown'){
+          html += '<div class="inv-host-cert">No certificate could be retrieved from this host.</div>';
+        }
+
+        if (h.ports && h.ports.length){
+          html += '<div class="inv-ports">' + h.ports.slice().sort(function(a, b){ return a.port - b.port; }).map(function(p){
+            var risky = RISKY_PORTS[p.port];
+            var label = shown(p.service) && p.service !== 'unknown' ? p.service : (risky || '');
+            return '<span class="inv-port' + (risky ? ' is-risky' : '') + '"' +
+              (risky ? ' title="' + escapeHtml(risky) + ' is a commonly attacked service when exposed to the internet"' : '') + '>' +
+              '<b>' + escapeHtml(p.port) + '</b>' + (label ? '<span>' + escapeHtml(label) + '</span>' : '') +
+              (shown(p.version) ? '<span>' + escapeHtml(p.version) + '</span>' : '') + '</span>';
+          }).join('') + '</div>';
+        } else if (h.ports){
+          html += '<div class="inv-empty">No open ports found in the ranges this scan mode checks.</div>';
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+      if (names.length > MAX) html += '<div class="inv-more">+' + (names.length - MAX) + ' more hosts in the full report</div>';
+      li.insertAdjacentHTML('beforeend', html);
+      list.appendChild(li);
+    }
+
+    function renderTechStack(list, findings){
+      var techs = uniqueTechs(findings);
+      if (!techs.length) return;
+      techs.forEach(function(t){ t.cat = TECH_CATEGORY[t.name.toLowerCase()] || 'Other'; });
+      techs.sort(function(a, b){
+        return CATEGORY_ORDER.indexOf(a.cat) - CATEGORY_ORDER.indexOf(b.cat) ||
+               (b.version ? 1 : 0) - (a.version ? 1 : 0) || a.name.localeCompare(b.name);
+      });
+      var versioned = techs.filter(function(t){ return t.version; }).length;
+      var li = invBlock('Technology stack', techs.length + ' detected · ' + versioned + ' with version');
+      li.insertAdjacentHTML('beforeend', '<div class="inv-tech">' + techs.map(function(t){
+        var v = t.version ? 'v' + escapeHtml(t.version)
+              : UNVERSIONED[t.cat] ? 'not versioned' : 'version not exposed';
+        return '<div class="inv-tech-c"><span class="inv-tech-k">' + escapeHtml(t.cat) + '</span>' +
+          '<span class="inv-tech-n">' + escapeHtml(t.name) + '</span>' +
+          '<span class="inv-tech-v' + (t.version ? '' : ' is-none') + '">' + v + '</span></div>';
+      }).join('') + '</div>');
+      list.appendChild(li);
+    }
+
     function updateCards(findings){
       var cards = document.querySelectorAll('.rep-cards > li');
       if (!findings || !cards.length) return;
@@ -2618,23 +2791,10 @@ window.TaharaNavSpy = (function(){
       if (repList){
         repList.textContent = '';
 
-        /* ── Tech Stack section ── */
-        var techs = uniqueTechs(realFindings);
-        if (techs.length){
-          var techHeader = document.createElement('li');
-          techHeader.style.cssText = 'grid-column:1/-1;display:block;padding:16px 0 8px;font-weight:700;font-size:15px;color:var(--ink);letter-spacing:.02em;border-top:1px solid var(--line)';
-          techHeader.textContent = 'Detected Technology Stack';
-          repList.appendChild(techHeader);
-
-          var techGrid = document.createElement('li');
-          techGrid.style.cssText = 'grid-column:1/-1;display:block;padding:0 0 16px';
-          var chips = techs.map(function(t){
-            var name = escapeHtml(t.name + (t.version ? ' ' + t.version : ''));
-            return '<span style="display:inline-block;padding:6px 14px;margin:4px;background:var(--line);border-radius:20px;font-size:13px;font-weight:600;color:var(--ink)">' + name + '</span>';
-          }).join('');
-          techGrid.innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:2px">' + chips + '</div>';
-          repList.appendChild(techGrid);
-        }
+        /* ── Asset inventory: domain, hosts & services, technology stack ── */
+        renderDomainOverview(repList, realFindings);
+        renderHosts(repList, realFindings, runTarget);
+        renderTechStack(repList, realFindings);
 
         /* ── Top 3 CVEs section ── */
         var cveFindings = realFindings.filter(function(f){ return f.finding_type === 'cve'; });
