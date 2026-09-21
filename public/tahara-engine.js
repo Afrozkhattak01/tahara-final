@@ -2244,6 +2244,7 @@ window.TaharaNavSpy = (function(){
 
     const RUN_MS = 11000;
     let pollTimer = 0, scanId = '', realFindings = null, scanDone = false, pendingFindings = 0;
+    let scanFailed = false, scanPartial = false;
 
     /* ── the ring · one arc per checklist stage ───────────────────────
        Six arcs on r=80 in a 200-box. Each owns a sixth of the run and
@@ -2396,36 +2397,48 @@ window.TaharaNavSpy = (function(){
     function buildReport(target){
       if (repTgt)  repTgt.textContent = target;
       var useReal = realFindings && realFindings.length > 0;
+      /* A real scan was run whenever there is a scan id. For those, the
+         hand-written demo findings must never appear: they include a "Remote Code
+         Execution" critical on api.example.com and a public S3 bucket, and shown
+         after a failed or empty scan they read as that target's actual results. */
+      var realScan = !!scanId;
       if (repMeta){
-        repMeta.textContent = (lang() === 'ar' ? 'اكتمل · ' : 'Completed · ') +
-          (useReal ? realFindings.length + ' findings' : (RUN_MS / 1000).toFixed(1) + 's');
+        var n = useReal ? realFindings.length : 0;
+        repMeta.textContent = scanFailed ? 'Scan failed · ' + n + ' findings recovered'
+          : scanPartial ? 'Partial results · ' + n + ' findings'
+          : realScan ? (lang() === 'ar' ? 'اكتمل · ' : 'Completed · ') + n + ' findings'
+          : (lang() === 'ar' ? 'اكتمل · ' : 'Completed · ') + (RUN_MS / 1000).toFixed(1) + 's';
       }
       var L = lang();
 
       if (useReal){
         buildRealReport(L);
+      } else if (realScan){
+        buildEmptyReport();
       } else {
         buildFallbackReport(L);
       }
 
-      var riskScore = useReal ? computeRisk(realFindings) : RISK;
+      var riskScore = useReal ? computeRisk(realFindings) : realScan ? null : RISK;
       var gaugeN = document.querySelector('.rep-gauge-n');
-      if (gaugeN) gaugeN.textContent = String(riskScore);
+      if (gaugeN) gaugeN.textContent = riskScore == null ? '—' : String(riskScore);
       if (gauge){
         gauge.style.strokeDashoffset = String(GAUGE_C);
-        requestAnimationFrame(function(){
-          gauge.style.strokeDashoffset = String(GAUGE_C * (1 - riskScore / 100));
-        });
+        if (riskScore != null){
+          requestAnimationFrame(function(){
+            gauge.style.strokeDashoffset = String(GAUGE_C * (1 - riskScore / 100));
+          });
+        }
       }
 
       var countEl = document.querySelector('.rep-count b');
-      if (countEl) countEl.textContent = String(useReal ? realFindings.length : FINDINGS.length);
+      if (countEl) countEl.textContent = String(useReal ? realFindings.length : realScan ? 0 : FINDINGS.length);
 
       updateCards(useReal ? realFindings : null);
 
       var fullLink = document.getElementById('repFullLink');
       var dlBtn = document.getElementById('repDownloadBtn');
-      if (fullLink && useReal && scanId){
+      if (fullLink && realScan){
         var reportUrl = 'http://136.119.22.21/scans/' + scanId + '/report-detailed';
         fullLink.href = reportUrl;
         fullLink.style.display = 'block';
@@ -2445,11 +2458,11 @@ window.TaharaNavSpy = (function(){
 
       /* Hide email gate when real scan — show direct report link instead */
       var mailForm = document.getElementById('repMailForm');
-      if (mailForm && useReal) mailForm.style.display = 'none';
+      if (mailForm && realScan) mailForm.style.display = 'none';
       var dlTitle = document.querySelector('.rep-dl-t');
-      if (dlTitle && useReal) dlTitle.textContent = 'Full Detailed Report';
+      if (dlTitle && realScan) dlTitle.textContent = 'Full Detailed Report';
       var dlMeta = document.querySelector('.rep-dl-m');
-      if (dlMeta && useReal) dlMeta.textContent = 'View the complete assessment with all findings';
+      if (dlMeta && realScan) dlMeta.textContent = 'View the complete assessment with all findings';
     }
 
     function computeRisk(findings){
@@ -2711,6 +2724,26 @@ window.TaharaNavSpy = (function(){
       }
     }
 
+    /* What a real scan shows when it has nothing to report. Says what happened
+       and points at the backend report, rather than filling the space. */
+    function buildEmptyReport(){
+      if (repList){
+        repList.textContent = '';
+        var li = document.createElement('li');
+        li.style.cssText = 'grid-column:1/-1;display:block;padding:18px 0;border-top:1px solid var(--line)';
+        li.innerHTML =
+          '<div style="font-size:15px;color:var(--ink);line-height:1.4;font-weight:600">' +
+            (scanFailed ? 'The scan did not complete' : 'The scan returned no findings') + '</div>' +
+          '<div style="font-size:13px;color:var(--ink-2);line-height:1.55;margin-top:6px">' +
+            (scanFailed
+              ? 'The scanner stopped before producing results for this target. This is not a clean result — nothing was assessed. Try again, or open the full report for details.'
+              : 'No results came back for this target. This is not evidence the target is secure; it usually means the target could not be reached.') +
+          '</div>';
+        repList.appendChild(li);
+      }
+      if (repCov) repCov.textContent = '';
+    }
+
     function buildFallbackReport(L){
       if (repList){
         repList.textContent = '';
@@ -2828,6 +2861,8 @@ window.TaharaNavSpy = (function(){
       if (!live || !body) return;
       runTarget = target;
       scanDone = false;
+      scanFailed = false;
+      scanPartial = false;
       realFindings = null;
       body.hidden = true;
       live.hidden = false;
@@ -2884,16 +2919,16 @@ window.TaharaNavSpy = (function(){
           .then(function(r){ return r.json(); })
           .then(function(data){
             pollErrors = 0;
-            if (data.status === 'completed'){
+            if (data.status === 'completed' || data.status === 'failed'){
               clearInterval(pollTimer);
               pollTimer = 0;
               scanDone = true;
-              realFindings = data.findings || [];
-            } else if (data.status === 'failed'){
-              clearInterval(pollTimer);
-              pollTimer = 0;
-              scanDone = true;
-              realFindings = [];
+              scanFailed = data.status === 'failed';
+              scanPartial = !!data.partial;
+              /* A failed scan still returns what it found. Keep it: discarding it
+                 left the report with nothing real, which is how it fell through to
+                 the hand-written demo findings below. */
+              realFindings = Array.isArray(data.findings) ? data.findings : [];
             } else {
               pendingFindings = data.findingsCount || 0;
             }
@@ -2925,6 +2960,7 @@ window.TaharaNavSpy = (function(){
       if (pollTimer) clearInterval(pollTimer);
       raf = 0; handoff = 0; printed = 0; runTarget = '';
       scanId = ''; scanDone = false; realFindings = null; pollTimer = 0; pendingFindings = 0;
+      scanFailed = false; scanPartial = false;
       if (live) live.hidden = true;
       if (report) report.hidden = true;
       if (body) body.hidden = false;
