@@ -15,3 +15,6 @@ tsconfig.tsbuildinfo
 Thumbs.db
 .idea/
 .vscode/
+
+# Template with no secrets, so a fresh clone knows what to configure.
+!.env.example
