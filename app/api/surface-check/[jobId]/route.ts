@@ -29,6 +29,8 @@ async function getToken(): Promise<string> {
   return data.access_token;
 }
 
+const HARD_CEILING_MS = 20 * 60_000;
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ jobId: string }> }
@@ -45,14 +47,6 @@ export async function GET(
     }
     const scan = await scanRes.json();
 
-    if (scan.status === 'failed') {
-      return NextResponse.json({
-        scanId: scan.id,
-        status: 'failed',
-        startedAt: scan.started_at,
-      });
-    }
-
     const elapsed = scan.started_at
       ? Date.now() - new Date(scan.started_at).getTime()
       : 0;
@@ -64,23 +58,29 @@ export async function GET(
       if (Array.isArray(data)) findings = data;
     }
 
-    const types = new Set(findings.map((f: any) => f.finding_type));
-    const hasCVEs = types.has('cve') || types.has('cve_summary');
-    const hasAI = types.has('ai_analysis');
-    const techInconclusive = types.has('technology_inconclusive') && !types.has('technology');
+    // Ready means the backend says the scan is over — nothing else. The backend
+    // settles scan status itself once every task is done, failed or skipped,
+    // including the per-host tasks subdomain discovery spawns mid-scan.
+    //
+    // This used to guess from the findings instead: "ready" as soon as any CVE
+    // finding existed, or unconditionally after five minutes. The first fired
+    // while AI analysis and other hosts were still running; the second fired
+    // while CVE correlation was still waiting on fingerprinting, which is why the
+    // report opened with 0 CVEs and 0 critical on scans that went on to find 19.
+    const finished = scan.status === 'completed' || scan.status === 'failed';
 
-    // Ready when:
-    // 1. CVE findings exist (best case — full results), OR
-    // 2. Tech was inconclusive + AI finished (CVEs won't come), OR
-    // 3. Scan running > 3 minutes (fallback — show whatever we have)
-    const ready = hasCVEs
-      || (techInconclusive && hasAI && findings.length >= 5)
-      || elapsed > 300_000;
+    // Safety ceiling only, far beyond a normal stealth scan (~8 min, 27 tasks
+    // at most observed), so a hung worker cannot hold the page forever. Results
+    // released this way are flagged partial so the UI can say so.
+    const overdue = elapsed > HARD_CEILING_MS;
 
-    if (findings.length > 0 && ready) {
+    if (finished || overdue) {
       return NextResponse.json({
         scanId: scan.id,
-        status: 'completed',
+        // A failed scan still returns whatever it found; the UI must not
+        // substitute anything in place of real results.
+        status: scan.status === 'failed' ? 'failed' : 'completed',
+        partial: !finished,
         startedAt: scan.started_at,
         completedAt: scan.completed_at,
         findings,
