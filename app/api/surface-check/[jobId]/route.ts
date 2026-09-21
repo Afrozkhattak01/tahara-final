@@ -38,6 +38,17 @@ const HARD_CEILING_MS: Record<string, number> = {
   aggressive: 45 * 60_000,
 };
 
+// The backend sends UTC timestamps with no zone designator
+// ("2026-09-21T06:50:50.484642"), and JavaScript parses a designator-less
+// date-time as LOCAL time. On a machine at UTC+5 every scan therefore looked five
+// hours old the instant it started, so any elapsed-time cutoff fired at once —
+// which is why reports opened immediately with 0 CVEs, and why it never showed
+// on a UTC server. Treat a designator-less timestamp as the UTC it is.
+function parseBackendTime(value: string): number {
+  const hasZone = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(value);
+  return new Date(hasZone ? value : value + 'Z').getTime();
+}
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ jobId: string }> }
@@ -55,7 +66,7 @@ export async function GET(
     const scan = await scanRes.json();
 
     const elapsed = scan.started_at
-      ? Date.now() - new Date(scan.started_at).getTime()
+      ? Date.now() - parseBackendTime(scan.started_at)
       : 0;
 
     const findingsRes = await fetch(`${ARIE_API}/scans/${jobId}/findings`, { headers });
