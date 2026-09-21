@@ -29,7 +29,14 @@ async function getToken(): Promise<string> {
   return data.access_token;
 }
 
-const HARD_CEILING_MS = 20 * 60_000;
+// Safety ceiling per mode, well beyond each mode's typical run (simple ~2 min,
+// stealth ~8, aggressive ~25). A single 20-minute ceiling would have released
+// aggressive scans as "partial" before they could normally finish.
+const HARD_CEILING_MS: Record<string, number> = {
+  simple: 10 * 60_000,
+  stealth: 20 * 60_000,
+  aggressive: 45 * 60_000,
+};
 
 export async function GET(
   _req: NextRequest,
@@ -72,7 +79,8 @@ export async function GET(
     // Safety ceiling only, far beyond a normal stealth scan (~8 min, 27 tasks
     // at most observed), so a hung worker cannot hold the page forever. Results
     // released this way are flagged partial so the UI can say so.
-    const overdue = elapsed > HARD_CEILING_MS;
+    const ceiling = HARD_CEILING_MS[scan.scan_mode] ?? 20 * 60_000;
+    const overdue = elapsed > ceiling;
 
     if (finished || overdue) {
       return NextResponse.json({
@@ -81,6 +89,7 @@ export async function GET(
         // substitute anything in place of real results.
         status: scan.status === 'failed' ? 'failed' : 'completed',
         partial: !finished,
+        mode: scan.scan_mode,
         startedAt: scan.started_at,
         completedAt: scan.completed_at,
         findings,
@@ -91,6 +100,7 @@ export async function GET(
     return NextResponse.json({
       scanId: scan.id,
       status: 'running',
+      mode: scan.scan_mode,
       startedAt: scan.started_at,
       findingsCount: findings.length,
     });
