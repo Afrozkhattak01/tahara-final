@@ -49,6 +49,16 @@ function parseBackendTime(value: string): number {
   return new Date(hasZone ? value : value + 'Z').getTime();
 }
 
+// Next.js 14 caches GET fetch() calls made inside route handlers by default.
+// This route polls a scan whose status changes every few seconds, so the cache
+// served the first answer forever: the first "running, 6 findings" response was
+// returned on every later poll (in 0.03s — no request ever reached the backend),
+// the page never saw the scan finish, and it sat on "Analyzing vulnerabilities"
+// long after the backend had marked the scan complete. Both reads opt out below,
+// and the route itself is forced dynamic so nothing here is ever memoised.
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ jobId: string }> }
@@ -59,7 +69,7 @@ export async function GET(
     const token = await getToken();
     const headers = { 'Authorization': `Bearer ${token}` };
 
-    const scanRes = await fetch(`${ARIE_API}/scans/${jobId}`, { headers });
+    const scanRes = await fetch(`${ARIE_API}/scans/${jobId}`, { headers, cache: 'no-store' });
     if (!scanRes.ok) {
       return NextResponse.json({ error: { code: 'scan_not_found' } }, { status: 404 });
     }
@@ -69,7 +79,7 @@ export async function GET(
       ? Date.now() - parseBackendTime(scan.started_at)
       : 0;
 
-    const findingsRes = await fetch(`${ARIE_API}/scans/${jobId}/findings`, { headers });
+    const findingsRes = await fetch(`${ARIE_API}/scans/${jobId}/findings`, { headers, cache: 'no-store' });
     let findings: any[] = [];
     if (findingsRes.ok) {
       const data = await findingsRes.json();

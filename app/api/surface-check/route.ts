@@ -31,6 +31,9 @@ async function getToken(): Promise<string> {
 
 const SCAN_MODES = new Set(['simple', 'stealth', 'aggressive']);
 
+// Never cache: every call starts a new scan. See the status route for why this matters.
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     const { endpoint, mode } = await req.json();
