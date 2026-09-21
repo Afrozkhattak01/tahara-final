@@ -2419,7 +2419,8 @@ window.TaharaNavSpy = (function(){
         buildFallbackReport(L);
       }
 
-      var riskScore = useReal ? computeRisk(realFindings) : realScan ? null : RISK;
+      var aiRisk = useReal ? riskFromAnalysis(realFindings) : null;
+      var riskScore = useReal ? (aiRisk != null ? aiRisk : computeRisk(realFindings)) : realScan ? null : RISK;
       var gaugeN = document.querySelector('.rep-gauge-n');
       if (gaugeN) gaugeN.textContent = riskScore == null ? '—' : String(riskScore);
       if (gauge){
@@ -2463,6 +2464,21 @@ window.TaharaNavSpy = (function(){
       if (dlTitle && realScan) dlTitle.textContent = 'Full Detailed Report';
       var dlMeta = document.querySelector('.rep-dl-m');
       if (dlMeta && realScan) dlMeta.textContent = 'View the complete assessment with all findings';
+    }
+
+    /* The full report's headline figure is the risk score the AI analysis states.
+       Scoring separately here produced a different number for the same scan —
+       46 on this card and 75 in the report for taharaai.com — and a viewer who
+       clicks through sees the scanner contradict itself. Use the report's score;
+       fall back to the local formula only when the analysis gives none. */
+    function riskFromAnalysis(findings){
+      var ai = findings.find(function(f){ return f.finding_type === 'ai_analysis'; });
+      var text = ai && ai.description ? String(ai.description) : '';
+      var m = text.match(/risk[^\n]{0,80}?(\d{1,3})\s*\/\s*100/i)
+           || text.match(/risk score\s+(?:of|is|at)\s+(\d{1,3})(?![0-9])/i);
+      if (!m) return null;
+      var n = parseInt(m[1], 10);
+      return (n >= 0 && n <= 100) ? n : null;
     }
 
     function computeRisk(findings){
