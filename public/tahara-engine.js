@@ -2464,10 +2464,53 @@ window.TaharaNavSpy = (function(){
       return Math.min(100, Math.max(0, score));
     }
 
+    /* Findings carry structured metadata; read that, not the prose. The report
+       text is written for people and changes: the backend now says "Most
+       exploitable:" where it said "Top CVE:", titles CVE findings "CVE
+       Version-Confirmed: …" rather than "CVE Candidates: …", and appends the host
+       to technology titles. Every regex keyed on the old wording silently stopped
+       matching, which blanked the top-CVE line and put hostnames in the chips. */
+    function escapeHtml(v){
+      return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){
+        return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+      });
+    }
+
+    function metaOf(f){ return (f && f.metadata && typeof f.metadata === 'object') ? f.metadata : {}; }
+
+    function techName(f){
+      var m = metaOf(f);
+      if (m.technology) return String(m.technology);
+      return (f.title || '').replace(/^Technology:\s*/, '').replace(/\s*\([^)]*\)\s*$/, '');
+    }
+
+    /* One entry per technology, not per host: kums.edu.af reports jQuery on three
+       hosts, which counted as three technologies and drew three identical chips. */
+    function uniqueTechs(findings){
+      var seen = {}, out = [];
+      findings.forEach(function(f){
+        if (f.finding_type !== 'technology' || /^Technology Stack/.test(f.title || '')) return;
+        var name = techName(f);
+        if (!name) return;
+        var key = name.toLowerCase();
+        var ver = metaOf(f).version || '';
+        if (!seen[key]){ seen[key] = { name:name, version:ver }; out.push(seen[key]); }
+        else if (ver && !seen[key].version){ seen[key].version = ver; }
+      });
+      return out;
+    }
+
+    function cveTechLabel(f){
+      var m = metaOf(f);
+      if (m.technology) return m.technology + (m.version ? ' ' + m.version : '');
+      var t = f.title || '';
+      return t.indexOf(': ') >= 0 ? t.slice(t.indexOf(': ') + 2) : t;
+    }
+
     function updateCards(findings){
       var cards = document.querySelectorAll('.rep-cards > li');
       if (!findings || !cards.length) return;
-      var techs = findings.filter(function(f){ return f.finding_type === 'technology' && !f.title.startsWith('Technology Stack'); });
+      var techs = uniqueTechs(findings);
       var cveSummary = findings.find(function(f){ return f.finding_type === 'cve_summary'; });
       var cveItems = findings.filter(function(f){ return f.finding_type === 'cve'; });
       var totalCVEs = 0; var critCVEs = 0;
@@ -2521,7 +2564,7 @@ window.TaharaNavSpy = (function(){
         repList.textContent = '';
 
         /* ── Tech Stack section ── */
-        var techs = realFindings.filter(function(f){ return f.finding_type === 'technology' && !f.title.startsWith('Technology Stack'); });
+        var techs = uniqueTechs(realFindings);
         if (techs.length){
           var techHeader = document.createElement('li');
           techHeader.style.cssText = 'grid-column:1/-1;display:block;padding:16px 0 8px;font-weight:700;font-size:15px;color:var(--ink);letter-spacing:.02em;border-top:1px solid var(--line)';
@@ -2531,7 +2574,7 @@ window.TaharaNavSpy = (function(){
           var techGrid = document.createElement('li');
           techGrid.style.cssText = 'grid-column:1/-1;display:block;padding:0 0 16px';
           var chips = techs.map(function(t){
-            var name = (t.title || '').replace('Technology: ', '');
+            var name = escapeHtml(t.name + (t.version ? ' ' + t.version : ''));
             return '<span style="display:inline-block;padding:6px 14px;margin:4px;background:var(--line);border-radius:20px;font-size:13px;font-weight:600;color:var(--ink)">' + name + '</span>';
           }).join('');
           techGrid.innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:2px">' + chips + '</div>';
@@ -2551,19 +2594,28 @@ window.TaharaNavSpy = (function(){
             li.style.cssText = 'grid-column:1/-1;display:block;padding:12px 0;border-top:1px solid var(--line)';
             var sev = (f.severity || 'info').toLowerCase();
             var desc = f.description || '';
-            var topCVE = desc.match(/Top CVE:\s*(CVE-[\d-]+)\s*\(CVSS:\s*([\d.]+)\)/);
+            var cves = Array.isArray(metaOf(f).cves) ? metaOf(f).cves : [];
+            var lead = cves[0] || null;
             var countMatch = desc.match(/Found (\d+) CVEs/);
             var critMatch = desc.match(/Critical:\s*(\d+)/);
             var highMatch = desc.match(/High:\s*(\d+)/);
-            var techName = (f.title || '').replace('CVE Candidates: ', '');
+            var techLbl = escapeHtml(cveTechLabel(f));
             var sevColor = sev === 'critical' ? '#ef4444' : sev === 'high' ? '#f59e0b' : sev === 'medium' ? '#d6a25e' : 'var(--ink-3)';
 
             var html = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">' +
               '<span style="font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:' + sevColor + '">' + sevLabel(sev, L) + '</span>' +
-              '<span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-2);background:var(--bg-2);border:1px solid var(--line);border-radius:7px;padding:3px 9px">' + techName + '</span>' +
+              '<span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-2);background:var(--bg-2);border:1px solid var(--line);border-radius:7px;padding:3px 9px">' + techLbl + '</span>' +
               '</div>' +
               '<div style="font-size:15px;color:var(--ink);line-height:1.35">' + (f.title || '') + '</div>';
-            if (topCVE) html += '<div style="margin-top:6px;font-size:13px;color:var(--ink-2)"><b style="color:var(--ink)">' + topCVE[1] + '</b> · CVSS ' + topCVE[2] + '</div>';
+            if (lead && lead.cve_id){
+              /* The lead CVE is the most exploitable one (the backend ranks CISA KEV,
+                 then EPSS, then CVSS), so show the numbers that put it first. */
+              var parts = ['<b style="color:var(--ink)">' + escapeHtml(lead.cve_id) + '</b>'];
+              if (lead.cvss_score != null) parts.push('CVSS ' + Number(lead.cvss_score).toFixed(1));
+              if (lead.epss_probability != null) parts.push((Number(lead.epss_probability) * 100).toFixed(1) + '% EPSS');
+              if (lead.in_kev) parts.push('<span style="color:#ef4444;font-weight:600">CISA KEV · exploited</span>');
+              html += '<div style="margin-top:6px;font-size:13px;color:var(--ink-2)">' + parts.join(' · ') + '</div>';
+            }
             html += '<div style="margin-top:4px;font-size:13px;color:var(--ink-3)">' +
               (countMatch ? countMatch[1] + ' CVEs found' : '') +
               (critMatch && parseInt(critMatch[1]) > 0 ? ' · <span style="color:#ef4444;font-weight:600">' + critMatch[1] + ' Critical</span>' : '') +
