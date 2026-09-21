@@ -29,11 +29,21 @@ async function getToken(): Promise<string> {
   return data.access_token;
 }
 
+const SCAN_MODES = new Set(['simple', 'stealth', 'aggressive']);
+
 export async function POST(req: NextRequest) {
   try {
-    const { endpoint } = await req.json();
+    const { endpoint, mode } = await req.json();
     if (!endpoint || typeof endpoint !== 'string' || endpoint.length > 253) {
       return NextResponse.json({ error: { code: 'invalid_url' } }, { status: 400 });
+    }
+
+    // The backend has always supported three modes; the form never sent one, so
+    // every scan silently ran as stealth. Accept only the three the backend
+    // knows, and default to stealth as it does.
+    const scanMode = typeof mode === 'string' ? mode.toLowerCase().trim() : 'stealth';
+    if (!SCAN_MODES.has(scanMode)) {
+      return NextResponse.json({ error: { code: 'invalid_mode' } }, { status: 400 });
     }
 
     const domain = endpoint.replace(/^https?:\/\//, '').split(/[/?#]/)[0];
@@ -64,6 +74,7 @@ export async function POST(req: NextRequest) {
       headers,
       body: JSON.stringify({
         target_id: target.id,
+        scan_mode: scanMode,
         budget_minutes: 120,
       }),
     });
@@ -77,6 +88,7 @@ export async function POST(req: NextRequest) {
       scanId: scan.id,
       targetId: target.id,
       statusUrl: `/api/surface-check/${scan.id}`,
+      mode: scanMode,
     }, { status: 202 });
   } catch (e: any) {
     return NextResponse.json({ error: { code: 'server_error', detail: e.message } }, { status: 500 });
