@@ -2471,9 +2471,23 @@ window.TaharaNavSpy = (function(){
        46 on this card and 75 in the report for taharaai.com — and a viewer who
        clicks through sees the scanner contradict itself. Use the report's score;
        fall back to the local formula only when the analysis gives none. */
+    /* The backend calculates the score in arie/risk_score.py and stores it as a
+       number on the ai_analysis finding, alongside the per-point breakdown the
+       report prints. Read that number.
+
+       This used to regex it out of the AI's English instead — the same mistake
+       the note below this function warns about. Prose moves: the backend now
+       prefixes the summary with "Overall risk score: 72/100." and rewrites any
+       figure the model states to match, so the patterns happened to still hit,
+       but a wording change breaks them silently and the gauge falls through to a
+       locally computed number that disagreed with the report. */
     function riskFromAnalysis(findings){
       var ai = findings.find(function(f){ return f.finding_type === 'ai_analysis'; });
-      var text = ai && ai.description ? String(ai.description) : '';
+      if (!ai) return null;
+      var stored = metaOf(ai).risk_score;
+      if (typeof stored === 'number' && stored >= 0 && stored <= 100) return Math.round(stored);
+      /* Scans run before the score was stored have only the prose. */
+      var text = ai.description ? String(ai.description) : '';
       var m = text.match(/risk[^\n]{0,80}?(\d{1,3})\s*\/\s*100/i)
            || text.match(/risk score\s+(?:of|is|at)\s+(\d{1,3})(?![0-9])/i);
       if (!m) return null;
@@ -2481,16 +2495,69 @@ window.TaharaNavSpy = (function(){
       return (n >= 0 && n <= 100) ? n : null;
     }
 
+    /* Mirror of backend/arie/risk_score.py, used only when a scan has no
+       ai_analysis finding to read the score from — a scan still running, or one
+       whose AI step failed.
+
+       The previous version added 15 per critical, 8 per high, 3 per medium and 1
+       per low with no cap on how many findings could contribute, which is a
+       different formula, not an approximation of this one. It counted
+       cve_summary as well, a roll-up that restates the per-technology CVE
+       findings and is deliberately excluded from the real score. On a scan with
+       four criticals it read 100 while the report said 72, so the dashboard and
+       the report showed two different numbers for the same scan.
+
+       Formula, identical to the backend:
+         worst finding      critical 55, high 40, medium 25, low 10
+         further crit/high  +3 each, capped at +15
+         CISA KEV CVE       +20 version-confirmed, otherwise +10
+         highest EPSS       +10 at >=50%, +5 at >=10%
+         capped at 100, excluding cve_summary and ai_analysis */
+    var RISK_SEVERITY_BASE = { critical: 55, high: 40, medium: 25, low: 10 };
+    var RISK_EXCLUDED_TYPES = ['cve_summary', 'ai_analysis'];
+
     function computeRisk(findings){
-      var score = 0;
-      findings.forEach(function(f){
-        var s = (f.severity || '').toLowerCase();
-        if (s === 'critical') score += 15;
-        else if (s === 'high') score += 8;
-        else if (s === 'medium') score += 3;
-        else if (s === 'low') score += 1;
+      function sev(f){ return String(f && f.severity || '').toLowerCase(); }
+      var scored = (findings || []).filter(function(f){
+        return RISK_EXCLUDED_TYPES.indexOf(f && f.finding_type) === -1;
       });
-      return Math.min(100, Math.max(0, score));
+
+      var points = 0;
+      var ranked = scored.filter(function(f){ return RISK_SEVERITY_BASE[sev(f)] != null; })
+                         .sort(function(a, b){
+                           return RISK_SEVERITY_BASE[sev(b)] - RISK_SEVERITY_BASE[sev(a)];
+                         });
+      if (ranked.length){
+        points += RISK_SEVERITY_BASE[sev(ranked[0])];
+        var further = ranked.slice(1).filter(function(f){
+          return sev(f) === 'critical' || sev(f) === 'high';
+        });
+        if (further.length) points += Math.min(15, 3 * further.length);
+      }
+
+      var cves = [];
+      scored.forEach(function(f){
+        if (f.finding_type !== 'cve') return;
+        var list = metaOf(f).cves;
+        if (Array.isArray(list)) list.forEach(function(c){
+          if (c && typeof c === 'object') cves.push(c);
+        });
+      });
+
+      var kevConfirmed = cves.filter(function(c){
+        return c.in_kev && c.verification_status === 'verified';
+      });
+      if (kevConfirmed.length) points += 20;
+      else if (cves.filter(function(c){ return c.in_kev; }).length) points += 10;
+
+      var epss = cves.map(function(c){ return c.epss_probability; })
+                     .filter(function(v){ return typeof v === 'number'; });
+      if (epss.length){
+        var top = Math.max.apply(null, epss);
+        points += top >= 0.5 ? 10 : top >= 0.1 ? 5 : 0;
+      }
+
+      return Math.min(100, Math.max(0, points));
     }
 
     /* Findings carry structured metadata; read that, not the prose. The report
